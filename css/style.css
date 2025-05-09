@@ -37,7 +37,7 @@ body {
     align-items: center;
     justify-content: center;
     padding: 1rem;
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    background:#2c3e50;
 }
 
 /* Form Container */
