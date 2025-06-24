@@ -106,6 +106,9 @@ const gerenciadorFuncionarios = {
     }
 };
 
+
+
+
 // Gerenciamento de cargos
 const gerenciadorCargos = {
     cargos: [],
@@ -199,90 +202,3 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
 
-
-
-
-class Morador {
-    constructor(nome, cpf, residencia, telefone, email) {
-        this.id = Date.now();
-        this.nome = nome;
-        this.cpf = cpf;
-        this.residencia = residencia;
-        this.telefone = telefone;
-        this.email = email;
-    }
-}
-
-// Gerenciamento de moradores
-const gerenciadorMoradores = {
-    moradores: [],
-
-    init() {
-        this.moradores = JSON.parse(localStorage.getItem('moradores')) || [];
-        this.atualizarLista();
-        this.configurarFormulario();
-        this.atualizarContadores();
-    },
-
-    adicionar(morador) {
-        this.moradores.push(morador);
-        this.salvar();
-        this.atualizarLista();
-        this.atualizarContadores();
-    },
-
-    remover(id) {
-        this.moradores = this.moradores.filter(m => m.id !== id);
-        this.salvar();
-        this.atualizarLista();
-        this.atualizarContadores();
-    },
-
-    salvar() {
-        localStorage.setItem('moradores', JSON.stringify(this.moradores));
-    },
-
-    atualizarLista() {
-        const lista = document.getElementById('lista-moradores');
-        lista.innerHTML = '';
-
-        this.moradores.forEach(morador => {
-            const div = document.createElement('div');
-            div.className = 'lista-item';
-            div.innerHTML = `
-                <h4>${morador.nome}</h4>
-                <p>Residência: ${morador.residencia}</p>
-                <p>Telefone: ${morador.telefone}</p>
-                <button onclick="gerenciadorMoradores.remover(${morador.id})">Remover</button>
-            `;
-            lista.appendChild(div);
-        });
-    },
-
-    configurarFormulario() {
-        const form = document.getElementById('form-morador');
-        form.addEventListener('submit', (e) => {
-            e.preventDefault();
-            const morador = new Morador(
-                form.nome.value,
-                form.cpf.value,
-                form.residencia.value,
-                form.telefone.value,
-                form.email.value
-            );
-            this.adicionar(morador);
-            form.reset();
-        });
-    },
-
-    atualizarContadores() {
-        // Atualiza o total de residências
-        const totalResidencias = new Set(this.moradores.map(m => m.residencia)).size;
-        localStorage.setItem('totalResidencias', totalResidencias);
-
-        // Atualiza o contador de moradores presentes (assumindo que todos estão presentes por padrão)
-        localStorage.setItem('moradoresPresentes', this.moradores.length);
-    }
-};
-
-document.addEventListener('DOMContentLoaded', () => gerenciadorMoradores.init()); 

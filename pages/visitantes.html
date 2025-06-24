@@ -13,18 +13,28 @@
 </head>
 <body>
     <header>
-        <nav>
-            <div class="logo">
-                <h1><i class="fas fa-shield"></i> ShieldTech</h1>
-            </div>
-            <ul class="menu">
-                <li><a href="../index.html"><i class="fas fa-home"></i> Início</a></li>
-                <li><a href="visitantes.html"><i class="fas fa-user-friends"></i> Visitantes</a></li>
-                <li><a href="relatorios.html"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
-                <li><a href="cadastros.html"><i class="fas fa-gear"></i> Cadastros</a></li>
-            </ul>
-        </nav>
-    </header>
+    <nav>
+      <div class="logo">
+        <h1><i class="fas fa-shield"></i> ShieldTech</h1>
+      </div>
+      <ul class="menu">
+        <li><a href="../index.html"><i class="fas fa-home"></i> Início</a></li>
+        <li><a href="visitantes.html"><i class="fas fa-user-friends"></i> Visitantes</a></li>
+        <li><a href="relatorios.html"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropbtn"><i class="fas fa-gear"></i> Cadastros</a>
+          <div class="dropdown-content">
+            <a href="cadastro_moradores.html">Moradores</a>
+            <a href="cadastro_funcionarios.html">Funcionários</a>
+            <a href="cadastro_cargos.html">Cargos</a>
+          </div>
+        </li>
+      </ul>
+      <button class="menu-toggle" style="display: none;">
+        <i class="fas fa-bars"></i>
+      </button>
+    </nav>
+  </header>
 
     <main>
         <h2>Controle de Visitantes</h2>

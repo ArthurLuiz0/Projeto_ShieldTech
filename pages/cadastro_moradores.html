@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Funcionários - ShieldTech</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+  <<header>
+    <nav>
+      <div class="logo">
+        <h1><i class="fas fa-shield"></i> ShieldTech</h1>
+      </div>
+      <ul class="menu">
+        <li><a href="../index.html"><i class="fas fa-home"></i> Início</a></li>
+        <li><a href="visitantes.html"><i class="fas fa-user-friends"></i> Visitantes</a></li>
+        <li><a href="relatorios.html"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
+        <li class="dropdown">
+          <a href="#" class="dropbtn"><i class="fas fa-gear"></i> Cadastros</a>
+          <div class="dropdown-content">
+            <a href="cadastro_moradores.html">Moradores</a>
+            <a href="cadastro_funcionarios.html">Funcionários</a>
+            <a href="cadastro_cargos.html">Cargos</a>
+          </div>
+        </li>
+      </ul>
+      <button class="menu-toggle" style="display: none;">
+        <i class="fas fa-bars"></i>
+      </button>
+    </nav>
+  </header>
+
+  <main>
+
+    <h2>Gestão de Moradores</h2>
+        
+        <section class="form-section">
+            <h3>Cadastro de Morador</h3>
+            <form id="form-morador">
+                <div class="form-group">
+                    <label for="nome">Nome Completo:</label>
+                    <input type="text" id="nome" name="nome" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="cpf">CPF:</label>
+                    <input type="text" id="cpf" name="cpf" required>
+                </div>
+
+                <div class="form-group">
+                  <label for="rg">RG:</label>
+                  <input type="text" id="rg" name="rg" required>
+              </div>
+
+
+                <div class="form-group">
+                  <label for="telefone">Telefone:</label>
+                  <input type="tel" id="telefone" name="telefone" required>
+                </div>
+
+               <div class="form-group">
+                  <label for="veiculo">Veiculos:</label>
+                  <input type="text" id="veiculo" name="veiculo" required>
+                </div>
+                
+                <div class="form-group">
+                  <label for="animais">Animais:</label>
+                  <input type="text" id="animais" name="animais" required>
+                </div>
+
+                
+
+              <div class="form-group">
+                  <label for="email">E-mail:</label>
+                  <input type="email" id="email" name="email" required>
+              </div>
+                
+                <div class="form-group">
+                    <label for="residencia">Número da Residência:</label>
+                    <input type="text" id="residencia" name="residencia" required>
+                </div>
+
+
+
+                
+            </form>
+            <button type="submit">Cadastrar Morador</button>
+            </section>
+                    <section class="lista-section">
+                <h3>Lista de Moradores</h3>
+                <div id="lista-moradores"></div>
+            </section>
+
+
+           <h2>Gestão de Veiculos</h2>
+        
+        <section class="form-section">
+            <h3>Cadastro de Veiculos</h3>
+            <form id="form-veiculos">
+                <div class="form-group">
+                    <label for="nome">Nome Completo:</label>
+                    <input type="text" id="nome" name="nome" required>
+                </div>
+                
+            </form>
+            <button type="submit">Cadastrar Veiculo</button>
+        </section>
+
+
+           <h2>Gestão de Animais</h2>
+        
+        <section class="form-section">
+            <h3>Cadastro de Animais</h3>
+            <form id="form-animais">
+                <div class="form-group">
+                    <label for="nome">Nome Completo:</label>
+                    <input type="text" id="nome" name="nome" required>
+                </div>
+                
+            </form>
+            <button type="submit">Cadastrar Animal</button>
+        </section>
+
+
+
+
+
+    
+  </main>
+
+  <footer>
+    <p>&copy; 2025 ShieldTech - Sistema de Controle de Acesso</p>
+  </footer>
+
+  <script src="../js/moradores.js"></script>
+</body>
+
+</html>
+
+<style>
+  .tabela-container {
+    overflow-x: auto;
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+  }
+
+  th, td {
+    padding: 10px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+  }
+
+  th {
+    background-color: #f2f2f2;
+  }
+
+  tr:hover {
+    background-color: #f5f5f5;
+  }
+
+  .form-section, .lista-section {
+    margin-bottom: 40px;
+  }
+
+  .form-group {
+    margin-bottom: 15px;
+  }
+
+  .form-actions {
+    display: flex;
+    justify-content: space-between;
+  }
+
+  .btn-primary {
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+  }
+
+  .btn-secondary {
+    background-color: #f44336;
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    cursor: pointer;
+  }
+</style>
