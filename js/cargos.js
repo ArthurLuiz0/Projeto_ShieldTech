@@ -80,6 +80,14 @@ const gerenciadorCargos = {
         if (!tbody) return;
 
         tbody.innerHTML = '';
+        
+        if (this.cargos.length === 0) {
+            const tr = document.createElement('tr');
+            tr.innerHTML = '<td colspan="5" style="text-align: center;">Nenhum cargo cadastrado</td>';
+            tbody.appendChild(tr);
+            return;
+        }
+
         this.cargos.forEach(cargo => {
             const tr = document.createElement('tr');
             tr.innerHTML = `
@@ -88,10 +96,10 @@ const gerenciadorCargos = {
                 <td>R$ ${cargo.salario.toFixed(2)}</td>
                 <td>${cargo.cargaHoraria}h</td>
                 <td>
-                    <button onclick="gerenciadorCargos.carregarParaEdicao('${cargo.id}')" class="btn-editar">
+                    <button onclick="gerenciadorCargos.carregarParaEdicao(${cargo.id})" class="btn-editar">
                         <i class="fas fa-edit"></i> Editar
                     </button>
-                    <button onclick="gerenciadorCargos.remover('${cargo.id}')" class="btn-excluir">
+                    <button onclick="gerenciadorCargos.remover(${cargo.id})" class="btn-excluir">
                         <i class="fas fa-trash"></i> Excluir
                     </button>
                 </td>
@@ -100,23 +108,38 @@ const gerenciadorCargos = {
         });
 
         // Atualizar select de cargos no formulário de funcionários
+        this.atualizarSelectCargos();
+    },
+
+    atualizarSelectCargos() {
         const selectCargo = document.getElementById('cargo');
         if (selectCargo) {
-            const cargosAtuais = Array.from(selectCargo.options).map(opt => opt.value);
+            // Salvar valor atual
+            const valorAtual = selectCargo.value;
+            
+            // Limpar e recriar opções
+            selectCargo.innerHTML = '<option value="">Selecione um cargo</option>';
+            
             this.cargos.forEach(cargo => {
-                if (!cargosAtuais.includes(cargo.nome)) {
-                    const option = document.createElement('option');
-                    option.value = cargo.nome;
-                    option.textContent = cargo.nome;
-                    selectCargo.appendChild(option);
-                }
+                const option = document.createElement('option');
+                option.value = cargo.nome;
+                option.textContent = cargo.nome;
+                selectCargo.appendChild(option);
             });
+            
+            // Restaurar valor se ainda existir
+            if (valorAtual && this.cargos.some(c => c.nome === valorAtual)) {
+                selectCargo.value = valorAtual;
+            }
         }
     },
 
     configurarFormulario() {
         const form = document.getElementById('form-cargo');
-        const btnSubmit = form.querySelector('button[type="submit"]');
+        if (!form) return;
+
+        const btnSubmit = form.querySelector('button[type="submit"]') || 
+                         form.querySelector('.btn-primary');
         let cargoEmEdicao = null;
 
         form.addEventListener('submit', (e) => {
@@ -131,7 +154,7 @@ const gerenciadorCargos = {
             if (cargoEmEdicao) {
                 if (this.editar(cargoEmEdicao, dados)) {
                     cargoEmEdicao = null;
-                    btnSubmit.textContent = 'Cadastrar Cargo';
+                    if (btnSubmit) btnSubmit.textContent = 'Cadastrar Cargo';
                     form.reset();
                 }
             } else {
@@ -147,11 +170,14 @@ const gerenciadorCargos = {
             }
         });
 
-        const btnLimpar = form.querySelector('button[type="reset"]');
-        btnLimpar.addEventListener('click', () => {
-            cargoEmEdicao = null;
-            btnSubmit.textContent = 'Cadastrar Cargo';
-        });
+        const btnLimpar = form.querySelector('button[type="reset"]') || 
+                         form.querySelector('.btn-secondary');
+        if (btnLimpar) {
+            btnLimpar.addEventListener('click', () => {
+                cargoEmEdicao = null;
+                if (btnSubmit) btnSubmit.textContent = 'Cadastrar Cargo';
+            });
+        }
 
         this.carregarParaEdicao = (id) => {
             const cargo = this.cargos.find(c => c.id === id);
@@ -161,7 +187,7 @@ const gerenciadorCargos = {
                 form.descricao.value = cargo.descricao;
                 form.salario.value = cargo.salario;
                 form['carga-horaria'].value = cargo.cargaHoraria;
-                btnSubmit.textContent = 'Salvar Alterações';
+                if (btnSubmit) btnSubmit.textContent = 'Salvar Alterações';
                 form.scrollIntoView({ behavior: 'smooth' });
             }
         };

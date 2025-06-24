@@ -3,39 +3,31 @@ const gerenciadorRelatorios = {
 
     init() {
         this.configurarFormulario();
-        this.configurarFiltrosAvancados();
         this.configurarPeriodo();
-    },
-
-    configurarFiltrosAvancados() {
-        const btn = document.getElementById('btn-filtros-avancados');
-        const filtros = document.querySelector('.filtros-avancados');
-        
-        btn.addEventListener('click', () => {
-            filtros.classList.toggle('ativo');
-            btn.textContent = filtros.classList.contains('ativo') ? 
-                'Ocultar Filtros Avançados' : 'Filtros Avançados';
-        });
     },
 
     configurarPeriodo() {
         const periodo = document.getElementById('periodo');
         const datasPersonalizadas = document.getElementById('datas-personalizadas');
         
-        periodo.addEventListener('change', (e) => {
-            if (e.target.value === 'personalizado') {
-                datasPersonalizadas.style.display = 'block';
-            } else {
-                datasPersonalizadas.style.display = 'none';
-                this.definirDatasPeriodo(e.target.value);
-            }
-        });
+        if (periodo && datasPersonalizadas) {
+            periodo.addEventListener('change', (e) => {
+                if (e.target.value === 'personalizado') {
+                    datasPersonalizadas.style.display = 'block';
+                } else {
+                    datasPersonalizadas.style.display = 'none';
+                    this.definirDatasPeriodo(e.target.value);
+                }
+            });
+        }
     },
 
     definirDatasPeriodo(periodo) {
         const hoje = new Date();
         const dataInicio = document.getElementById('data-inicio');
         const dataFim = document.getElementById('data-fim');
+
+        if (!dataInicio || !dataFim) return;
 
         switch(periodo) {
             case 'hoje':
@@ -80,9 +72,9 @@ const gerenciadorRelatorios = {
         if (filtros.busca) {
             const busca = filtros.busca.toLowerCase();
             resultado = resultado.filter(item => 
-                item.nome?.toLowerCase().includes(busca) ||
-                item.moradorVisitado?.toLowerCase().includes(busca) ||
-                item.residencia?.toString().includes(busca)
+                (item.nome && item.nome.toLowerCase().includes(busca)) ||
+                (item.moradorVisitado && item.moradorVisitado.toLowerCase().includes(busca)) ||
+                (item.residencia && item.residencia.toString().includes(busca))
             );
         }
 
@@ -97,13 +89,13 @@ const gerenciadorRelatorios = {
         return [...dados].sort((a, b) => {
             switch(ordenacao) {
                 case 'data-desc':
-                    return new Date(b.entrada || b.data) - new Date(a.entrada || a.data);
+                    return new Date(b.entrada || b.data || 0) - new Date(a.entrada || a.data || 0);
                 case 'data-asc':
-                    return new Date(a.entrada || a.data) - new Date(b.entrada || b.data);
+                    return new Date(a.entrada || a.data || 0) - new Date(b.entrada || b.data || 0);
                 case 'nome':
                     return (a.nome || '').localeCompare(b.nome || '');
                 case 'residencia':
-                    return (a.residencia || '').localeCompare(b.residencia || '');
+                    return (a.residencia || '').toString().localeCompare((b.residencia || '').toString());
                 default:
                     return 0;
             }
@@ -112,6 +104,8 @@ const gerenciadorRelatorios = {
 
     exibirInformacoes(dados, tipo) {
         const info = document.getElementById('relatorio-info');
+        if (!info) return;
+
         const total = dados.length;
         let texto = `Total de registros: ${total}`;
 
@@ -137,16 +131,19 @@ const gerenciadorRelatorios = {
         hoje.setHours(0, 0, 0, 0);
 
         const visitasHoje = dados.filter(v => 
-            new Date(v.entrada) >= hoje
+            v.entrada && new Date(v.entrada) >= hoje
         ).length;
 
-        const mediaVisitas = Math.round(dados.length / 30); // média mensal
+        const mediaVisitas = dados.length > 0 ? Math.round(dados.length / 30) : 0; // média mensal
         
         return `Visitas hoje: ${visitasHoje} | Média mensal: ${mediaVisitas} visitas`;
     },
 
     exportarCSV() {
-        if (!this.dadosFiltrados.length) return;
+        if (!this.dadosFiltrados.length) {
+            alert('Nenhum dado para exportar');
+            return;
+        }
 
         const headers = Object.keys(this.dadosFiltrados[0]);
         const csv = [
@@ -156,12 +153,14 @@ const gerenciadorRelatorios = {
             )
         ].join('\n');
 
-        const blob = new Blob([csv], { type: 'text/csv' });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
         const url = window.URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'relatorio.csv';
+        a.download = `relatorio_${new Date().toISOString().split('T')[0]}.csv`;
+        document.body.appendChild(a);
         a.click();
+        document.body.removeChild(a);
         window.URL.revokeObjectURL(url);
     },
 
@@ -175,8 +174,13 @@ const gerenciadorRelatorios = {
                 return JSON.parse(localStorage.getItem('visitantes')) || [];
             case 'moradores':
                 return JSON.parse(localStorage.getItem('moradores')) || [];
-            case 'acessos':
-                return JSON.parse(localStorage.getItem('acessos')) || [];
+            case 'funcionarios':
+                return JSON.parse(localStorage.getItem('funcionarios')) || [];
+            case 'cargos':
+                return JSON.parse(localStorage.getItem('cargos')) || [];
+            case 'resumo':
+                // Para resumo, vamos usar dados de visitantes
+                return JSON.parse(localStorage.getItem('visitantes')) || [];
             default:
                 return [];
         }
@@ -187,16 +191,24 @@ const gerenciadorRelatorios = {
 
         const dataInicio = new Date(inicio);
         const dataFim = new Date(fim);
+        dataFim.setHours(23, 59, 59, 999); // Incluir todo o dia final
 
         return dados.filter(item => {
-            const data = new Date(item.entrada || item.data);
+            const data = new Date(item.entrada || item.data || item.dataAdmissao || 0);
             return data >= dataInicio && data <= dataFim;
         });
     },
 
     exibirRelatorio(dados, tipo) {
         const container = document.getElementById('resultado-relatorio');
+        if (!container) return;
+
         container.innerHTML = '';
+
+        if (dados.length === 0) {
+            container.innerHTML = '<p>Nenhum registro encontrado para os filtros selecionados.</p>';
+            return;
+        }
 
         const tabela = document.createElement('table');
         tabela.className = 'tabela-relatorio';
@@ -224,25 +236,49 @@ const gerenciadorRelatorios = {
                 return `
                     <tr>
                         <th>Nome</th>
+                        <th>Documento</th>
                         <th>Morador Visitado</th>
                         <th>Entrada</th>
                         <th>Saída</th>
+                        <th>Status</th>
                     </tr>
                 `;
             case 'moradores':
                 return `
                     <tr>
                         <th>Nome</th>
+                        <th>CPF</th>
                         <th>Residência</th>
+                        <th>Telefone</th>
+                        <th>Email</th>
+                    </tr>
+                `;
+            case 'funcionarios':
+                return `
+                    <tr>
+                        <th>Nome</th>
+                        <th>CPF</th>
+                        <th>Cargo</th>
+                        <th>Data Admissão</th>
                         <th>Telefone</th>
                     </tr>
                 `;
-            case 'acessos':
+            case 'cargos':
                 return `
                     <tr>
-                        <th>Data</th>
-                        <th>Tipo</th>
-                        <th>Pessoa</th>
+                        <th>Nome</th>
+                        <th>Descrição</th>
+                        <th>Salário</th>
+                        <th>Carga Horária</th>
+                    </tr>
+                `;
+            case 'resumo':
+                return `
+                    <tr>
+                        <th>Nome</th>
+                        <th>Morador Visitado</th>
+                        <th>Entrada</th>
+                        <th>Saída</th>
                     </tr>
                 `;
             default:
@@ -254,22 +290,42 @@ const gerenciadorRelatorios = {
         switch(tipo) {
             case 'visitantes':
                 return `
-                    <td>${item.nome}</td>
-                    <td>${item.moradorVisitado}</td>
-                    <td>${new Date(item.entrada).toLocaleString()}</td>
+                    <td>${item.nome || '-'}</td>
+                    <td>${item.documento || '-'}</td>
+                    <td>${item.moradorVisitado || '-'}</td>
+                    <td>${item.entrada ? new Date(item.entrada).toLocaleString() : '-'}</td>
                     <td>${item.saida ? new Date(item.saida).toLocaleString() : '-'}</td>
+                    <td>${item.saida ? 'Saiu' : 'Presente'}</td>
                 `;
             case 'moradores':
                 return `
-                    <td>${item.nome}</td>
-                    <td>${item.residencia}</td>
-                    <td>${item.telefone}</td>
+                    <td>${item.nome || '-'}</td>
+                    <td>${item.cpf || '-'}</td>
+                    <td>${item.residencia || '-'}</td>
+                    <td>${item.telefone || '-'}</td>
+                    <td>${item.email || '-'}</td>
                 `;
-            case 'acessos':
+            case 'funcionarios':
                 return `
-                    <td>${new Date(item.data).toLocaleString()}</td>
-                    <td>${item.tipo}</td>
-                    <td>${item.pessoa}</td>
+                    <td>${item.nome || '-'}</td>
+                    <td>${item.cpf || '-'}</td>
+                    <td>${item.cargo || '-'}</td>
+                    <td>${item.dataAdmissao ? new Date(item.dataAdmissao).toLocaleDateString() : '-'}</td>
+                    <td>${item.telefone || '-'}</td>
+                `;
+            case 'cargos':
+                return `
+                    <td>${item.nome || '-'}</td>
+                    <td>${item.descricao || '-'}</td>
+                    <td>R$ ${item.salario ? parseFloat(item.salario).toFixed(2) : '0,00'}</td>
+                    <td>${item.cargaHoraria || 0}h</td>
+                `;
+            case 'resumo':
+                return `
+                    <td>${item.nome || '-'}</td>
+                    <td>${item.moradorVisitado || '-'}</td>
+                    <td>${item.entrada ? new Date(item.entrada).toLocaleString() : '-'}</td>
+                    <td>${item.saida ? new Date(item.saida).toLocaleString() : '-'}</td>
                 `;
             default:
                 return '';
@@ -278,6 +334,8 @@ const gerenciadorRelatorios = {
 
     configurarFormulario() {
         const form = document.getElementById('form-filtros');
+        if (!form) return;
+
         form.addEventListener('submit', (e) => {
             e.preventDefault();
             this.gerarRelatorio(
@@ -290,7 +348,18 @@ const gerenciadorRelatorios = {
                 }
             );
         });
+
+        // Configurar botão de submit se não estiver no form
+        const btnSubmit = document.querySelector('button[type="submit"]');
+        if (btnSubmit && !btnSubmit.form) {
+            btnSubmit.addEventListener('click', (e) => {
+                e.preventDefault();
+                form.dispatchEvent(new Event('submit'));
+            });
+        }
     }
 };
 
-document.addEventListener('DOMContentLoaded', () => gerenciadorRelatorios.init()); 
+document.addEventListener('DOMContentLoaded', () => {
+    gerenciadorRelatorios.init();
+});
