@@ -1,6 +1,6 @@
 class Morador {
-    constructor(nome, cpf, rg, telefone, email, residencia, animal = null) {
-        this.id = Date.now();
+    constructor(nome, cpf, rg, telefone, email, residencia, animal = null, veiculo = null) {
+        this.id = Date.now() + Math.random();
         this.nome = nome;
         this.cpf = cpf;
         this.rg = rg;
@@ -8,15 +8,30 @@ class Morador {
         this.email = email;
         this.residencia = residencia;
         this.animal = animal;
+        this.veiculo = veiculo;
+        this.dataCadastro = new Date().toISOString();
     }
 }
 
 class Animal {
-    constructor(nome, especie, raca, idade) {
+    constructor(nome, especie, raca, idade, cor, peso) {
         this.nome = nome;
         this.especie = especie;
         this.raca = raca;
         this.idade = idade;
+        this.cor = cor;
+        this.peso = peso;
+    }
+}
+
+class Veiculo {
+    constructor(marca, modelo, placa, cor, ano, tipo) {
+        this.marca = marca;
+        this.modelo = modelo;
+        this.placa = placa;
+        this.cor = cor;
+        this.ano = ano;
+        this.tipo = tipo;
     }
 }
 
@@ -32,7 +47,7 @@ const gerenciadorMoradores = {
 
     adicionar(morador) {
         if (!this.validarDados(morador)) {
-            alert('Por favor, preencha todos os campos do morador corretamente.');
+            alert('Por favor, preencha todos os campos obrigatórios do morador corretamente.');
             return false;
         }
 
@@ -50,7 +65,7 @@ const gerenciadorMoradores = {
 
     editar(id, dadosAtualizados) {
         if (!this.validarDados(dadosAtualizados)) {
-            alert('Por favor, preencha todos os campos do morador corretamente.');
+            alert('Por favor, preencha todos os campos obrigatórios do morador corretamente.');
             return false;
         }
 
@@ -121,20 +136,32 @@ const gerenciadorMoradores = {
             div.classList.add('morador-item');
             div.innerHTML = `
                 <div class="morador-info">
-                    <h3>${morador.nome}</h3>
-                    <p><strong>CPF:</strong> ${morador.cpf}</p>
-                    <p><strong>RG:</strong> ${morador.rg}</p>
-                    <p><strong>Telefone:</strong> ${morador.telefone}</p>
-                    <p><strong>Email:</strong> ${morador.email}</p>
-                    <p><strong>Residência:</strong> ${morador.residencia}</p>
+                    <h3><i class="fas fa-user"></i> ${morador.nome}</h3>
+                    <p><i class="fas fa-id-card"></i> <strong>CPF:</strong> ${morador.cpf}</p>
+                    <p><i class="fas fa-id-badge"></i> <strong>RG:</strong> ${morador.rg}</p>
+                    <p><i class="fas fa-phone"></i> <strong>Telefone:</strong> ${morador.telefone}</p>
+                    <p><i class="fas fa-envelope"></i> <strong>Email:</strong> ${morador.email}</p>
+                    <p><i class="fas fa-home"></i> <strong>Residência:</strong> ${morador.residencia}</p>
                 </div>
                 ${morador.animal ? `
                 <div class="animal-info">
-                    <h4>Animal de Estimação</h4>
+                    <h4><i class="fas fa-paw"></i> Animal de Estimação</h4>
                     <p><strong>Nome:</strong> ${morador.animal.nome}</p>
                     <p><strong>Espécie:</strong> ${morador.animal.especie}</p>
-                    <p><strong>Raça:</strong> ${morador.animal.raca}</p>
-                    <p><strong>Idade:</strong> ${morador.animal.idade} anos</p>
+                    <p><strong>Raça:</strong> ${morador.animal.raca || 'Não informado'}</p>
+                    <p><strong>Idade:</strong> ${morador.animal.idade || 'Não informado'} anos</p>
+                    <p><strong>Cor:</strong> ${morador.animal.cor || 'Não informado'}</p>
+                    <p><strong>Peso:</strong> ${morador.animal.peso || 'Não informado'} kg</p>
+                </div>
+                ` : ''}
+                ${morador.veiculo ? `
+                <div class="veiculo-info">
+                    <h4><i class="fas fa-car"></i> Veículo</h4>
+                    <p><strong>Marca/Modelo:</strong> ${morador.veiculo.marca} ${morador.veiculo.modelo}</p>
+                    <p><strong>Placa:</strong> ${morador.veiculo.placa}</p>
+                    <p><strong>Cor:</strong> ${morador.veiculo.cor}</p>
+                    <p><strong>Ano:</strong> ${morador.veiculo.ano}</p>
+                    <p><strong>Tipo:</strong> ${morador.veiculo.tipo}</p>
                 </div>
                 ` : ''}
                 <div class="botoes-acao">
@@ -161,10 +188,13 @@ const gerenciadorMoradores = {
 
     configurarFormulario() {
         const formMorador = document.getElementById('form-morador');
+        const formAnimal = document.getElementById('form-animal');
+        const formVeiculo = document.getElementById('form-veiculo');
+        
         if (!formMorador) return;
 
-        const btnSubmit = document.querySelector('button[type="submit"]') || 
-                         document.querySelector('.btn-primary');
+        const btnSubmit = formMorador.querySelector('button[type="submit"]') || 
+                         formMorador.querySelector('.btn-primary');
         let moradorEmEdicao = null;
 
         // Configurar máscaras
@@ -190,6 +220,18 @@ const gerenciadorMoradores = {
             });
         }
 
+        // Máscara para placa do veículo
+        const placaInput = formVeiculo ? formVeiculo.querySelector('#placa') : null;
+        if (placaInput) {
+            placaInput.addEventListener('input', (e) => {
+                let value = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase();
+                if (value.length <= 7) {
+                    value = value.replace(/^([A-Z]{3})(\d{4}).*/, '$1-$2');
+                    e.target.value = value;
+                }
+            });
+        }
+
         // Configurar envio do formulário
         formMorador.addEventListener('submit', (e) => {
             e.preventDefault();
@@ -204,7 +246,6 @@ const gerenciadorMoradores = {
             };
 
             // Verificar se há dados do animal
-            const formAnimal = document.getElementById('form-animal');
             if (formAnimal) {
                 const nomeAnimal = formAnimal.querySelector('#nome-animal');
                 if (nomeAnimal && nomeAnimal.value) {
@@ -212,7 +253,24 @@ const gerenciadorMoradores = {
                         nomeAnimal.value,
                         formAnimal.querySelector('#especie')?.value || '',
                         formAnimal.querySelector('#raca')?.value || '',
-                        parseInt(formAnimal.querySelector('#idade-animal')?.value) || 0
+                        parseInt(formAnimal.querySelector('#idade-animal')?.value) || 0,
+                        formAnimal.querySelector('#cor-animal')?.value || '',
+                        parseFloat(formAnimal.querySelector('#peso-animal')?.value) || 0
+                    );
+                }
+            }
+
+            // Verificar se há dados do veículo
+            if (formVeiculo) {
+                const marcaVeiculo = formVeiculo.querySelector('#marca');
+                if (marcaVeiculo && marcaVeiculo.value) {
+                    dadosMorador.veiculo = new Veiculo(
+                        marcaVeiculo.value,
+                        formVeiculo.querySelector('#modelo')?.value || '',
+                        formVeiculo.querySelector('#placa')?.value || '',
+                        formVeiculo.querySelector('#cor-veiculo')?.value || '',
+                        parseInt(formVeiculo.querySelector('#ano')?.value) || 0,
+                        formVeiculo.querySelector('#tipo-veiculo')?.value || ''
                     );
                 }
             }
@@ -223,6 +281,8 @@ const gerenciadorMoradores = {
                     if (btnSubmit) btnSubmit.textContent = 'Cadastrar Morador';
                     formMorador.reset();
                     if (formAnimal) formAnimal.reset();
+                    if (formVeiculo) formVeiculo.reset();
+                    alert('Morador atualizado com sucesso!');
                 }
             } else {
                 const morador = new Morador(
@@ -232,24 +292,27 @@ const gerenciadorMoradores = {
                     dadosMorador.telefone,
                     dadosMorador.email,
                     dadosMorador.residencia,
-                    dadosMorador.animal
+                    dadosMorador.animal,
+                    dadosMorador.veiculo
                 );
                 if (this.adicionar(morador)) {
                     formMorador.reset();
                     if (formAnimal) formAnimal.reset();
+                    if (formVeiculo) formVeiculo.reset();
+                    alert('Morador cadastrado com sucesso!');
                 }
             }
         });
 
         // Configurar botão de limpar
-        const btnLimpar = document.querySelector('button[type="reset"]') || 
-                         document.querySelector('.btn-secondary');
+        const btnLimpar = formMorador.querySelector('button[type="reset"]') || 
+                         formMorador.querySelector('.btn-secondary');
         if (btnLimpar) {
             btnLimpar.addEventListener('click', () => {
                 moradorEmEdicao = null;
                 if (btnSubmit) btnSubmit.textContent = 'Cadastrar Morador';
-                const formAnimal = document.getElementById('form-animal');
                 if (formAnimal) formAnimal.reset();
+                if (formVeiculo) formVeiculo.reset();
             });
         }
 
@@ -265,19 +328,40 @@ const gerenciadorMoradores = {
                 formMorador.email.value = morador.email;
                 formMorador.residencia.value = morador.residencia;
 
-                const formAnimal = document.getElementById('form-animal');
                 if (formAnimal && morador.animal) {
                     const nomeAnimal = formAnimal.querySelector('#nome-animal');
                     const especie = formAnimal.querySelector('#especie');
                     const raca = formAnimal.querySelector('#raca');
                     const idade = formAnimal.querySelector('#idade-animal');
+                    const cor = formAnimal.querySelector('#cor-animal');
+                    const peso = formAnimal.querySelector('#peso-animal');
                     
-                    if (nomeAnimal) nomeAnimal.value = morador.animal.nome;
-                    if (especie) especie.value = morador.animal.especie;
-                    if (raca) raca.value = morador.animal.raca;
-                    if (idade) idade.value = morador.animal.idade;
+                    if (nomeAnimal) nomeAnimal.value = morador.animal.nome || '';
+                    if (especie) especie.value = morador.animal.especie || '';
+                    if (raca) raca.value = morador.animal.raca || '';
+                    if (idade) idade.value = morador.animal.idade || '';
+                    if (cor) cor.value = morador.animal.cor || '';
+                    if (peso) peso.value = morador.animal.peso || '';
                 } else if (formAnimal) {
                     formAnimal.reset();
+                }
+
+                if (formVeiculo && morador.veiculo) {
+                    const marca = formVeiculo.querySelector('#marca');
+                    const modelo = formVeiculo.querySelector('#modelo');
+                    const placa = formVeiculo.querySelector('#placa');
+                    const cor = formVeiculo.querySelector('#cor-veiculo');
+                    const ano = formVeiculo.querySelector('#ano');
+                    const tipo = formVeiculo.querySelector('#tipo-veiculo');
+                    
+                    if (marca) marca.value = morador.veiculo.marca || '';
+                    if (modelo) modelo.value = morador.veiculo.modelo || '';
+                    if (placa) placa.value = morador.veiculo.placa || '';
+                    if (cor) cor.value = morador.veiculo.cor || '';
+                    if (ano) ano.value = morador.veiculo.ano || '';
+                    if (tipo) tipo.value = morador.veiculo.tipo || '';
+                } else if (formVeiculo) {
+                    formVeiculo.reset();
                 }
 
                 if (btnSubmit) btnSubmit.textContent = 'Salvar Alterações';

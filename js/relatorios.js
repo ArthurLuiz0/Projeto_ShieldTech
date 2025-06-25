@@ -74,7 +74,9 @@ const gerenciadorRelatorios = {
             resultado = resultado.filter(item => 
                 (item.nome && item.nome.toLowerCase().includes(busca)) ||
                 (item.moradorVisitado && item.moradorVisitado.toLowerCase().includes(busca)) ||
-                (item.residencia && item.residencia.toString().includes(busca))
+                (item.residencia && item.residencia.toString().includes(busca)) ||
+                (item.cpf && item.cpf.toLowerCase().includes(busca)) ||
+                (item.email && item.email.toLowerCase().includes(busca))
             );
         }
 
@@ -89,9 +91,9 @@ const gerenciadorRelatorios = {
         return [...dados].sort((a, b) => {
             switch(ordenacao) {
                 case 'data-desc':
-                    return new Date(b.entrada || b.data || 0) - new Date(a.entrada || a.data || 0);
+                    return new Date(b.entrada || b.dataCadastro || b.dataAdmissao || 0) - new Date(a.entrada || a.dataCadastro || a.dataAdmissao || 0);
                 case 'data-asc':
-                    return new Date(a.entrada || a.data || 0) - new Date(b.entrada || b.data || 0);
+                    return new Date(a.entrada || a.dataCadastro || a.dataAdmissao || 0) - new Date(b.entrada || b.dataCadastro || b.dataAdmissao || 0);
                 case 'nome':
                     return (a.nome || '').localeCompare(b.nome || '');
                 case 'residencia':
@@ -116,7 +118,17 @@ const gerenciadorRelatorios = {
                 break;
             case 'moradores':
                 const residencias = new Set(dados.map(m => m.residencia)).size;
-                texto += ` | Total de residências: ${residencias}`;
+                const comAnimais = dados.filter(m => m.animal && m.animal.nome).length;
+                const comVeiculos = dados.filter(m => m.veiculo && m.veiculo.placa).length;
+                texto += ` | Residências: ${residencias} | Com animais: ${comAnimais} | Com veículos: ${comVeiculos}`;
+                break;
+            case 'funcionarios':
+                const cargosUnicos = new Set(dados.map(f => f.cargo)).size;
+                texto += ` | Cargos diferentes: ${cargosUnicos}`;
+                break;
+            case 'cargos':
+                const totalSalarios = dados.reduce((sum, c) => sum + (parseFloat(c.salario) || 0), 0);
+                texto += ` | Total em salários: R$ ${totalSalarios.toFixed(2)}`;
                 break;
             case 'resumo':
                 texto = this.gerarResumoGeral(dados);
@@ -194,7 +206,7 @@ const gerenciadorRelatorios = {
         dataFim.setHours(23, 59, 59, 999); // Incluir todo o dia final
 
         return dados.filter(item => {
-            const data = new Date(item.entrada || item.data || item.dataAdmissao || 0);
+            const data = new Date(item.entrada || item.dataCadastro || item.dataAdmissao || 0);
             return data >= dataInicio && data <= dataFim;
         });
     },
@@ -251,6 +263,8 @@ const gerenciadorRelatorios = {
                         <th>Residência</th>
                         <th>Telefone</th>
                         <th>Email</th>
+                        <th>Animal</th>
+                        <th>Veículo</th>
                     </tr>
                 `;
             case 'funcionarios':
@@ -304,6 +318,8 @@ const gerenciadorRelatorios = {
                     <td>${item.residencia || '-'}</td>
                     <td>${item.telefone || '-'}</td>
                     <td>${item.email || '-'}</td>
+                    <td>${item.animal && item.animal.nome ? `${item.animal.nome} (${item.animal.especie})` : 'Não possui'}</td>
+                    <td>${item.veiculo && item.veiculo.placa ? `${item.veiculo.marca} ${item.veiculo.modelo} - ${item.veiculo.placa}` : 'Não possui'}</td>
                 `;
             case 'funcionarios':
                 return `
