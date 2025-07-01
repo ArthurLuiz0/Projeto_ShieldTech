@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Consultar Moradores - ShieldTech</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
@@ -14,15 +14,15 @@
                 <h1><i class="fas fa-shield"></i> ShieldTech</h1>
             </div>
             <ul class="menu">
-                <li><a href="../index.php"><i class="fas fa-home"></i> Início</a></li>
-                <li><a href="visitantes.php"><i class="fas fa-user-friends"></i> Visitantes</a></li>
-                <li><a href="relatorios.php"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
+                <li><a href="../../index.php"><i class="fas fa-home"></i> Início</a></li>
+                <li><a href="../visitantes/visitantes.php"><i class="fas fa-user-friends"></i> Visitantes</a></li>
+                <li><a href="../relatorios/relatorios.php"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropbtn"><i class="fas fa-gear"></i> Cadastros</a>
                     <div class="dropdown-content">
                         <a href="cadastro_moradores.php">Moradores</a>
-                        <a href="cadastro_funcionarios.php">Funcionários</a>
-                        <a href="cadastro_cargos.php">Cargos</a>
+                        <a href="../funcionarios/cadastro_funcionarios.php">Funcionários</a>
+                        <a href="../cargos/cadastro_cargos.php">Cargos</a>
                     </div>
                 </li>
             </ul>
@@ -57,7 +57,7 @@
                     </thead>
                     <tbody>
                         <?php
-                        include("../conectarbd.php");
+                        include("../../conectarbd.php");
                         $selecionar = mysqli_query($conn, "SELECT * FROM tb_moradores ORDER BY nome");
                         
                         if (mysqli_num_rows($selecionar) > 0) {
@@ -71,7 +71,7 @@
                                 echo "<td>" . $campo["andar"] . "</td>";
                                 echo "<td>" . ($campo["veiculo"] ? $campo["veiculo"] : "Não possui") . "</td>";
                                 echo "<td>" . ($campo["animais"] ? $campo["animais"] : "Não possui") . "</td>";
-                                echo "<td><span class='status-ativo'>" . $campo["status"] . "</span></td>";
+                                echo "<td><span class='status-ativo'>" . ($campo["status"] ? $campo["status"] : "Ativo") . "</span></td>";
                                 echo "<td class='acoes'>";
                                 echo "<a href='editar_morador.php?id=" . $campo["id_moradores"] . "' class='btn-editar'>";
                                 echo "<i class='fas fa-edit'></i> Editar</a>";

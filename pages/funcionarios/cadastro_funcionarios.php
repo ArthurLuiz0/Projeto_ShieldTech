@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro de Funcionários - ShieldTech</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <?php
-    include("../conectarbd.php");
+    include("../../conectarbd.php");
     
     // Processar formulário se foi enviado
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -42,15 +42,15 @@
                 <h1><i class="fas fa-shield"></i> ShieldTech</h1>
             </div>
             <ul class="menu">
-                <li><a href="../index.php"><i class="fas fa-home"></i> Início</a></li>
-                <li><a href="visitantes.php"><i class="fas fa-user-friends"></i> Visitantes</a></li>
-                <li><a href="relatorios.php"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
+                <li><a href="../../index.php"><i class="fas fa-home"></i> Início</a></li>
+                <li><a href="../visitantes/visitantes.php"><i class="fas fa-user-friends"></i> Visitantes</a></li>
+                <li><a href="../relatorios/relatorios.php"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropbtn"><i class="fas fa-gear"></i> Cadastros</a>
                     <div class="dropdown-content">
-                        <a href="cadastro_moradores.php">Moradores</a>
+                        <a href="../moradores/cadastro_moradores.php">Moradores</a>
                         <a href="cadastro_funcionarios.php">Funcionários</a>
-                        <a href="cadastro_cargos.php">Cargos</a>
+                        <a href="../cargos/cadastro_cargos.php">Cargos</a>
                     </div>
                 </li>
             </ul>

@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Relatórios - ShieldTech</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
@@ -14,15 +14,15 @@
                 <h1><i class="fas fa-shield"></i> ShieldTech</h1>
             </div>
             <ul class="menu">
-                <li><a href="../index.php"><i class="fas fa-home"></i> Início</a></li>
-                <li><a href="visitantes.php"><i class="fas fa-user-friends"></i> Visitantes</a></li>
+                <li><a href="../../index.php"><i class="fas fa-home"></i> Início</a></li>
+                <li><a href="../visitantes/visitantes.php"><i class="fas fa-user-friends"></i> Visitantes</a></li>
                 <li><a href="relatorios.php"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropbtn"><i class="fas fa-gear"></i> Cadastros</a>
                     <div class="dropdown-content">
-                        <a href="cadastro_moradores.php">Moradores</a>
-                        <a href="cadastro_funcionarios.php">Funcionários</a>
-                        <a href="cadastro_cargos.php">Cargos</a>
+                        <a href="../moradores/cadastro_moradores.php">Moradores</a>
+                        <a href="../funcionarios/cadastro_funcionarios.php">Funcionários</a>
+                        <a href="../cargos/cadastro_cargos.php">Cargos</a>
                     </div>
                 </li>
             </ul>
@@ -41,6 +41,7 @@
                         <option value="moradores" <?= isset($_GET['tipo_relatorio']) && $_GET['tipo_relatorio'] == 'moradores' ? 'selected' : '' ?>>Moradores</option>
                         <option value="funcionarios" <?= isset($_GET['tipo_relatorio']) && $_GET['tipo_relatorio'] == 'funcionarios' ? 'selected' : '' ?>>Funcionários</option>
                         <option value="visitantes" <?= isset($_GET['tipo_relatorio']) && $_GET['tipo_relatorio'] == 'visitantes' ? 'selected' : '' ?>>Visitantes</option>
+                        <option value="cargos" <?= isset($_GET['tipo_relatorio']) && $_GET['tipo_relatorio'] == 'cargos' ? 'selected' : '' ?>>Cargos</option>
                         <option value="resumo" <?= isset($_GET['tipo_relatorio']) && $_GET['tipo_relatorio'] == 'resumo' ? 'selected' : '' ?>>Resumo Geral</option>
                     </select>
                 </div>
@@ -67,7 +68,7 @@
         </section>
 
         <?php
-        include("../conectarbd.php");
+        include("../../conectarbd.php");
         
         if (isset($_GET['tipo_relatorio'])) {
             $tipo = $_GET['tipo_relatorio'];
@@ -169,8 +170,35 @@
                         echo "<td>" . $row['nome_visitante'] . "</td>";
                         echo "<td>" . $row['num_documento'] . "</td>";
                         echo "<td>" . $row['telefone'] . "</td>";
-                        echo "<td>" . $row['email'] . "</td>";
+                        echo "<td>" . ($row['email'] ?: 'Não informado') . "</td>";
                         echo "<td>" . ($row['status'] ?: 'Presente') . "</td>";
+                        echo "</tr>";
+                    }
+                    echo "</tbody></table>";
+                    break;
+                    
+                case 'cargos':
+                    $sql = "SELECT * FROM tb_cargo ORDER BY nome_cargo";
+                    
+                    $resultado = mysqli_query($conn, $sql);
+                    $total = mysqli_num_rows($resultado);
+                    
+                    echo "<div class='relatorio-info'>";
+                    echo "<p><strong>Total de Cargos:</strong> $total</p>";
+                    echo "</div>";
+                    
+                    echo "<table class='tabela-relatorio'>";
+                    echo "<thead>";
+                    echo "<tr><th>Nome</th><th>Descrição</th><th>Salário Base</th><th>Carga Horária</th></tr>";
+                    echo "</thead>";
+                    echo "<tbody>";
+                    
+                    while ($row = mysqli_fetch_array($resultado)) {
+                        echo "<tr>";
+                        echo "<td>" . $row['nome_cargo'] . "</td>";
+                        echo "<td>" . $row['descricao'] . "</td>";
+                        echo "<td>R$ " . number_format($row['salario_base'], 2, ',', '.') . "</td>";
+                        echo "<td>" . $row['carga_horaria'] . "</td>";
                         echo "</tr>";
                     }
                     echo "</tbody></table>";

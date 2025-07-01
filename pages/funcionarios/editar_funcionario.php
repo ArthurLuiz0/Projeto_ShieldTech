@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Editar Morador - ShieldTech</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <title>Editar Funcionário - ShieldTech</title>
+    <link rel="stylesheet" href="../../css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
     <?php
-    include("../conectarbd.php");
+    include("../../conectarbd.php");
     
     $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
     
@@ -22,28 +22,27 @@
         $data_nascimento = mysqli_real_escape_string($conn, $_POST["data_nascimento"]);
         $sexo = mysqli_real_escape_string($conn, $_POST["sexo"]);
         $telefone = mysqli_real_escape_string($conn, $_POST["telefone"]);
-        $bloco = mysqli_real_escape_string($conn, $_POST["bloco"]);
-        $torre = mysqli_real_escape_string($conn, $_POST["torre"]);
-        $andar = mysqli_real_escape_string($conn, $_POST["andar"]);
-        $veiculo = mysqli_real_escape_string($conn, $_POST["veiculo"]);
-        $animais = mysqli_real_escape_string($conn, $_POST["animais"]);
-        $foto = mysqli_real_escape_string($conn, $_POST["foto"]);
+        $email = mysqli_real_escape_string($conn, $_POST["email"]);
+        $endereco = mysqli_real_escape_string($conn, $_POST["endereco"]);
+        $funcao_cargo = mysqli_real_escape_string($conn, $_POST["funcao_cargo"]);
+        $salario = mysqli_real_escape_string($conn, $_POST["salario"]);
+        $data_admissao = mysqli_real_escape_string($conn, $_POST["data_admissao"]);
         
-        $sql = "UPDATE tb_moradores SET 
+        $sql = "UPDATE tb_funcionarios SET 
                 nome='$nome', cpf='$cpf', rg='$rg', data_nascimento='$data_nascimento', 
-                sexo='$sexo', telefone='$telefone', bloco='$bloco', torre='$torre', 
-                andar='$andar', veiculo='$veiculo', animais='$animais', foto='$foto' 
-                WHERE id_moradores=$id";
+                sexo='$sexo', telefone='$telefone', email='$email', endereco='$endereco', 
+                funcao_cargo='$funcao_cargo', salario='$salario', data_admissao='$data_admissao' 
+                WHERE id_funcionarios=$id";
         
         if (mysqli_query($conn, $sql)) {
-            echo "<script>alert('Morador atualizado com sucesso!'); window.location = 'consultar_moradores.php';</script>";
+            echo "<script>alert('Funcionário atualizado com sucesso!'); window.location = 'consultar_funcionarios.php';</script>";
         } else {
-            echo "<script>alert('Erro ao atualizar morador: " . mysqli_error($conn) . "');</script>";
+            echo "<script>alert('Erro ao atualizar funcionário: " . mysqli_error($conn) . "');</script>";
         }
     }
     
-    // Buscar dados do morador
-    $selecionar = mysqli_query($conn, "SELECT * FROM tb_moradores WHERE id_moradores=$id");
+    // Buscar dados do funcionário
+    $selecionar = mysqli_query($conn, "SELECT * FROM tb_funcionarios WHERE id_funcionarios=$id");
     $campo = mysqli_fetch_array($selecionar);
     ?>
 
@@ -53,15 +52,15 @@
                 <h1><i class="fas fa-shield"></i> ShieldTech</h1>
             </div>
             <ul class="menu">
-                <li><a href="../index.php"><i class="fas fa-home"></i> Início</a></li>
-                <li><a href="visitantes.php"><i class="fas fa-user-friends"></i> Visitantes</a></li>
-                <li><a href="relatorios.php"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
+                <li><a href="../../index.php"><i class="fas fa-home"></i> Início</a></li>
+                <li><a href="../visitantes/visitantes.php"><i class="fas fa-user-friends"></i> Visitantes</a></li>
+                <li><a href="../relatorios/relatorios.php"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropbtn"><i class="fas fa-gear"></i> Cadastros</a>
                     <div class="dropdown-content">
-                        <a href="cadastro_moradores.php">Moradores</a>
+                        <a href="../moradores/cadastro_moradores.php">Moradores</a>
                         <a href="cadastro_funcionarios.php">Funcionários</a>
-                        <a href="cadastro_cargos.php">Cargos</a>
+                        <a href="../cargos/cadastro_cargos.php">Cargos</a>
                     </div>
                 </li>
             </ul>
@@ -69,12 +68,12 @@
     </header>
 
     <main>
-        <h2>Editar Morador</h2>
+        <h2>Editar Funcionário</h2>
 
         <section class="form-section">
-            <h3>Alterar Dados do Morador</h3>
+            <h3>Alterar Dados do Funcionário</h3>
             <form method="post" action="">
-                <input type="hidden" name="id" value="<?= $campo["id_moradores"] ?>">
+                <input type="hidden" name="id" value="<?= $campo["id_funcionarios"] ?>">
                 
                 <div class="form-group">
                     <label for="nome">Nome Completo:</label>
@@ -111,40 +110,44 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="bloco">Bloco:</label>
-                    <input type="text" id="bloco" name="bloco" value="<?= $campo["bloco"] ?>" required>
+                    <label for="email">Email:</label>
+                    <input type="email" id="email" name="email" value="<?= $campo["email"] ?>" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="torre">Torre:</label>
-                    <input type="text" id="torre" name="torre" value="<?= $campo["torre"] ?>">
+                    <label for="endereco">Endereço:</label>
+                    <input type="text" id="endereco" name="endereco" value="<?= $campo["endereco"] ?>" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="andar">Andar:</label>
-                    <input type="text" id="andar" name="andar" value="<?= $campo["andar"] ?>">
+                    <label for="funcao_cargo">Função/Cargo:</label>
+                    <select id="funcao_cargo" name="funcao_cargo" required>
+                        <option value="">Selecione um cargo</option>
+                        <?php
+                        $cargos = mysqli_query($conn, "SELECT * FROM tb_cargo ORDER BY nome_cargo");
+                        while ($cargo = mysqli_fetch_array($cargos)) {
+                            $selected = ($campo["funcao_cargo"] == $cargo["nome_cargo"]) ? "selected" : "";
+                            echo "<option value='" . $cargo["nome_cargo"] . "' $selected>" . $cargo["nome_cargo"] . "</option>";
+                        }
+                        ?>
+                    </select>
                 </div>
 
                 <div class="form-group">
-                    <label for="veiculo">Veículo:</label>
-                    <input type="text" id="veiculo" name="veiculo" value="<?= $campo["veiculo"] ?>">
+                    <label for="salario">Salário:</label>
+                    <input type="number" id="salario" name="salario" step="0.01" min="0" value="<?= $campo["salario"] ?>" required>
                 </div>
 
                 <div class="form-group">
-                    <label for="animais">Animais:</label>
-                    <input type="text" id="animais" name="animais" value="<?= $campo["animais"] ?>">
-                </div>
-
-                <div class="form-group">
-                    <label for="foto">Foto (URL):</label>
-                    <input type="text" id="foto" name="foto" value="<?= $campo["foto"] ?>">
+                    <label for="data_admissao">Data de Admissão:</label>
+                    <input type="date" id="data_admissao" name="data_admissao" value="<?= $campo["data_admissao"] ?>" required>
                 </div>
 
                 <div class="form-actions">
                     <button type="submit" class="btn-primary">
                         <i class="fas fa-save"></i> Salvar Alterações
                     </button>
-                    <a href="consultar_moradores.php" class="btn-secondary">
+                    <a href="consultar_funcionarios.php" class="btn-secondary">
                         <i class="fas fa-arrow-left"></i> Voltar
                     </a>
                 </div>

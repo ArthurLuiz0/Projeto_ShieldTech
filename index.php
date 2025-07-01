@@ -19,14 +19,14 @@
             </div>
             <ul class="menu">
                 <li><a href="index.php"><i class="fas fa-home"></i> Início</a></li>
-                <li><a href="pages/visitantes.php"><i class="fas fa-user-friends"></i> Visitantes</a></li>
-                <li><a href="pages/relatorios.php"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
+                <li><a href="pages/visitantes/visitantes.php"><i class="fas fa-user-friends"></i> Visitantes</a></li>
+                <li><a href="pages/relatorios/relatorios.php"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropbtn"><i class="fas fa-gear"></i> Cadastros</a>
                     <div class="dropdown-content">
-                        <a href="pages/cadastro_moradores.php">Moradores</a>
-                        <a href="pages/cadastro_funcionarios.php">Funcionários</a>
-                        <a href="pages/cadastro_cargos.php">Cargos</a>
+                        <a href="pages/moradores/cadastro_moradores.php">Moradores</a>
+                        <a href="pages/funcionarios/cadastro_funcionarios.php">Funcionários</a>
+                        <a href="pages/cargos/cadastro_cargos.php">Cargos</a>
                     </div>
                 </li>
             </ul>
@@ -49,6 +49,7 @@
                 $moradores = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM tb_moradores"));
                 $funcionarios = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM tb_funcionarios"));
                 $visitantes = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM tb_visitantes WHERE status = 'Presente'"));
+                $cargos = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM tb_cargo"));
                 ?>
                 
                 <div class="card">
@@ -63,6 +64,10 @@
                     <h3><i class="fas fa-user-friends"></i> Visitantes Presentes</h3>
                     <p><?= $visitantes ?></p>
                 </div>
+                <div class="card">
+                    <h3><i class="fas fa-briefcase"></i> Cargos Cadastrados</h3>
+                    <p><?= $cargos ?></p>
+                </div>
             </div>
         </section>
 
@@ -76,22 +81,22 @@
         <section class="quick-access">
             <h3>Acesso Rápido</h3>
             <div class="quick-access-grid">
-                <a href="pages/cadastro_moradores.php" class="quick-access-card">
+                <a href="pages/moradores/cadastro_moradores.php" class="quick-access-card">
                     <i class="fas fa-users"></i>
                     <h4>Moradores</h4>
                     <p>Cadastre e gerencie moradores</p>
                 </a>
-                <a href="pages/cadastro_funcionarios.php" class="quick-access-card">
+                <a href="pages/funcionarios/cadastro_funcionarios.php" class="quick-access-card">
                     <i class="fas fa-id-card"></i>
                     <h4>Funcionários</h4>
                     <p>Gerencie a equipe</p>
                 </a>
-                <a href="pages/visitantes.php" class="quick-access-card">
+                <a href="pages/visitantes/visitantes.php" class="quick-access-card">
                     <i class="fas fa-user-friends"></i>
                     <h4>Visitantes</h4>
                     <p>Controle de acesso</p>
                 </a>
-                <a href="pages/relatorios.php" class="quick-access-card">
+                <a href="pages/relatorios/relatorios.php" class="quick-access-card">
                     <i class="fas fa-chart-bar"></i>
                     <h4>Relatórios</h4>
                     <p>Visualize estatísticas</p>
