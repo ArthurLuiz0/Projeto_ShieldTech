@@ -184,6 +184,236 @@ main {
     flex: 1;
 }
 
+/* Form Grid Layout - 2x1 */
+.form-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 2rem;
+    margin-bottom: 2rem;
+}
+
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
+
+/* Info Section */
+.info-section {
+    background: var(--white);
+    padding: 2rem;
+    border-radius: 1rem;
+    box-shadow: var(--shadow);
+    height: fit-content;
+}
+
+.info-section h3 {
+    color: var(--text-color);
+    margin-bottom: 1.5rem;
+    font-size: 1.5rem;
+}
+
+/* Info Cards */
+.info-cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.info-card {
+    background: var(--background-color);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    text-align: center;
+    transition: var(--transition);
+}
+
+.info-card:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+.info-card i {
+    font-size: 2rem;
+    color: var(--accent-color);
+    margin-bottom: 0.5rem;
+}
+
+.info-card h4 {
+    font-size: 0.9rem;
+    color: var(--text-color);
+    margin-bottom: 0.25rem;
+}
+
+.info-card p {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--accent-color);
+}
+
+/* Quick Actions */
+.quick-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.quick-action-card {
+    background: var(--background-color);
+    padding: 1rem;
+    border-radius: 0.5rem;
+    text-decoration: none;
+    color: var(--text-color);
+    transition: var(--transition);
+    border-left: 4px solid var(--accent-color);
+}
+
+.quick-action-card:hover {
+    transform: translateX(5px);
+    box-shadow: var(--shadow);
+}
+
+.quick-action-card i {
+    font-size: 1.5rem;
+    color: var(--accent-color);
+    margin-bottom: 0.5rem;
+}
+
+.quick-action-card h4 {
+    font-size: 1rem;
+    margin-bottom: 0.25rem;
+}
+
+.quick-action-card p {
+    font-size: 0.8rem;
+    color: var(--light-text);
+}
+
+/* Stats Section */
+.stats-section h4 {
+    color: var(--text-color);
+    margin-bottom: 1rem;
+}
+
+.stat-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.stat-item:last-child {
+    border-bottom: none;
+}
+
+.stat-number {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--accent-color);
+}
+
+.stat-label {
+    color: var(--light-text);
+    font-size: 0.9rem;
+}
+
+/* Recent Animals */
+.recent-animals h4 {
+    color: var(--text-color);
+    margin-bottom: 1rem;
+}
+
+.recent-list {
+    max-height: 200px;
+    overflow-y: auto;
+}
+
+.recent-item {
+    padding: 0.75rem;
+    background: var(--background-color);
+    border-radius: 0.5rem;
+    margin-bottom: 0.5rem;
+    border-left: 3px solid var(--accent-color);
+}
+
+.recent-item:last-child {
+    margin-bottom: 0;
+}
+
+/* Cards de Animais */
+.cards-animais {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1rem;
+}
+
+.card-animal {
+    background-color: white;
+    border-radius: 1rem;
+    box-shadow: var(--shadow);
+    overflow: hidden;
+    transition: var(--transition);
+    border-left: 4px solid var(--accent-color);
+}
+
+.card-animal:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--shadow-lg);
+}
+
+.card-header {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    border-bottom: 1px solid #eee;
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.card-header i {
+    font-size: 1.5rem;
+    color: var(--accent-color);
+}
+
+.card-header h4 {
+    color: var(--primary-color);
+    font-size: 1.2rem;
+    margin: 0;
+    flex: 1;
+}
+
+.card-body {
+    padding: 1rem;
+}
+
+.card-body p {
+    margin-bottom: 0.8rem;
+    color: #555;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.card-body p i {
+    color: var(--accent-color);
+    width: 20px;
+    text-align: center;
+}
+
+.card-footer {
+    padding: 1rem;
+    background-color: #f8f9fa;
+    border-top: 1px solid #eee;
+    display: flex;
+    justify-content: flex-end;
+    gap: 0.8rem;
+}
+
 /* Welcome Section */
 .welcome-section {
     text-align: center;
@@ -225,7 +455,7 @@ main {
 .card {
     background-color: white;
     padding: 1.5rem;
-    border-radius: var(--border-radius);
+    border-radius: 1rem;
     box-shadow: var(--shadow);
     transition: var(--transition);
     border-left: 4px solid var(--accent-color);
@@ -233,7 +463,7 @@ main {
 
 .card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    box-shadow: var(--shadow-lg);
 }
 
 .card h3 {
@@ -271,7 +501,7 @@ main {
 .quick-access-card {
     background: var(--white);
     padding: 2rem;
-    border-radius: var(--border-radius);
+    border-radius: 1rem;
     box-shadow: var(--shadow);
     text-decoration: none;
     color: var(--text-color);
@@ -308,7 +538,7 @@ main {
     margin: 3rem 0;
     background: var(--white);
     padding: 2rem;
-    border-radius: var(--border-radius);
+    border-radius: 1rem;
     box-shadow: var(--shadow);
 }
 
@@ -323,11 +553,11 @@ main {
     height: 400px;
 }
 
-/* Formulários - Estilo Original Restaurado */
+/* Formulários */
 .form-section {
     background-color: white;
     padding: 2rem;
-    border-radius: var(--border-radius);
+    border-radius: 1rem;
     box-shadow: var(--shadow);
     margin-bottom: 2rem;
 }
@@ -355,7 +585,7 @@ main {
     width: 100%;
     padding: 0.8rem;
     border: 1px solid #ddd;
-    border-radius: var(--border-radius);
+    border-radius: 0.5rem;
     font-size: 1rem;
     transition: var(--transition);
 }
@@ -427,7 +657,7 @@ input:focus, select:focus, textarea:focus {
 button, .btn-primary, .btn-secondary, .btn-success, .btn-danger, .btn-editar, .btn-excluir, .btn-remover {
     padding: 0.8rem 1.5rem;
     border: none;
-    border-radius: var(--border-radius);
+    border-radius: 0.5rem;
     cursor: pointer;
     font-weight: 500;
     transition: var(--transition);
@@ -440,7 +670,7 @@ button, .btn-primary, .btn-secondary, .btn-success, .btn-danger, .btn-editar, .b
 
 button:hover, .btn-primary:hover, .btn-secondary:hover, .btn-success:hover, .btn-danger:hover {
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    box-shadow: var(--shadow);
 }
 
 .btn-primary {
@@ -506,7 +736,7 @@ button:hover, .btn-primary:hover, .btn-secondary:hover, .btn-success:hover, .btn
 .lista-item {
     background-color: white;
     padding: 1.5rem;
-    border-radius: var(--border-radius);
+    border-radius: 1rem;
     margin-bottom: 1rem;
     box-shadow: var(--shadow);
     transition: var(--transition);
@@ -514,7 +744,7 @@ button:hover, .btn-primary:hover, .btn-secondary:hover, .btn-success:hover, .btn
 
 .lista-item:hover {
     transform: translateX(5px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+    box-shadow: var(--shadow-lg);
 }
 
 .lista-item h4 {
@@ -538,7 +768,7 @@ button:hover, .btn-primary:hover, .btn-secondary:hover, .btn-success:hover, .btn
 
 .card-funcionario {
     background-color: white;
-    border-radius: var(--border-radius);
+    border-radius: 1rem;
     box-shadow: var(--shadow);
     overflow: hidden;
     transition: var(--transition);
@@ -547,62 +777,14 @@ button:hover, .btn-primary:hover, .btn-secondary:hover, .btn-success:hover, .btn
 
 .card-funcionario:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-}
-
-.card-header {
-    background-color: #f8f9fa;
-    padding: 1rem;
-    border-bottom: 1px solid #eee;
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-}
-
-.card-header i {
-    font-size: 1.5rem;
-    color: var(--accent-color);
-}
-
-.card-header h4 {
-    color: var(--primary-color);
-    font-size: 1.2rem;
-    margin: 0;
-    flex: 1;
-}
-
-.card-body {
-    padding: 1rem;
-}
-
-.card-body p {
-    margin-bottom: 0.8rem;
-    color: #555;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.card-body p i {
-    color: var(--accent-color);
-    width: 20px;
-    text-align: center;
-}
-
-.card-footer {
-    padding: 1rem;
-    background-color: #f8f9fa;
-    border-top: 1px solid #eee;
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.8rem;
+    box-shadow: var(--shadow-lg);
 }
 
 .sem-registros {
     text-align: center;
     padding: 2rem;
     background-color: #f8f9fa;
-    border-radius: var(--border-radius);
+    border-radius: 1rem;
     color: #777;
     font-style: italic;
     display: flex;
@@ -626,7 +808,7 @@ button:hover, .btn-primary:hover, .btn-secondary:hover, .btn-success:hover, .btn
     width: 100%;
     border-collapse: collapse;
     background-color: white;
-    border-radius: var(--border-radius);
+    border-radius: 1rem;
     overflow: hidden;
     box-shadow: var(--shadow);
 }
@@ -753,6 +935,10 @@ footer {
         grid-template-columns: 1fr;
     }
 
+    .cards-animais {
+        grid-template-columns: 1fr;
+    }
+
     .form-actions {
         flex-direction: column;
     }
@@ -763,6 +949,10 @@ footer {
 
     .resumo-cards {
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    .info-cards {
+        grid-template-columns: 1fr;
     }
 }
 

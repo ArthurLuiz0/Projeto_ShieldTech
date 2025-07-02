@@ -26,12 +26,11 @@
         $torre = mysqli_real_escape_string($conn, $_POST["torre"]);
         $andar = mysqli_real_escape_string($conn, $_POST["andar"]);
         $veiculo = mysqli_real_escape_string($conn, $_POST["veiculo"]);
-        $animais = mysqli_real_escape_string($conn, $_POST["animais"]);
         $foto = mysqli_real_escape_string($conn, $_POST["foto"]);
         $data_cadastro = date('Y-m-d H:i:s');
         
-        $sql = "INSERT INTO tb_moradores (nome, cpf, rg, data_nascimento, sexo, telefone, bloco, torre, andar, veiculo, animais, foto, data_cadastro) 
-                VALUES ('$nome', '$cpf', '$rg', '$data_nascimento', '$sexo', '$telefone', '$bloco', '$torre', '$andar', '$veiculo', '$animais', '$foto', '$data_cadastro')";
+        $sql = "INSERT INTO tb_moradores (nome, cpf, rg, data_nascimento, sexo, telefone, bloco, torre, andar, veiculo, foto, data_cadastro) 
+                VALUES ('$nome', '$cpf', '$rg', '$data_nascimento', '$sexo', '$telefone', '$bloco', '$torre', '$andar', '$veiculo', '$foto', '$data_cadastro')";
         
         if (mysqli_query($conn, $sql)) {
             echo "<script>alert('Morador cadastrado com sucesso!'); window.location = 'consultar_moradores.php';</script>";
@@ -56,6 +55,7 @@
                         <a href="cadastro_moradores.php">Moradores</a>
                         <a href="../funcionarios/cadastro_funcionarios.php">Funcionários</a>
                         <a href="../cargos/cadastro_cargos.php">Cargos</a>
+                        <a href="../animais/cadastro_animais.php">Animais</a>
                     </div>
                 </li>
             </ul>
@@ -65,87 +65,127 @@
     <main>
         <h2>Gestão de Moradores</h2>
 
-        <section class="form-section">
-            <h3>Cadastro de Morador</h3>
-            <form method="post" action="">
-                <div class="form-group">
-                    <label for="nome">Nome Completo:</label>
-                    <input type="text" id="nome" name="nome" required>
-                </div>
+        <div class="form-grid">
+            <section class="form-section">
+                <h3>Cadastro de Morador</h3>
+                <form method="post" action="">
+                    <div class="form-group">
+                        <label for="nome">Nome Completo:</label>
+                        <input type="text" id="nome" name="nome" required>
+                    </div>
 
-                <div class="form-group">
-                    <label for="cpf">CPF:</label>
-                    <input type="text" id="cpf" name="cpf" placeholder="000.000.000-00" required>
-                </div>
+                    <div class="form-group">
+                        <label for="cpf">CPF:</label>
+                        <input type="text" id="cpf" name="cpf" placeholder="000.000.000-00" required>
+                    </div>
 
-                <div class="form-group">
-                    <label for="rg">RG:</label>
-                    <input type="text" id="rg" name="rg" required>
-                </div>
+                    <div class="form-group">
+                        <label for="rg">RG:</label>
+                        <input type="text" id="rg" name="rg" required>
+                    </div>
 
-                <div class="form-group">
-                    <label for="data_nascimento">Data de Nascimento:</label>
-                    <input type="date" id="data_nascimento" name="data_nascimento" required>
-                </div>
+                    <div class="form-group">
+                        <label for="data_nascimento">Data de Nascimento:</label>
+                        <input type="date" id="data_nascimento" name="data_nascimento" required>
+                    </div>
 
-                <div class="form-group">
-                    <label for="sexo">Sexo:</label>
-                    <select id="sexo" name="sexo" required>
-                        <option value="">Selecione</option>
-                        <option value="Masculino">Masculino</option>
-                        <option value="Feminino">Feminino</option>
-                    </select>
-                </div>
+                    <div class="form-group">
+                        <label for="sexo">Sexo:</label>
+                        <select id="sexo" name="sexo" required>
+                            <option value="">Selecione</option>
+                            <option value="Masculino">Masculino</option>
+                            <option value="Feminino">Feminino</option>
+                        </select>
+                    </div>
 
-                <div class="form-group">
-                    <label for="telefone">Telefone:</label>
-                    <input type="tel" id="telefone" name="telefone" placeholder="(00) 00000-0000" required>
-                </div>
+                    <div class="form-group">
+                        <label for="telefone">Telefone:</label>
+                        <input type="tel" id="telefone" name="telefone" placeholder="(00) 00000-0000" required>
+                    </div>
 
-                <div class="form-group">
-                    <label for="bloco">Bloco:</label>
-                    <input type="text" id="bloco" name="bloco" required>
-                </div>
+                    <div class="form-group">
+                        <label for="bloco">Bloco:</label>
+                        <input type="text" id="bloco" name="bloco" required>
+                    </div>
 
-                <div class="form-group">
-                    <label for="torre">Torre:</label>
-                    <input type="text" id="torre" name="torre">
-                </div>
+                    <div class="form-group">
+                        <label for="torre">Torre:</label>
+                        <input type="text" id="torre" name="torre">
+                    </div>
 
-                <div class="form-group">
-                    <label for="andar">Andar:</label>
-                    <input type="text" id="andar" name="andar">
-                </div>
+                    <div class="form-group">
+                        <label for="andar">Andar:</label>
+                        <input type="text" id="andar" name="andar">
+                    </div>
 
-                <div class="form-group">
-                    <label for="veiculo">Veículo:</label>
-                    <input type="text" id="veiculo" name="veiculo" placeholder="Marca/Modelo - Placa">
-                </div>
+                    <div class="form-group">
+                        <label for="veiculo">Veículo:</label>
+                        <input type="text" id="veiculo" name="veiculo" placeholder="Marca/Modelo - Placa">
+                    </div>
 
-                <div class="form-group">
-                    <label for="foto">Foto (URL):</label>
-                    <input type="text" id="foto" name="foto" placeholder="URL da foto">
-                </div>
+                    <div class="form-group">
+                        <label for="foto">Foto (URL):</label>
+                        <input type="text" id="foto" name="foto" placeholder="URL da foto">
+                    </div>
 
-                <div class="form-actions">
-                    <button type="submit" class="btn-primary">
-                        <i class="fas fa-save"></i> Cadastrar Animal
-                    </button>
-                    <a href="FormConsultarAnimais.php" class="btn-secondary">
-                        <i class="fas fa-list"></i> Ver Animais
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i> Cadastrar Morador
+                        </button>
+                        <a href="consultar_moradores.php" class="btn-secondary">
+                            <i class="fas fa-list"></i> Ver Moradores
+                        </a>
+                    </div>
+                </form>
+            </section>
+
+            <section class="info-section">
+                <h3>Acesso Rápido</h3>
+                <div class="quick-actions">
+                    <a href="../animais/cadastro_animais.php" class="quick-action-card">
+                        <i class="fas fa-paw"></i>
+                        <h4>Cadastrar Animal</h4>
+                        <p>Registre animais de estimação dos moradores</p>
+                    </a>
+                    
+                    <a href="../funcionarios/cadastro_funcionarios.php" class="quick-action-card">
+                        <i class="fas fa-user-tie"></i>
+                        <h4>Cadastrar Funcionário</h4>
+                        <p>Adicione novos funcionários ao sistema</p>
+                    </a>
+                    
+                    <a href="../visitantes/visitantes.php" class="quick-action-card">
+                        <i class="fas fa-user-friends"></i>
+                        <h4>Registrar Visitante</h4>
+                        <p>Controle de acesso de visitantes</p>
                     </a>
                 </div>
 
-                <div class="form-actions">
-                    <button type="submit" class="btn-primary">
-                        <i class="fas fa-save"></i> Cadastrar Morador
-                    </button>
-                    <a href="consultar_moradores.php" class="btn-secondary">
-                        <i class="fas fa-list"></i> Ver Moradores
-                    </a>
+                <div class="stats-section">
+                    <h4>Estatísticas</h4>
+                    <?php
+                    $total_moradores = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM tb_moradores"));
+                    $total_blocos = mysqli_num_rows(mysqli_query($conn, "SELECT DISTINCT bloco FROM tb_moradores WHERE bloco IS NOT NULL AND bloco != ''"));
+                    $com_veiculos = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM tb_moradores WHERE veiculo IS NOT NULL AND veiculo != ''"));
+                    ?>
+                    
+                    <div class="stat-item">
+                        <span class="stat-number"><?= $total_moradores ?></span>
+                        <span class="stat-label">Total de Moradores</span>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <span class="stat-number"><?= $total_blocos ?></span>
+                        <span class="stat-label">Blocos Ocupados</span>
+                    </div>
+                    
+                    <div class="stat-item">
+                        <span class="stat-number"><?= $com_veiculos ?></span>
+                        <span class="stat-label">Com Veículos</span>
+                    </div>
                 </div>
-            </form>
-        </section>
+            </section>
+        </div>
     </main>
 
     <footer>
