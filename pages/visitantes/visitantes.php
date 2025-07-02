@@ -19,9 +19,9 @@
         $email = mysqli_real_escape_string($conn, $_POST["email"]);
         $data_nascimento = mysqli_real_escape_string($conn, $_POST["data_nascimento"]);
         $foto = mysqli_real_escape_string($conn, $_POST["foto"]);
-        
-        $sql = "INSERT INTO tb_visitantes (nome_visitante, num_documento, telefone, email, data_nascimento, foto) 
-                VALUES ('$nome_visitante', '$num_documento', '$telefone', '$email', '$data_nascimento', '$foto')";
+        $status = mysqli_real_escape_string($conn, $_POST["status"]);
+        $sql = "INSERT INTO tb_visitantes (nome_visitante, num_documento, telefone, email, data_nascimento, foto,  status) 
+                VALUES ('$nome_visitante', '$num_documento', '$telefone', '$email', '$data_nascimento', '$foto', '$status')";
         
         if (mysqli_query($conn, $sql)) {
             echo "<script>alert('Visitante registrado com sucesso!');</script>";
@@ -88,10 +88,19 @@
                     <input type="text" id="foto" name="foto" placeholder="URL da foto">
                 </div>
 
+                <div class="form-group">
+                    <label for="status">Status :</label>
+                    <select id="status" name="status" required>
+                        <option value="Presente">Presente</option>                   
+                    </select>
+                </div>
+
                 <div class="form-actions">
                     <button type="submit" class="btn-primary">
                         <i class="fas fa-sign-in-alt"></i> Registrar Entrada
                     </button>
+
+                
                     <a href="consultar_visitantes.php" class="btn-secondary">
                         <i class="fas fa-list"></i> Ver Visitantes
                     </a>
@@ -110,7 +119,6 @@
                             <th>Telefone</th>
                             <th>Email</th>
                             <th>Status</th>
-                            <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -125,7 +133,6 @@
                                 echo "<td>" . $campo["telefone"] . "</td>";
                                 echo "<td>" . ($campo["email"] ? $campo["email"] : "Não informado") . "</td>";
                                 echo "<td><span class='status-ativo'>" . $campo["status"] . "</span></td>";
-                                echo "<td class='acoes'>";
                                 echo "<a href='registrar_saida.php?id=" . $campo["id_visitantes"] . "' class='btn-danger'>";
                                 echo "<i class='fas fa-sign-out-alt'></i> Registrar Saída</a>";
                                 echo "</td>";

@@ -59,15 +59,15 @@
                         if (mysqli_num_rows($selecionar) > 0) {
                             while ($campo = mysqli_fetch_array($selecionar)) {
                                 echo "<tr>";
-                                echo "<td>" . $campo["id_cargo"] . "</td>";
+                                echo "<td>" . $campo["id_cargos"] . "</td>";
                                 echo "<td>" . $campo["nome_cargo"] . "</td>";
                                 echo "<td>" . $campo["descricao"] . "</td>";
                                 echo "<td>R$ " . number_format($campo["salario_base"], 2, ',', '.') . "</td>";
                                 echo "<td>" . $campo["carga_horaria"] . "</td>";
                                 echo "<td class='acoes'>";
-                                echo "<a href='editar_cargo.php?id=" . $campo["id_cargo"] . "' class='btn-editar'>";
+                                echo "<a href='editar_cargo.php?id=" . $campo["id_cargos"] . "' class='btn-editar'>";
                                 echo "<i class='fas fa-edit'></i> Editar</a>";
-                                echo "<a href='excluir_cargo.php?id=" . $campo["id_cargo"] . "' class='btn-excluir' onclick='return confirm(\"Tem certeza que deseja excluir este cargo?\")'>";
+                                echo "<a href='excluir_cargo.php?id=" . $campo["id_cargos"] . "' class='btn-excluir' onclick='return confirm(\"Tem certeza que deseja excluir este cargo?\")'>";
                                 echo "<i class='fas fa-trash'></i> Excluir</a>";
                                 echo "</td>";
                                 echo "</tr>";

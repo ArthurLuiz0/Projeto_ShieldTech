@@ -24,7 +24,7 @@
         $sql = "UPDATE tb_cargo SET 
                 nome_cargo='$nome_cargo', descricao='$descricao', 
                 salario_base='$salario_base', carga_horaria='$carga_horaria' 
-                WHERE id_cargo=$id";
+                WHERE id_cargos=$id";
         
         if (mysqli_query($conn, $sql)) {
             echo "<script>alert('Cargo atualizado com sucesso!'); window.location = 'consultar_cargos.php';</script>";
@@ -34,7 +34,7 @@
     }
     
     // Buscar dados do cargo
-    $selecionar = mysqli_query($conn, "SELECT * FROM tb_cargo WHERE id_cargo=$id");
+    $selecionar = mysqli_query($conn, "SELECT * FROM tb_cargo WHERE id_cargos=$id");
     $campo = mysqli_fetch_array($selecionar);
     ?>
 
@@ -65,7 +65,7 @@
         <section class="form-section">
             <h3>Alterar Dados do Cargo</h3>
             <form method="post" action="">
-                <input type="hidden" name="id" value="<?= $campo["id_cargo"] ?>">
+                <input type="hidden" name="id" value="<?= $campo["id_cargos"] ?>">
                 
                 <div class="form-group">
                     <label for="nome_cargo">Nome do Cargo:</label>

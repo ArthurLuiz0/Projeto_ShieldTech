@@ -123,13 +123,17 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="animais">Animais:</label>
-                    <input type="text" id="animais" name="animais" placeholder="Tipo e nome dos animais">
-                </div>
-
-                <div class="form-group">
                     <label for="foto">Foto (URL):</label>
                     <input type="text" id="foto" name="foto" placeholder="URL da foto">
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-save"></i> Cadastrar Animal
+                    </button>
+                    <a href="FormConsultarAnimais.php" class="btn-secondary">
+                        <i class="fas fa-list"></i> Ver Animais
+                    </a>
                 </div>
 
                 <div class="form-actions">
