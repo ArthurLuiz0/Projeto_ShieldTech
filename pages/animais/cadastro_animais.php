@@ -154,7 +154,7 @@
                     <h4>Últimos Animais Cadastrados</h4>
                     <div class="recent-list">
                         <?php
-                        $recentes = mysqli_query($conn, "SELECT a.*, m.nome as nome_morador FROM tb_animais a 
+                        $recentes = mysqli_query($conn, "SELECT a.*, m.nome as nome_morador FROM tb_animais a
                                                         LEFT JOIN tb_moradores m ON a.id_morador = m.id_moradores 
                                                         ORDER BY a.id_animais DESC LIMIT 5");
                         while ($animal = mysqli_fetch_array($recentes)) {
