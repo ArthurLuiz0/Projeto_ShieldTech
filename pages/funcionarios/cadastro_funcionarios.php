@@ -63,71 +63,81 @@
         <section class="form-section">
             <h3>Cadastro de Funcionário</h3>
             <form method="post" action="">
-                <div class="form-group">
-                    <label for="nome">Nome Completo:</label>
-                    <input type="text" id="nome" name="nome" required>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nome">Nome Completo:</label>
+                        <input type="text" id="nome" name="nome" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cpf">CPF:</label>
+                        <input type="text" id="cpf" name="cpf" placeholder="000.000.000-00" required>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="cpf">CPF:</label>
-                    <input type="text" id="cpf" name="cpf" placeholder="000.000.000-00" required>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="rg">RG:</label>
+                        <input type="text" id="rg" name="rg" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="data_nascimento">Data de Nascimento:</label>
+                        <input type="date" id="data_nascimento" name="data_nascimento" required>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="rg">RG:</label>
-                    <input type="text" id="rg" name="rg" required>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="sexo">Sexo:</label>
+                        <select id="sexo" name="sexo" required>
+                            <option value="">Selecione</option>
+                            <option value="Masculino">Masculino</option>
+                            <option value="Feminino">Feminino</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="telefone">Telefone:</label>
+                        <input type="tel" id="telefone" name="telefone" placeholder="(00) 00000-0000" required>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="data_nascimento">Data de Nascimento:</label>
-                    <input type="date" id="data_nascimento" name="data_nascimento" required>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="funcao_cargo">Função/Cargo:</label>
+                        <select id="funcao_cargo" name="funcao_cargo" required>
+                            <option value="">Selecione um cargo</option>
+                            <?php
+                            $cargos = mysqli_query($conn, "SELECT * FROM tb_cargo ORDER BY nome_cargo");
+                            while ($cargo = mysqli_fetch_array($cargos)) {
+                                echo "<option value='" . $cargo["nome_cargo"] . "'>" . $cargo["nome_cargo"] . "</option>";
+                            }
+                            ?>
+                        </select>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="sexo">Sexo:</label>
-                    <select id="sexo" name="sexo" required>
-                        <option value="">Selecione</option>
-                        <option value="Masculino">Masculino</option>
-                        <option value="Feminino">Feminino</option>
-                    </select>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="salario">Salário:</label>
+                        <input type="number" id="salario" name="salario" step="0.01" min="0" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="data_admissao">Data de Admissão:</label>
+                        <input type="date" id="data_admissao" name="data_admissao" required>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="telefone">Telefone:</label>
-                    <input type="tel" id="telefone" name="telefone" placeholder="(00) 00000-0000" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
-
-                <div class="form-group">
+                <div class="form-group full-width">
                     <label for="endereco">Endereço:</label>
                     <input type="text" id="endereco" name="endereco" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="funcao_cargo">Função/Cargo:</label>
-                    <select id="funcao_cargo" name="funcao_cargo" required>
-                        <option value="">Selecione um cargo</option>
-                        <?php
-                        $cargos = mysqli_query($conn, "SELECT * FROM tb_cargo ORDER BY nome_cargo");
-                        while ($cargo = mysqli_fetch_array($cargos)) {
-                            echo "<option value='" . $cargo["nome_cargo"] . "'>" . $cargo["nome_cargo"] . "</option>";
-                        }
-                        ?>
-                    </select>
-                </div>
-
-                <div class="form-group">
-                    <label for="salario">Salário:</label>
-                    <input type="number" id="salario" name="salario" step="0.01" min="0" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="data_admissao">Data de Admissão:</label>
-                    <input type="date" id="data_admissao" name="data_admissao" required>
                 </div>
 
                 <div class="form-actions">

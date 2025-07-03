@@ -184,7 +184,7 @@ main {
     flex: 1;
 }
 
-/* Form Grid Layout - 2x1 */
+/* Form Grid Layout - 2x1 para formulários PHP */
 .form-grid {
     display: grid;
     grid-template-columns: 2fr 1fr;
@@ -192,11 +192,21 @@ main {
     margin-bottom: 2rem;
 }
 
-@media (max-width: 768px) {
-    .form-grid {
-        grid-template-columns: 1fr;
-        gap: 1rem;
-    }
+/* Layout de grade para campos de formulário */
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-row .form-group {
+    margin-bottom: 0;
+}
+
+/* Para campos que devem ocupar toda a linha */
+.form-group.full-width {
+    grid-column: 1 / -1;
 }
 
 /* Info Section */
@@ -836,6 +846,27 @@ button:hover, .btn-primary:hover, .btn-secondary:hover, .btn-success:hover, .btn
     flex-wrap: wrap;
 }
 
+/* Botão especial para registrar saída na tabela de visitantes */
+.tabela-relatorio .btn-saida {
+    background-color: var(--error-color);
+    color: white;
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 0.3rem;
+    cursor: pointer;
+    font-size: 0.8rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    transition: var(--transition);
+}
+
+.tabela-relatorio .btn-saida:hover {
+    background-color: #c0392b;
+    transform: translateY(-1px);
+}
+
 /* Status */
 .status-ativo {
     background-color: var(--success-color);
@@ -953,6 +984,21 @@ footer {
 
     .info-cards {
         grid-template-columns: 1fr;
+    }
+
+    /* Layout responsivo para formulários */
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .form-row .form-group {
+        margin-bottom: 1.5rem;
     }
 }
 

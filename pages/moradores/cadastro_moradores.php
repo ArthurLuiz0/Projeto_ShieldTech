@@ -69,61 +69,71 @@
             <section class="form-section">
                 <h3>Cadastro de Morador</h3>
                 <form method="post" action="">
-                    <div class="form-group">
-                        <label for="nome">Nome Completo:</label>
-                        <input type="text" id="nome" name="nome" required>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nome">Nome Completo:</label>
+                            <input type="text" id="nome" name="nome" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="cpf">CPF:</label>
+                            <input type="text" id="cpf" name="cpf" placeholder="000.000.000-00" required>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="cpf">CPF:</label>
-                        <input type="text" id="cpf" name="cpf" placeholder="000.000.000-00" required>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="rg">RG:</label>
+                            <input type="text" id="rg" name="rg" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="data_nascimento">Data de Nascimento:</label>
+                            <input type="date" id="data_nascimento" name="data_nascimento" required>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="rg">RG:</label>
-                        <input type="text" id="rg" name="rg" required>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="sexo">Sexo:</label>
+                            <select id="sexo" name="sexo" required>
+                                <option value="">Selecione</option>
+                                <option value="Masculino">Masculino</option>
+                                <option value="Feminino">Feminino</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="telefone">Telefone:</label>
+                            <input type="tel" id="telefone" name="telefone" placeholder="(00) 00000-0000" required>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="data_nascimento">Data de Nascimento:</label>
-                        <input type="date" id="data_nascimento" name="data_nascimento" required>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="bloco">Bloco:</label>
+                            <input type="text" id="bloco" name="bloco" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="torre">Torre:</label>
+                            <input type="text" id="torre" name="torre">
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="sexo">Sexo:</label>
-                        <select id="sexo" name="sexo" required>
-                            <option value="">Selecione</option>
-                            <option value="Masculino">Masculino</option>
-                            <option value="Feminino">Feminino</option>
-                        </select>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="andar">Andar:</label>
+                            <input type="text" id="andar" name="andar">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="veiculo">Veículo:</label>
+                            <input type="text" id="veiculo" name="veiculo" placeholder="Marca/Modelo - Placa">
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="telefone">Telefone:</label>
-                        <input type="tel" id="telefone" name="telefone" placeholder="(00) 00000-0000" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="bloco">Bloco:</label>
-                        <input type="text" id="bloco" name="bloco" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="torre">Torre:</label>
-                        <input type="text" id="torre" name="torre">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="andar">Andar:</label>
-                        <input type="text" id="andar" name="andar">
-                    </div>
-
-                    <div class="form-group">
-                        <label for="veiculo">Veículo:</label>
-                        <input type="text" id="veiculo" name="veiculo" placeholder="Marca/Modelo - Placa">
-                    </div>
-
-                    <div class="form-group">
+                    <div class="form-group full-width">
                         <label for="foto">Foto (URL):</label>
                         <input type="text" id="foto" name="foto" placeholder="URL da foto">
                     </div>

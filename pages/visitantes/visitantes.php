@@ -58,49 +58,53 @@
         <section class="form-section">
             <h3>Registro de Visitante</h3>
             <form method="post" action="">
-                <div class="form-group">
-                    <label for="nome_visitante">Nome do Visitante:</label>
-                    <input type="text" id="nome_visitante" name="nome_visitante" required>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nome_visitante">Nome do Visitante:</label>
+                        <input type="text" id="nome_visitante" name="nome_visitante" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="num_documento">Número do Documento:</label>
+                        <input type="text" id="num_documento" name="num_documento" placeholder="CPF ou RG" required>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="num_documento">Número do Documento:</label>
-                    <input type="text" id="num_documento" name="num_documento" placeholder="CPF ou RG" required>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="telefone">Telefone:</label>
+                        <input type="text" id="telefone" name="telefone" placeholder="(00) 00000-0000" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email">
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="telefone">Telefone:</label>
-                    <input type="text" id="telefone" name="telefone" placeholder="(00) 00000-0000" required>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="data_nascimento">Data de Nascimento:</label>
+                        <input type="date" id="data_nascimento" name="data_nascimento" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="status">Status:</label>
+                        <select id="status" name="status" required>
+                            <option value="Presente">Presente</option>                   
+                        </select>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" name="email">
-                </div>
-
-                <div class="form-group">
-                    <label for="data_nascimento">Data de Nascimento:</label>
-                    <input type="date" id="data_nascimento" name="data_nascimento" required>
-                </div>
-
-                <div class="form-group">
+                <div class="form-group full-width">
                     <label for="foto">Foto (URL):</label>
                     <input type="text" id="foto" name="foto" placeholder="URL da foto">
-                </div>
-
-                <div class="form-group">
-                    <label for="status">Status :</label>
-                    <select id="status" name="status" required>
-                        <option value="Presente">Presente</option>                   
-                    </select>
                 </div>
 
                 <div class="form-actions">
                     <button type="submit" class="btn-primary">
                         <i class="fas fa-sign-in-alt"></i> Registrar Entrada
                     </button>
-
-                
                     <a href="consultar_visitantes.php" class="btn-secondary">
                         <i class="fas fa-list"></i> Ver Visitantes
                     </a>
@@ -119,6 +123,7 @@
                             <th>Telefone</th>
                             <th>Email</th>
                             <th>Status</th>
+                            <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -133,7 +138,8 @@
                                 echo "<td>" . $campo["telefone"] . "</td>";
                                 echo "<td>" . ($campo["email"] ? $campo["email"] : "Não informado") . "</td>";
                                 echo "<td><span class='status-ativo'>" . $campo["status"] . "</span></td>";
-                                echo "<a href='registrar_saida.php?id=" . $campo["id_visitantes"] . "' class='btn-danger'>";
+                                echo "<td>";
+                                echo "<a href='registrar_saida.php?id=" . $campo["id_visitantes"] . "' class='btn-saida'>";
                                 echo "<i class='fas fa-sign-out-alt'></i> Registrar Saída</a>";
                                 echo "</td>";
                                 echo "</tr>";

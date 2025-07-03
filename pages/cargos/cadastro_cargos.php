@@ -56,24 +56,28 @@
         <section class="form-section">
             <h3>Cadastro de Cargo</h3>
             <form method="post" action="">
-                <div class="form-group">
-                    <label for="nome_cargo">Nome do Cargo:</label>
-                    <input type="text" id="nome_cargo" name="nome_cargo" required>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nome_cargo">Nome do Cargo:</label>
+                        <input type="text" id="nome_cargo" name="nome_cargo" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="salario_base">Salário Base (R$):</label>
+                        <input type="number" id="salario_base" name="salario_base" step="0.01" min="0" required>
+                    </div>
                 </div>
 
-                <div class="form-group">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="carga_horaria">Carga Horária (hh:mm):</label>
+                        <input type="time" id="carga_horaria" name="carga_horaria" required>
+                    </div>
+                </div>
+
+                <div class="form-group full-width">
                     <label for="descricao">Descrição:</label>
                     <textarea id="descricao" name="descricao" rows="3" required></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label for="salario_base">Salário Base (R$):</label>
-                    <input type="number" id="salario_base" name="salario_base" step="0.01" min="0" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="carga_horaria">Carga Horária (hh:mm):</label>
-                    <input type="time" id="carga_horaria" name="carga_horaria" required>
                 </div>
 
                 <div class="form-actions">
