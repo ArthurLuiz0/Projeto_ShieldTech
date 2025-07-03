@@ -76,66 +76,78 @@
             <form method="post" action="">
                 <input type="hidden" name="id" value="<?= $campo["id_moradores"] ?>">
                 
-                <div class="form-group">
-                    <label for="nome">Nome Completo:</label>
-                    <input type="text" id="nome" name="nome" value="<?= $campo["nome"] ?>" required>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nome">Nome Completo:</label>
+                        <input type="text" id="nome" name="nome" value="<?= $campo["nome"] ?>" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="cpf">CPF:</label>
+                        <input type="text" id="cpf" name="cpf" value="<?= $campo["cpf"] ?>" required>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="cpf">CPF:</label>
-                    <input type="text" id="cpf" name="cpf" value="<?= $campo["cpf"] ?>" required>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="rg">RG:</label>
+                        <input type="text" id="rg" name="rg" value="<?= $campo["rg"] ?>" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="data_nascimento">Data de Nascimento:</label>
+                        <input type="date" id="data_nascimento" name="data_nascimento" value="<?= $campo["data_nascimento"] ?>" required>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="rg">RG:</label>
-                    <input type="text" id="rg" name="rg" value="<?= $campo["rg"] ?>" required>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="sexo">Sexo:</label>
+                        <select id="sexo" name="sexo" required>
+                            <option value="">Selecione</option>
+                            <option value="Masculino" <?= $campo["sexo"] == "Masculino" ? "selected" : "" ?>>Masculino</option>
+                            <option value="Feminino" <?= $campo["sexo"] == "Feminino" ? "selected" : "" ?>>Feminino</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="telefone">Telefone:</label>
+                        <input type="tel" id="telefone" name="telefone" value="<?= $campo["telefone"] ?>" required>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="data_nascimento">Data de Nascimento:</label>
-                    <input type="date" id="data_nascimento" name="data_nascimento" value="<?= $campo["data_nascimento"] ?>" required>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="bloco">Bloco:</label>
+                        <input type="text" id="bloco" name="bloco" value="<?= $campo["bloco"] ?>" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="torre">Torre:</label>
+                        <input type="text" id="torre" name="torre" value="<?= $campo["torre"] ?>">
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="sexo">Sexo:</label>
-                    <select id="sexo" name="sexo" required>
-                        <option value="">Selecione</option>
-                        <option value="Masculino" <?= $campo["sexo"] == "Masculino" ? "selected" : "" ?>>Masculino</option>
-                        <option value="Feminino" <?= $campo["sexo"] == "Feminino" ? "selected" : "" ?>>Feminino</option>
-                    </select>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="andar">Andar:</label>
+                        <input type="text" id="andar" name="andar" value="<?= $campo["andar"] ?>">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="veiculo">Veículo:</label>
+                        <input type="text" id="veiculo" name="veiculo" value="<?= $campo["veiculo"] ?>">
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="telefone">Telefone:</label>
-                    <input type="tel" id="telefone" name="telefone" value="<?= $campo["telefone"] ?>" required>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="animais">Animais:</label>
+                        <input type="text" id="animais" name="animais" value="<?= $campo["animais"] ?>">
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="bloco">Bloco:</label>
-                    <input type="text" id="bloco" name="bloco" value="<?= $campo["bloco"] ?>" required>
-                </div>
-
-                <div class="form-group">
-                    <label for="torre">Torre:</label>
-                    <input type="text" id="torre" name="torre" value="<?= $campo["torre"] ?>">
-                </div>
-
-                <div class="form-group">
-                    <label for="andar">Andar:</label>
-                    <input type="text" id="andar" name="andar" value="<?= $campo["andar"] ?>">
-                </div>
-
-                <div class="form-group">
-                    <label for="veiculo">Veículo:</label>
-                    <input type="text" id="veiculo" name="veiculo" value="<?= $campo["veiculo"] ?>">
-                </div>
-
-                <div class="form-group">
-                    <label for="animais">Animais:</label>
-                    <input type="text" id="animais" name="animais" value="<?= $campo["animais"] ?>">
-                </div>
-
-                <div class="form-group">
+                <div class="form-group full-width">
                     <label for="foto">Foto (URL):</label>
                     <input type="text" id="foto" name="foto" value="<?= $campo["foto"] ?>">
                 </div>

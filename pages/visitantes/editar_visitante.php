@@ -69,32 +69,38 @@
             <form method="post" action="">
                 <input type="hidden" name="id" value="<?= $campo["id_visitantes"] ?>">
                 
-                <div class="form-group">
-                    <label for="nome_visitante">Nome do Visitante:</label>
-                    <input type="text" id="nome_visitante" name="nome_visitante" value="<?= $campo["nome_visitante"] ?>" required>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="nome_visitante">Nome do Visitante:</label>
+                        <input type="text" id="nome_visitante" name="nome_visitante" value="<?= $campo["nome_visitante"] ?>" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="num_documento">Número do Documento:</label>
+                        <input type="text" id="num_documento" name="num_documento" value="<?= $campo["num_documento"] ?>" required>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="num_documento">Número do Documento:</label>
-                    <input type="text" id="num_documento" name="num_documento" value="<?= $campo["num_documento"] ?>" required>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="telefone">Telefone:</label>
+                        <input type="text" id="telefone" name="telefone" value="<?= $campo["telefone"] ?>" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" value="<?= $campo["email"] ?>">
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="telefone">Telefone:</label>
-                    <input type="text" id="telefone" name="telefone" value="<?= $campo["telefone"] ?>" required>
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="data_nascimento">Data de Nascimento:</label>
+                        <input type="date" id="data_nascimento" name="data_nascimento" value="<?= $campo["data_nascimento"] ?>" required>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" value="<?= $campo["email"] ?>">
-                </div>
-
-                <div class="form-group">
-                    <label for="data_nascimento">Data de Nascimento:</label>
-                    <input type="date" id="data_nascimento" name="data_nascimento" value="<?= $campo["data_nascimento"] ?>" required>
-                </div>
-
-                <div class="form-group">
+                <div class="form-group full-width">
                     <label for="foto">Foto (URL):</label>
                     <input type="text" id="foto" name="foto" value="<?= $campo["foto"] ?>">
                 </div>
