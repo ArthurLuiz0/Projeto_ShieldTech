@@ -61,6 +61,7 @@
                         <a href="../moradores/cadastro_moradores.php">Moradores</a>
                         <a href="cadastro_funcionarios.php">Funcionários</a>
                         <a href="../cargos/cadastro_cargos.php">Cargos</a>
+                        <a href="../animais/cadastro_animais.php">Animais</a>
                     </div>
                 </li>
             </ul>

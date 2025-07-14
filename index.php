@@ -27,6 +27,7 @@
                         <a href="pages/moradores/cadastro_moradores.php">Moradores</a>
                         <a href="pages/funcionarios/cadastro_funcionarios.php">Funcionários</a>
                         <a href="pages/cargos/cadastro_cargos.php">Cargos</a>
+                        <a href="pages/animais/cadastro_animais.php">Animais</a>
                     </div>
                 </li>
             </ul>

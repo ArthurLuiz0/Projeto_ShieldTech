@@ -23,6 +23,7 @@
                         <a href="cadastro_moradores.php">Moradores</a>
                         <a href="../funcionarios/cadastro_funcionarios.php">Funcionários</a>
                         <a href="../cargos/cadastro_cargos.php">Cargos</a>
+                        
                     </div>
                 </li>
             </ul>
