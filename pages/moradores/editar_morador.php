@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Editar Morador - ShieldTech</title>
     <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/validation.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
@@ -30,16 +31,27 @@
         $animais = mysqli_real_escape_string($conn, $_POST["animais"]);
         $foto = mysqli_real_escape_string($conn, $_POST["foto"]);
         
-        $sql = "UPDATE tb_moradores SET 
-                nome='$nome', cpf='$cpf', rg='$rg', data_nascimento='$data_nascimento', 
-                sexo='$sexo', telefone='$telefone', email='$email', bloco='$bloco', torre='$torre', 
-                andar='$andar', veiculo='$veiculo', animais='$animais', foto='$foto' 
-                WHERE id_moradores=$id";
-        
-        if (mysqli_query($conn, $sql)) {
-            echo "<script>alert('Morador atualizado com sucesso!'); window.location = 'consultar_moradores.php';</script>";
+        // Validar email
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            echo "<script>alert('Email inválido! Por favor, digite um email válido.');</script>";
         } else {
-            echo "<script>alert('Erro ao atualizar morador: " . mysqli_error($conn) . "');</script>";
+            // Verificar se email já existe em outro morador
+            $verificar_email = mysqli_query($conn, "SELECT * FROM tb_moradores WHERE email = '$email' AND id_moradores != $id");
+            if (mysqli_num_rows($verificar_email) > 0) {
+                echo "<script>alert('Este email já está cadastrado em outro morador!');</script>";
+            } else {
+                $sql = "UPDATE tb_moradores SET 
+                        nome='$nome', cpf='$cpf', rg='$rg', data_nascimento='$data_nascimento', 
+                        sexo='$sexo', telefone='$telefone', email='$email', bloco='$bloco', torre='$torre', 
+                        andar='$andar', veiculo='$veiculo', animais='$animais', foto='$foto' 
+                        WHERE id_moradores=$id";
+                
+                if (mysqli_query($conn, $sql)) {
+                    echo "<script>alert('Morador atualizado com sucesso!'); window.location = 'consultar_moradores.php';</script>";
+                } else {
+                    echo "<script>alert('Erro ao atualizar morador: " . mysqli_error($conn) . "');</script>";
+                }
+            }
         }
     }
     
@@ -116,14 +128,18 @@
                         <label for="telefone">Telefone:</label>
                         <input type="tel" id="telefone" name="telefone" value="<?= $campo["telefone"] ?>" required>
                     </div>
-
-                    <div class="form-group">
-                        <label for="email">Email:</label>
-                        <input type="email" id="email" name="email" value="<?= $campo["email"] ?>" required>
-                    </div>
                 </div>
 
                 <div class="form-row">
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <div class="email-validation">
+                            <input type="email" id="email" name="email" value="<?= $campo["email"] ?>" required>
+                            <span class="validation-icon" id="email-icon"></span>
+                        </div>
+                        <div class="email-error" id="email-error"></div>
+                    </div>
+
                     <div class="form-group">
                         <label for="bloco">Bloco:</label>
                         <input type="text" id="bloco" name="bloco" value="<?= $campo["bloco"] ?>" required>
@@ -174,5 +190,35 @@
     <footer>
         <p>&copy; 2025 ShieldTech. Todos os direitos reservados.</p>
     </footer>
+
+    <script src="../../js/validation.js"></script>
+    <script>
+        // Configurar validação de email para edição
+        document.addEventListener('DOMContentLoaded', () => {
+            const moradorId = <?= $campo["id_moradores"] ?>;
+            
+            // Configurar validação excluindo o ID atual
+            EmailValidator.setupEmailValidation('email', 'email-error');
+            
+            // Verificação adicional para email duplicado
+            const emailInput = document.getElementById('email');
+            const emailIcon = document.getElementById('email-icon');
+            
+            emailInput.addEventListener('input', async () => {
+                const email = emailInput.value.trim();
+                if (email) {
+                    const exists = await checkEmailExists(email, moradorId);
+                    if (exists) {
+                        emailInput.classList.add('invalid');
+                        emailInput.classList.remove('valid');
+                        document.getElementById('email-error').textContent = 'Este email já está cadastrado!';
+                        document.getElementById('email-error').style.color = '#e74c3c';
+                        document.getElementById('email-error').style.display = 'block';
+                        emailIcon.innerHTML = '<i class="fas fa-times-circle invalid"></i>';
+                    }
+                }
+            });
+        });
+    </script>
 </body>
 </html>

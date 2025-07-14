@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro de Moradores - ShieldTech</title>
     <link rel="stylesheet" href="../../css/style.css">
+    <link rel="stylesheet" href="../../css/validation.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
@@ -23,6 +24,7 @@
         $sexo = mysqli_real_escape_string($conn, $_POST["sexo"]);
         $telefone = mysqli_real_escape_string($conn, $_POST["telefone"]);
         $email = mysqli_real_escape_string($conn, $_POST["email"]);
+        $email = mysqli_real_escape_string($conn, $_POST["email"]);
         $bloco = mysqli_real_escape_string($conn, $_POST["bloco"]);
         $torre = mysqli_real_escape_string($conn, $_POST["torre"]);
         $andar = mysqli_real_escape_string($conn, $_POST["andar"]);
@@ -30,8 +32,25 @@
         $foto = mysqli_real_escape_string($conn, $_POST["foto"]);
         $data_cadastro = date('Y-m-d H:i:s');
         
-        $sql = "INSERT INTO tb_moradores (nome, cpf, rg, data_nascimento, sexo, telefone, email, bloco, torre, andar, veiculo, foto, data_cadastro) 
-                VALUES ('$nome', '$cpf', '$rg', '$data_nascimento', '$sexo', '$telefone', '$email', '$bloco', '$torre', '$andar', '$veiculo', '$foto', '$data_cadastro')";
+        // Validar email
+        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            echo "<script>alert('Email inválido! Por favor, digite um email válido.');</script>";
+        } else {
+            // Verificar se email já existe
+            $verificar_email = mysqli_query($conn, "SELECT * FROM tb_moradores WHERE email = '$email'");
+            if (mysqli_num_rows($verificar_email) > 0) {
+                echo "<script>alert('Este email já está cadastrado!');</script>";
+            } else {
+                $sql = "INSERT INTO tb_moradores (nome, cpf, rg, data_nascimento, sexo, telefone, email, bloco, torre, andar, veiculo, foto, data_cadastro) 
+                        VALUES ('$nome', '$cpf', '$rg', '$data_nascimento', '$sexo', '$telefone', '$email', '$bloco', '$torre', '$andar', '$veiculo', '$foto', '$data_cadastro')";
+                
+                if (mysqli_query($conn, $sql)) {
+                    echo "<script>alert('Morador cadastrado com sucesso!'); window.location = 'consultar_moradores.php';</script>";
+                } else {
+                    echo "<script>alert('Erro ao cadastrar morador: " . mysqli_error($conn) . "');</script>";
+                }
+            }
+        }
         
         if (mysqli_query($conn, $sql)) {
             echo "<script>alert('Morador cadastrado com sucesso!'); window.location = 'consultar_moradores.php';</script>";
@@ -175,6 +194,24 @@
                         <label for="email">Email:</label>
                         <input type="email" id="email" name="email" placeholder="exemplo@email.com" required>
                     </div>
+
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <div class="email-validation">
+                            <input type="email" id="email" name="email" placeholder="exemplo@email.com" required>
+                            <span class="validation-icon" id="email-icon"></span>
+                        </div>
+                        <div class="email-error" id="email-error"></div>
+                        <div class="email-tooltip">
+                            <i class="fas fa-info-circle"></i>
+                            <span class="tooltiptext">
+                                Digite um email válido. Exemplos:<br>
+                                • usuario@gmail.com<br>
+                                • nome@empresa.com.br<br>
+                                • contato@dominio.org
+                            </span>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="stats-section">
@@ -208,6 +245,7 @@
         <p>&copy; 2025 ShieldTech. Todos os direitos reservados.</p>
     </footer>
 
+    <script src="../../js/validation.js"></script>
     <script>
         // Máscara para CPF
         document.getElementById('cpf').addEventListener('input', function(e) {
@@ -225,6 +263,40 @@
                 value = value.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
                 e.target.value = value;
             }
+        });
+
+        // Configurar validação de email em tempo real
+        document.addEventListener('DOMContentLoaded', () => {
+            EmailValidator.setupEmailValidation('email', 'email-error');
+            
+            // Adicionar ícone de validação
+            const emailInput = document.getElementById('email');
+            const emailIcon = document.getElementById('email-icon');
+            
+            emailInput.addEventListener('input', () => {
+                emailIcon.innerHTML = '<div class="email-loading"></div>';
+            });
+            
+            // Atualizar ícone baseado na validação
+            const originalSetup = EmailValidator.setupEmailValidation;
+            EmailValidator.setupEmailValidation = function(inputId, errorElementId) {
+                originalSetup.call(this, inputId, errorElementId);
+                
+                const input = document.getElementById(inputId);
+                const icon = document.getElementById('email-icon');
+                
+                input.addEventListener('input', () => {
+                    setTimeout(() => {
+                        if (input.classList.contains('valid')) {
+                            icon.innerHTML = '<i class="fas fa-check-circle valid"></i>';
+                        } else if (input.classList.contains('invalid')) {
+                            icon.innerHTML = '<i class="fas fa-times-circle invalid"></i>';
+                        } else {
+                            icon.innerHTML = '';
+                        }
+                    }, 600);
+                });
+            };
         });
     </script>
 </body>
