@@ -48,6 +48,7 @@
                             <th>Nome</th>
                             <th>CPF</th>
                             <th>Telefone</th>
+                            <th>Email</th>
                             <th>Bloco/Torre</th>
                             <th>Andar</th>
                             <th>Veículo</th>
@@ -68,6 +69,7 @@
                                 echo "<td>" . $campo["nome"] . "</td>";
                                 echo "<td>" . $campo["cpf"] . "</td>";
                                 echo "<td>" . $campo["telefone"] . "</td>";
+                                echo "<td>" . ($campo["email"] ? $campo["email"] : "Não informado") . "</td>";
                                 echo "<td>" . $campo["bloco"] . "/" . $campo["torre"] . "</td>";
                                 echo "<td>" . $campo["andar"] . "</td>";
                                 echo "<td>" . ($campo["veiculo"] ? $campo["veiculo"] : "Não possui") . "</td>";
@@ -82,7 +84,7 @@
                                 echo "</tr>";
                             }
                         } else {
-                            echo "<tr><td colspan='10' style='text-align: center;'>Nenhum morador cadastrado</td></tr>";
+                            echo "<tr><td colspan='11' style='text-align: center;'>Nenhum morador cadastrado</td></tr>";
                         }
                         ?>
                     </tbody>

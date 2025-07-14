@@ -22,6 +22,7 @@
         $data_nascimento = mysqli_real_escape_string($conn, $_POST["data_nascimento"]);
         $sexo = mysqli_real_escape_string($conn, $_POST["sexo"]);
         $telefone = mysqli_real_escape_string($conn, $_POST["telefone"]);
+        $email = mysqli_real_escape_string($conn, $_POST["email"]);
         $bloco = mysqli_real_escape_string($conn, $_POST["bloco"]);
         $torre = mysqli_real_escape_string($conn, $_POST["torre"]);
         $andar = mysqli_real_escape_string($conn, $_POST["andar"]);
@@ -29,8 +30,8 @@
         $foto = mysqli_real_escape_string($conn, $_POST["foto"]);
         $data_cadastro = date('Y-m-d H:i:s');
         
-        $sql = "INSERT INTO tb_moradores (nome, cpf, rg, data_nascimento, sexo, telefone, bloco, torre, andar, veiculo, foto, data_cadastro) 
-                VALUES ('$nome', '$cpf', '$rg', '$data_nascimento', '$sexo', '$telefone', '$bloco', '$torre', '$andar', '$veiculo', '$foto', '$data_cadastro')";
+        $sql = "INSERT INTO tb_moradores (nome, cpf, rg, data_nascimento, sexo, telefone, email, bloco, torre, andar, veiculo, foto, data_cadastro) 
+                VALUES ('$nome', '$cpf', '$rg', '$data_nascimento', '$sexo', '$telefone', '$email', '$bloco', '$torre', '$andar', '$veiculo', '$foto', '$data_cadastro')";
         
         if (mysqli_query($conn, $sql)) {
             echo "<script>alert('Morador cadastrado com sucesso!'); window.location = 'consultar_moradores.php';</script>";
@@ -169,6 +170,11 @@
                         <h4>Registrar Visitante</h4>
                         <p>Controle de acesso de visitantes</p>
                     </a>
+
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" placeholder="exemplo@email.com" required>
+                    </div>
                 </div>
 
                 <div class="stats-section">

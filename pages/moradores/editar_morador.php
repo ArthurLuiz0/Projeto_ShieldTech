@@ -22,6 +22,7 @@
         $data_nascimento = mysqli_real_escape_string($conn, $_POST["data_nascimento"]);
         $sexo = mysqli_real_escape_string($conn, $_POST["sexo"]);
         $telefone = mysqli_real_escape_string($conn, $_POST["telefone"]);
+        $email = mysqli_real_escape_string($conn, $_POST["email"]);
         $bloco = mysqli_real_escape_string($conn, $_POST["bloco"]);
         $torre = mysqli_real_escape_string($conn, $_POST["torre"]);
         $andar = mysqli_real_escape_string($conn, $_POST["andar"]);
@@ -31,7 +32,7 @@
         
         $sql = "UPDATE tb_moradores SET 
                 nome='$nome', cpf='$cpf', rg='$rg', data_nascimento='$data_nascimento', 
-                sexo='$sexo', telefone='$telefone', bloco='$bloco', torre='$torre', 
+                sexo='$sexo', telefone='$telefone', email='$email', bloco='$bloco', torre='$torre', 
                 andar='$andar', veiculo='$veiculo', animais='$animais', foto='$foto' 
                 WHERE id_moradores=$id";
         
@@ -114,6 +115,11 @@
                     <div class="form-group">
                         <label for="telefone">Telefone:</label>
                         <input type="tel" id="telefone" name="telefone" value="<?= $campo["telefone"] ?>" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" value="<?= $campo["email"] ?>" required>
                     </div>
                 </div>
 
