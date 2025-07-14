@@ -1,3 +1,5 @@
+
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -23,7 +25,6 @@
         $data_nascimento = mysqli_real_escape_string($conn, $_POST["data_nascimento"]);
         $sexo = mysqli_real_escape_string($conn, $_POST["sexo"]);
         $telefone = mysqli_real_escape_string($conn, $_POST["telefone"]);
-        $email = mysqli_real_escape_string($conn, $_POST["email"]);
         $email = mysqli_real_escape_string($conn, $_POST["email"]);
         $bloco = mysqli_real_escape_string($conn, $_POST["bloco"]);
         $torre = mysqli_real_escape_string($conn, $_POST["torre"]);
@@ -129,6 +130,12 @@
                         </div>
                     </div>
 
+                          <div class="form-group">
+                        <label for="email">Email:</label>
+                        <input type="email" id="email" name="email" placeholder="exemplo@email.com" required>
+                        
+                    </div>
+
                     <div class="form-row">
                         <div class="form-group">
                             <label for="bloco">Bloco:</label>
@@ -190,27 +197,9 @@
                         <p>Controle de acesso de visitantes</p>
                     </a>
 
-                    <div class="form-group">
-                        <label for="email">Email:</label>
-                        <input type="email" id="email" name="email" placeholder="exemplo@email.com" required>
-                    </div>
+              
 
-                    <div class="form-group">
-                        <label for="email">Email:</label>
-                        <div class="email-validation">
-                            <input type="email" id="email" name="email" placeholder="exemplo@email.com" required>
-                            <span class="validation-icon" id="email-icon"></span>
-                        </div>
-                        <div class="email-error" id="email-error"></div>
-                        <div class="email-tooltip">
-                            <i class="fas fa-info-circle"></i>
-                            <span class="tooltiptext">
-                                Digite um email válido. Exemplos:<br>
-                                • usuario@gmail.com<br>
-                                • nome@empresa.com.br<br>
-                                • contato@dominio.org
-                            </span>
-                        </div>
+                    
                     </div>
                 </div>
 
