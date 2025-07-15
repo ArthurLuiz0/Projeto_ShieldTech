@@ -18,13 +18,19 @@
         $salario_base = mysqli_real_escape_string($conn, $_POST["salario_base"]);
         $carga_horaria = mysqli_real_escape_string($conn, $_POST["carga_horaria"]);
         
-        $sql = "INSERT INTO tb_cargo (nome_cargo, descricao, salario_base, carga_horaria) 
-                VALUES ('$nome_cargo', '$descricao', '$salario_base', '$carga_horaria')";
-        
-        if (mysqli_query($conn, $sql)) {
-            echo "<script>alert('Cargo cadastrado com sucesso!'); window.location = 'consultar_cargos.php';</script>";
+        // Verificar se cargo já existe
+        $verificar_cargo = mysqli_query($conn, "SELECT * FROM tb_cargo WHERE nome_cargo = '$nome_cargo'");
+        if (mysqli_num_rows($verificar_cargo) > 0) {
+            echo "<script>alert('Este cargo já está cadastrado!');</script>";
         } else {
-            echo "<script>alert('Erro ao cadastrar cargo: " . mysqli_error($conn) . "');</script>";
+            $sql = "INSERT INTO tb_cargo (nome_cargo, descricao, salario_base, carga_horaria) 
+                    VALUES ('$nome_cargo', '$descricao', '$salario_base', '$carga_horaria')";
+            
+            if (mysqli_query($conn, $sql)) {
+                echo "<script>alert('Cargo cadastrado com sucesso!'); window.location = 'consultar_cargos.php';</script>";
+            } else {
+                echo "<script>alert('Erro ao cadastrar cargo: " . mysqli_error($conn) . "');</script>";
+            }
         }
     }
     ?>

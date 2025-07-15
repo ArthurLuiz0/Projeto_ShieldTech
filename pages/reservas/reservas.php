@@ -31,42 +31,44 @@
             
             if (mysqli_query($conn, $sql)) {
                 // Buscar dados do morador para enviar email
-                $morador_query = mysqli_query($conn, "SELECT nome, email FROM tb_moradores WHERE id_moradores = '$id_moradores'");
+                $morador_query = mysqli_query($conn, "SELECT nome, email FROM tb_moradores WHERE id_moradores = $id_moradores");
                 $morador = mysqli_fetch_array($morador_query);
                 
                 if ($morador && $morador['email']) {
-                    // Aqui você pode implementar o envio de email
-                    // Por exemplo, usando PHPMailer ou mail() do PHP
                     $nome_morador = $morador['nome'];
                     $email_morador = $morador['email'];
                     
-                    // Exemplo básico de email (você pode melhorar isso)
+                    // Configurar email
                     $assunto = "Confirmação de Reserva - ShieldTech";
                     $mensagem = "
-                    Olá $nome_morador,
-                    
-                    Sua reserva foi confirmada com sucesso!
-                    
-                    Detalhes da reserva:
-                    - Local: $local
-                    - Data: " . date('d/m/Y', strtotime($data)) . "
-                    - Horário: $horario
-                    - Duração: $tempo_duracao
-                    - Observações: $descricao
-                    
-                    Atenciosamente,
-                    Equipe ShieldTech
+Olá $nome_morador,
+
+Sua reserva foi confirmada com sucesso!
+
+Detalhes da reserva:
+- Local: $local
+- Data: " . date('d/m/Y', strtotime($data)) . "
+- Horário: $horario
+- Duração: $tempo_duracao
+- Observações: $descricao
+
+Atenciosamente,
+Equipe ShieldTech
                     ";
                     
                     $headers = "From: noreply@shieldtech.com\r\n";
                     $headers .= "Reply-To: contato@shieldtech.com\r\n";
                     $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
                     
-                    // Enviar email (descomente a linha abaixo quando configurar o servidor de email)
-                    // mail($email_morador, $assunto, $mensagem, $headers);
+                    // Enviar email (funciona se o servidor tiver configuração de email)
+                    if (mail($email_morador, $assunto, $mensagem, $headers)) {
+                        echo "<script>alert('Reserva realizada com sucesso! Email de confirmação enviado.');</script>";
+                    } else {
+                        echo "<script>alert('Reserva realizada com sucesso! (Email não pôde ser enviado)');</script>";
+                    }
+                } else {
+                    echo "<script>alert('Reserva realizada com sucesso!');</script>";
                 }
-                
-                echo "<script>alert('Reserva realizada com sucesso! Confirmação enviada por email.');</script>";
             } else {
                 echo "<script>alert('Erro ao realizar reserva: " . mysqli_error($conn) . "');</script>";
             }
@@ -264,11 +266,11 @@
                         <?php
                         $hoje = date('Y-m-d');
                         $proximas = mysqli_query($conn, "
-                            SELECT *, nome as nome_morador, bloco, torre 
-                            FROM tb_reservas 
-                            LEFT JOIN tb_moradores  ON id_moradores = id_moradores 
-                            WHERE data >= '$hoje' 
-                            ORDER BY  data, horario 
+                            SELECT r.*, m.nome as nome_morador, m.bloco, m.torre 
+                            FROM tb_reservas r 
+                            LEFT JOIN tb_moradores m ON r.id_moradores = m.id_moradores 
+                            WHERE r.data >= '$hoje' 
+                            ORDER BY r.data, r.horario 
                             LIMIT 10
                         ");
                         
@@ -314,8 +316,6 @@
             const horario = document.getElementById('horario').value;
             
             if (local && data && horario) {
-                // Aqui você pode fazer uma requisição AJAX para verificar disponibilidade
-                // Por enquanto, vamos apenas mostrar uma mensagem
                 console.log('Verificando disponibilidade para:', local, data, horario);
             }
         }
