@@ -53,6 +53,7 @@
                             <th>Morador</th>
                             <th>Observações</th>
                             <th>Status</th>
+                            <th>Ações</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -66,7 +67,7 @@
                         
                         $selecionar = mysqli_query($conn, $sql);
                         
-                        if (mysqli_num_rows($selecionar) > 0) {
+                        if ($selecionar && mysqli_num_rows($selecionar) > 0) {
                             while ($campo = mysqli_fetch_array($selecionar)) {
                                 $hoje = date('Y-m-d');
                                 $data_reserva = $campo["data"];
@@ -79,13 +80,21 @@
                                 echo "<td>" . date('d/m/Y', strtotime($campo["data"])) . "</td>";
                                 echo "<td>" . $campo["horario"] . "</td>";
                                 echo "<td>" . $campo["tempo_duracao"] . "</td>";
-                                echo "<td>" . $campo["nome_morador"] . " - Bloco " . $campo["bloco"] . "/" . $campo["torre"] . "</td>";
+                                echo "<td>" . ($campo["nome_morador"] ? $campo["nome_morador"] . " - Bloco " . $campo["bloco"] . "/" . $campo["torre"] : "Morador não encontrado") . "</td>";
                                 echo "<td>" . ($campo["descricao"] ? substr($campo["descricao"], 0, 50) . "..." : "Sem observações") . "</td>";
                                 echo "<td><span class='$status_class'>$status</span></td>";
+                                echo "<td class='acoes'>";
+                                if ($data_reserva >= $hoje) {
+                                    echo "<a href='editar_reserva.php?id=" . $campo["id_reservas"] . "' class='btn-editar'>";
+                                    echo "<i class='fas fa-edit'></i> Editar</a>";
+                                }
+                                echo "<a href='cancelar_reserva.php?id=" . $campo["id_reservas"] . "' class='btn-excluir' onclick='return confirm(\"Tem certeza que deseja cancelar esta reserva?\")'>";
+                                echo "<i class='fas fa-times'></i> Cancelar</a>";
+                                echo "</td>";
                                 echo "</tr>";
                             }
                         } else {
-                            echo "<tr><td colspan='8' style='text-align: center;'>Nenhuma reserva encontrada</td></tr>";
+                            echo "<tr><td colspan='9' style='text-align: center;'>Nenhuma reserva encontrada</td></tr>";
                         }
                         ?>
                     </tbody>
