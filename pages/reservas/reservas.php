@@ -13,71 +13,49 @@
     
     // Função para enviar email de confirmação
     function enviarEmailConfirmacao($email_morador, $nome_morador, $local, $data, $horario, $tempo_duracao, $descricao) {
-        $assunto = "Confirmação de Reserva - ShieldTech";
+        // Validar email
+        if (!filter_var($email_morador, FILTER_VALIDATE_EMAIL)) {
+            return false;
+        }
+        
+        $assunto = "Confirmacao de Reserva - ShieldTech";
         $data_formatada = date('d/m/Y', strtotime($data));
         
-        $mensagem = "
-        <html>
-        <head>
-            <title>Confirmação de Reserva</title>
-            <style>
-                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-                .header { background: #2c3e50; color: white; padding: 20px; text-align: center; }
-                .content { padding: 20px; background: #f9f9f9; }
-                .details { background: white; padding: 15px; margin: 10px 0; border-left: 4px solid #3498db; }
-                .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
-            </style>
-        </head>
-        <body>
-            <div class='container'>
-                <div class='header'>
-                    <h1>🛡️ ShieldTech</h1>
-                    <h2>Confirmação de Reserva</h2>
-                </div>
-                <div class='content'>
-                    <p>Olá <strong>$nome_morador</strong>,</p>
-                    <p>Sua reserva foi confirmada com sucesso!</p>
-                    
-                    <div class='details'>
-                        <h3>📋 Detalhes da Reserva:</h3>
-                        <p><strong>📍 Local:</strong> $local</p>
-                        <p><strong>📅 Data:</strong> $data_formatada</p>
-                        <p><strong>🕐 Horário:</strong> $horario</p>
-                        <p><strong>⏱️ Duração:</strong> $tempo_duracao</p>
-                        " . ($descricao ? "<p><strong>📝 Observações:</strong> $descricao</p>" : "") . "
-                    </div>
-                    
-                    <div class='details'>
-                        <h3>📋 Lembrete Importante:</h3>
-                        <ul>
-                            <li>Chegue no horário marcado</li>
-                            <li>Deixe o local limpo após o uso</li>
-                            <li>Em caso de cancelamento, avise com antecedência</li>
-                            <li>Dúvidas? Entre em contato conosco</li>
-                        </ul>
-                    </div>
-                </div>
-                <div class='footer'>
-                    <p>Este é um email automático, não responda.</p>
-                    <p>© 2025 ShieldTech - Sistema de Controle de Acesso</p>
-                </div>
-            </div>
-        </body>
-        </html>
-        ";
+        // Mensagem em texto simples para melhor compatibilidade
+        $mensagem = "=== SHIELDTECH - CONFIRMACAO DE RESERVA ===\n\n";
+        $mensagem .= "Ola " . $nome_morador . ",\n\n";
+        $mensagem .= "Sua reserva foi confirmada com sucesso!\n\n";
+        $mensagem .= "DETALHES DA RESERVA:\n";
+        $mensagem .= "- Local: " . $local . "\n";
+        $mensagem .= "- Data: " . $data_formatada . "\n";
+        $mensagem .= "- Horario: " . $horario . "\n";
+        $mensagem .= "- Duracao: " . $tempo_duracao . "\n";
+        if ($descricao) {
+            $mensagem .= "- Observacoes: " . $descricao . "\n";
+        }
+        $mensagem .= "\nLEMBRETE IMPORTANTE:\n";
+        $mensagem .= "- Chegue no horario marcado\n";
+        $mensagem .= "- Deixe o local limpo apos o uso\n";
+        $mensagem .= "- Em caso de cancelamento, avise com antecedencia\n";
+        $mensagem .= "- Duvidas? Entre em contato conosco\n\n";
+        $mensagem .= "Este e um email automatico, nao responda.\n";
+        $mensagem .= "(c) 2025 ShieldTech - Sistema de Controle de Acesso";
         
-        $headers = "MIME-Version: 1.0" . "\r\n";
-        $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
-        $headers .= "From: ShieldTech <noreply@shieldtech.com>" . "\r\n";
-        $headers .= "Reply-To: contato@shieldtech.com" . "\r\n";
+        // Headers mais simples
+        $headers = "From: ShieldTech <sistema@shieldtech.com>\r\n";
+        $headers .= "Reply-To: contato@shieldtech.com\r\n";
+        $headers .= "X-Mailer: PHP/" . phpversion() . "\r\n";
+        $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
         
         // Tentar enviar o email
-        if (mail($email_morador, $assunto, $mensagem, $headers)) {
-            return true;
-        } else {
-            // Log do erro para debug
-            error_log("Erro ao enviar email para: $email_morador");
+        try {
+            if (@mail($email_morador, $assunto, $mensagem, $headers)) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (Exception $e) {
+            error_log("Erro ao enviar email: " . $e->getMessage());
             return false;
         }
     }
