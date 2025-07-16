@@ -21,6 +21,7 @@
         $horario = mysqli_real_escape_string($conn, $_POST["horario"]);
         $tempo_duracao = mysqli_real_escape_string($conn, $_POST["tempo_duracao"]);
         $descricao = mysqli_real_escape_string($conn, $_POST["descricao"]);
+        $id_morador = mysqli_real_escape_string($conn, $_POST["id_morador"]);
         
         // Verificar se já existe reserva para o mesmo local, data e horário (exceto a atual)
         $verificar = mysqli_query($conn, "SELECT * FROM tb_reservas WHERE local='$local' AND data='$data' AND horario='$horario' AND id_reservas != $id");
@@ -30,7 +31,7 @@
         } else {
             $sql = "UPDATE tb_reservas SET 
                     local='$local', data='$data', horario='$horario', 
-                    tempo_duracao='$tempo_duracao', descricao='$descricao' 
+                    tempo_duracao='$tempo_duracao', descricao='$descricao', id_morador='$id_morador' 
                     WHERE id_reservas=$id";
             
             if (mysqli_query($conn, $sql)) {
@@ -124,6 +125,22 @@
                             <option value="4 horas" <?= $campo["tempo_duracao"] == "4 horas" ? "selected" : "" ?>>4 horas</option>
                             <option value="Meio período (4h)" <?= $campo["tempo_duracao"] == "Meio período (4h)" ? "selected" : "" ?>>Meio período (4h)</option>
                             <option value="Período integral (8h)" <?= $campo["tempo_duracao"] == "Período integral (8h)" ? "selected" : "" ?>>Período integral (8h)</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="id_morador">Morador:</label>
+                        <select id="id_morador" name="id_morador" required>
+                            <option value="">Selecione o morador</option>
+                            <?php
+                            $moradores = mysqli_query($conn, "SELECT id_moradores, nome, bloco, torre FROM tb_moradores ORDER BY nome");
+                            while ($morador = mysqli_fetch_array($moradores)) {
+                                $selected = ($campo["id_morador"] == $morador["id_moradores"]) ? "selected" : "";
+                                echo "<option value='" . $morador["id_moradores"] . "' $selected>" . $morador["nome"] . " - Bloco " . $morador["bloco"] . "/" . $morador["torre"] . "</option>";
+                            }
+                            ?>
                         </select>
                     </div>
                 </div>

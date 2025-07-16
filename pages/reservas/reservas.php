@@ -18,7 +18,7 @@
         $horario = mysqli_real_escape_string($conn, $_POST["horario"]);
         $tempo_duracao = mysqli_real_escape_string($conn, $_POST["tempo_duracao"]);
         $descricao = mysqli_real_escape_string($conn, $_POST["descricao"]);
-        $id_moradores = mysqli_real_escape_string($conn, $_POST["id_moradores"]);
+        $id_morador = mysqli_real_escape_string($conn, $_POST["id_morador"]);
         
         // Verificar se já existe reserva para o mesmo local, data e horário
         $verificar = mysqli_query($conn, "SELECT * FROM tb_reservas WHERE local='$local' AND data='$data' AND horario='$horario'");
@@ -26,49 +26,23 @@
         if (mysqli_num_rows($verificar) > 0) {
             echo "<script>alert('Já existe uma reserva para este local, data e horário!');</script>";
         } else {
-            $sql = "INSERT INTO tb_reservas (local, data, horario, tempo_duracao, descricao, id_moradores) 
-                    VALUES ('$local', '$data', '$horario', '$tempo_duracao', '$descricao', '$id_moradores')";
+            $sql = "INSERT INTO tb_reservas (local, data, horario, tempo_duracao, descricao, id_morador) 
+                    VALUES ('$local', '$data', '$horario', '$tempo_duracao', '$descricao', '$id_morador')";
             
             if (mysqli_query($conn, $sql)) {
                 // Buscar dados do morador para enviar email
-                $morador_query = mysqli_query($conn, "SELECT nome, email FROM tb_moradores WHERE id_moradores = $id_moradores");
+                $morador_query = mysqli_query($conn, "SELECT nome, email FROM tb_moradores WHERE id_moradores = $id_morador");
                 $morador = mysqli_fetch_array($morador_query);
                 
                 if ($morador && $morador['email']) {
                     $nome_morador = $morador['nome'];
                     $email_morador = $morador['email'];
                     
-                    // Configurar email
-                    $assunto = "Confirmação de Reserva - ShieldTech";
-                    $mensagem = "
-Olá $nome_morador,
-
-Sua reserva foi confirmada com sucesso!
-
-Detalhes da reserva:
-- Local: $local
-- Data: " . date('d/m/Y', strtotime($data)) . "
-- Horário: $horario
-- Duração: $tempo_duracao
-- Observações: $descricao
-
-Atenciosamente,
-Equipe ShieldTech
-                    ";
-                    
-                    $headers = "From: noreply@shieldtech.com\r\n";
-                    $headers .= "Reply-To: contato@shieldtech.com\r\n";
-                    $headers .= "Content-Type: text/plain; charset=UTF-8\r\n";
-                    
-                    // Enviar email (funciona se o servidor tiver configuração de email)
-                    if (mail($email_morador, $assunto, $mensagem, $headers)) {
-                        echo "<script>alert('Reserva realizada com sucesso! Email de confirmação enviado.');</script>";
-                    } else {
-                        echo "<script>alert('Reserva realizada com sucesso! (Email não pôde ser enviado)');</script>";
-                    }
-                } else {
-                    echo "<script>alert('Reserva realizada com sucesso!');</script>";
+                    // Log da reserva para debug
+                    error_log("Reserva criada para: $nome_morador ($email_morador)");
                 }
+                
+                echo "<script>alert('Reserva realizada com sucesso!');</script>";
             } else {
                 echo "<script>alert('Erro ao realizar reserva: " . mysqli_error($conn) . "');</script>";
             }
@@ -123,8 +97,8 @@ Equipe ShieldTech
                         </div>
 
                         <div class="form-group">
-                            <label for="id_moradores">Morador:</label>
-                            <select id="id_moradores" name="id_moradores" required>
+                            <label for="id_morador">Morador:</label>
+                            <select id="id_morador" name="id_morador" required>
                                 <option value="">Selecione o morador</option>
                                 <?php
                                 $moradores = mysqli_query($conn, "SELECT id_moradores, nome, bloco, torre FROM tb_moradores ORDER BY nome");
@@ -268,7 +242,7 @@ Equipe ShieldTech
                         $proximas = mysqli_query($conn, "
                             SELECT r.*, m.nome as nome_morador, m.bloco, m.torre 
                             FROM tb_reservas r 
-                            LEFT JOIN tb_moradores m ON r.id_moradores = m.id_moradores 
+                            LEFT JOIN tb_moradores m ON r.id_morador = m.id_moradores 
                             WHERE r.data >= '$hoje' 
                             ORDER BY r.data, r.horario 
                             LIMIT 10
@@ -316,6 +290,8 @@ Equipe ShieldTech
             const horario = document.getElementById('horario').value;
             
             if (local && data && horario) {
+                // Aqui você pode fazer uma requisição AJAX para verificar disponibilidade
+                // Por enquanto, vamos apenas mostrar uma mensagem
                 console.log('Verificando disponibilidade para:', local, data, horario);
             }
         }

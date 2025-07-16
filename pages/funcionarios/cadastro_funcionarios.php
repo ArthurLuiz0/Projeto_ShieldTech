@@ -25,19 +25,13 @@
         $salario = mysqli_real_escape_string($conn, $_POST["salario"]);
         $data_admissao = mysqli_real_escape_string($conn, $_POST["data_admissao"]);
         
-        // Verificar se CPF já existe
-        $verificar_cpf = mysqli_query($conn, "SELECT * FROM tb_funcionarios WHERE cpf = '$cpf'");
-        if (mysqli_num_rows($verificar_cpf) > 0) {
-            echo "<script>alert('Este CPF já está cadastrado!');</script>";
+        $sql = "INSERT INTO tb_funcionarios (nome, cpf, rg, data_nascimento, sexo, telefone, email, endereco, funcao_cargo, salario, data_admissao) 
+                VALUES ('$nome', '$cpf', '$rg', '$data_nascimento', '$sexo', '$telefone', '$email', '$endereco', '$funcao_cargo', '$salario', '$data_admissao')";
+        
+        if (mysqli_query($conn, $sql)) {
+            echo "<script>alert('Funcionário cadastrado com sucesso!'); window.location = 'consultar_funcionarios.php';</script>";
         } else {
-            $sql = "INSERT INTO tb_funcionarios (nome, cpf, rg, data_nascimento, sexo, telefone, email, endereco, funcao_cargo, salario, data_admissao) 
-                    VALUES ('$nome', '$cpf', '$rg', '$data_nascimento', '$sexo', '$telefone', '$email', '$endereco', '$funcao_cargo', '$salario', '$data_admissao')";
-            
-            if (mysqli_query($conn, $sql)) {
-                echo "<script>alert('Funcionário cadastrado com sucesso!'); window.location = 'consultar_funcionarios.php';</script>";
-            } else {
-                echo "<script>alert('Erro ao cadastrar funcionário: " . mysqli_error($conn) . "');</script>";
-            }
+            echo "<script>alert('Erro ao cadastrar funcionário: " . mysqli_error($conn) . "');</script>";
         }
     }
     ?>

@@ -28,28 +28,16 @@
         $torre = mysqli_real_escape_string($conn, $_POST["torre"]);
         $andar = mysqli_real_escape_string($conn, $_POST["andar"]);
         $veiculo = mysqli_real_escape_string($conn, $_POST["veiculo"]);
-        $animais = mysqli_real_escape_string($conn, $_POST["animais"]);
         $foto = mysqli_real_escape_string($conn, $_POST["foto"]);
         $data_cadastro = date('Y-m-d H:i:s');
         
-        // Validar email
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            echo "<script>alert('Email inválido! Por favor, digite um email válido.');</script>";
+        $sql = "INSERT INTO tb_moradores (nome, cpf, rg, data_nascimento, sexo, telefone, email, bloco, torre, andar, veiculo, animais, foto, data_cadastro) 
+        VALUES ('$nome', '$cpf', '$rg', '$data_nascimento', '$sexo', '$telefone','$email', '$bloco', '$torre', '$andar', '$veiculo', '$animais', '$foto', '$data_cadastro')";
+
+        if (mysqli_query($conn, $sql)) {
+            echo "<script>alert('Morador cadastrado com sucesso!'); window.location = 'consultar_moradores.php';</script>";
         } else {
-            // Verificar se email já existe
-            $verificar_email = mysqli_query($conn, "SELECT * FROM tb_moradores WHERE email = '$email'");
-            if (mysqli_num_rows($verificar_email) > 0) {
-                echo "<script>alert('Este email já está cadastrado!');</script>";
-            } else {
-                $sql = "INSERT INTO tb_moradores (nome, cpf, rg, data_nascimento, sexo, telefone, email, bloco, torre, andar, veiculo, animais, foto, data_cadastro) 
-                        VALUES ('$nome', '$cpf', '$rg', '$data_nascimento', '$sexo', '$telefone', '$email', '$bloco', '$torre', '$andar', '$veiculo', '$animais', '$foto', '$data_cadastro')";
-                
-                if (mysqli_query($conn, $sql)) {
-                    echo "<script>alert('Morador cadastrado com sucesso!'); window.location = 'consultar_moradores.php';</script>";
-                } else {
-                    echo "<script>alert('Erro ao cadastrar morador: " . mysqli_error($conn) . "');</script>";
-                }
-            }
+            echo "<script>alert('Erro ao cadastrar morador: " . mysqli_error($conn) . "');</script>";
         }
     }
     ?>
@@ -123,39 +111,44 @@
                         </div>
                     </div>
 
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="email">Email:</label>
+                    <div class="form-group">
+                        <label for="email">Email:</label>
+                        <div class="email-validation">
                             <input type="email" id="email" name="email" placeholder="exemplo@email.com" required>
+                            <span class="validation-icon" id="email-icon"></span>
+                        </div>
+                        <div class="email-error" id="email-error"></div>
+                        <div class="email-tooltip">
+                            <i class="fas fa-info-circle"></i>
+                            <span class="tooltiptext">
+                                Digite um email válido. Exemplos:<br>
+                                • usuario@gmail.com<br>
+                                • nome@empresa.com.br<br>
+                                • contato@dominio.org
+                            </span>
                         </div>
 
+                    <div class="form-row">
                         <div class="form-group">
                             <label for="bloco">Bloco:</label>
                             <input type="text" id="bloco" name="bloco" required>
                         </div>
-                    </div>
 
-                    <div class="form-row">
                         <div class="form-group">
                             <label for="torre">Torre:</label>
                             <input type="text" id="torre" name="torre">
                         </div>
-
-                        <div class="form-group">
-                            <label for="andar">Andar:</label>
-                            <input type="text" id="andar" name="andar">
-                        </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
-                            <label for="veiculo">Veículo:</label>
-                            <input type="text" id="veiculo" name="veiculo" placeholder="Marca/Modelo - Placa">
+                            <label for="andar">Andar:</label>
+                            <input type="text" id="andar" name="andar">
                         </div>
 
                         <div class="form-group">
-                            <label for="animais">Animais:</label>
-                            <input type="text" id="animais" name="animais" placeholder="Tipo e nome dos animais">
+                            <label for="veiculo">Veículo:</label>
+                            <input type="text" id="veiculo" name="veiculo" placeholder="Marca/Modelo - Placa">
                         </div>
                     </div>
 
@@ -195,6 +188,10 @@
                         <h4>Registrar Visitante</h4>
                         <p>Controle de acesso de visitantes</p>
                     </a>
+
+
+                    
+                    </div>
                 </div>
 
                 <div class="stats-section">
@@ -246,6 +243,40 @@
                 value = value.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
                 e.target.value = value;
             }
+        });
+
+        // Configurar validação de email em tempo real
+        document.addEventListener('DOMContentLoaded', () => {
+            EmailValidator.setupEmailValidation('email', 'email-error');
+            
+            // Adicionar ícone de validação
+            const emailInput = document.getElementById('email');
+            const emailIcon = document.getElementById('email-icon');
+            
+            emailInput.addEventListener('input', () => {
+                emailIcon.innerHTML = '<div class="email-loading"></div>';
+            });
+            
+            // Atualizar ícone baseado na validação
+            const originalSetup = EmailValidator.setupEmailValidation;
+            EmailValidator.setupEmailValidation = function(inputId, errorElementId) {
+                originalSetup.call(this, inputId, errorElementId);
+                
+                const input = document.getElementById(inputId);
+                const icon = document.getElementById('email-icon');
+                
+                input.addEventListener('input', () => {
+                    setTimeout(() => {
+                        if (input.classList.contains('valid')) {
+                            icon.innerHTML = '<i class="fas fa-check-circle valid"></i>';
+                        } else if (input.classList.contains('invalid')) {
+                            icon.innerHTML = '<i class="fas fa-times-circle invalid"></i>';
+                        } else {
+                            icon.innerHTML = '';
+                        }
+                    }, 600);
+                });
+            };
         });
     </script>
 </body>

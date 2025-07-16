@@ -52,7 +52,6 @@
                 $funcionarios = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM tb_funcionarios"));
                 $visitantes = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM tb_visitantes WHERE status = 'Presente'"));
                 $cargos = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM tb_cargo"));
-                $reservas = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM tb_reservas WHERE data >= CURDATE()"));
                 ?>
                 
                 <div class="card">
@@ -70,10 +69,6 @@
                 <div class="card">
                     <h3><i class="fas fa-briefcase"></i> Cargos Cadastrados</h3>
                     <p><?= $cargos ?></p>
-                </div>
-                <div class="card">
-                    <h3><i class="fas fa-calendar-alt"></i> Reservas Ativas</h3>
-                    <p><?= $reservas ?></p>
                 </div>
             </div>
         </section>
@@ -102,11 +97,6 @@
                     <i class="fas fa-user-friends"></i>
                     <h4>Visitantes</h4>
                     <p>Controle de acesso</p>
-                </a>
-                <a href="pages/reservas/reservas.php" class="quick-access-card">
-                    <i class="fas fa-calendar-alt"></i>
-                    <h4>Reservas</h4>
-                    <p>Gerencie reservas de áreas</p>
                 </a>
                 <a href="pages/relatorios/relatorios.php" class="quick-access-card">
                     <i class="fas fa-chart-bar"></i>
