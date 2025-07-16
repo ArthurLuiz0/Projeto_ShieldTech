@@ -11,6 +11,77 @@
     <?php
     include("../../conectarbd.php");
     
+    // Função para enviar email de confirmação
+    function enviarEmailConfirmacao($email_morador, $nome_morador, $local, $data, $horario, $tempo_duracao, $descricao) {
+        $assunto = "Confirmação de Reserva - ShieldTech";
+        $data_formatada = date('d/m/Y', strtotime($data));
+        
+        $mensagem = "
+        <html>
+        <head>
+            <title>Confirmação de Reserva</title>
+            <style>
+                body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+                .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+                .header { background: #2c3e50; color: white; padding: 20px; text-align: center; }
+                .content { padding: 20px; background: #f9f9f9; }
+                .details { background: white; padding: 15px; margin: 10px 0; border-left: 4px solid #3498db; }
+                .footer { text-align: center; padding: 20px; color: #666; font-size: 12px; }
+            </style>
+        </head>
+        <body>
+            <div class='container'>
+                <div class='header'>
+                    <h1>🛡️ ShieldTech</h1>
+                    <h2>Confirmação de Reserva</h2>
+                </div>
+                <div class='content'>
+                    <p>Olá <strong>$nome_morador</strong>,</p>
+                    <p>Sua reserva foi confirmada com sucesso!</p>
+                    
+                    <div class='details'>
+                        <h3>📋 Detalhes da Reserva:</h3>
+                        <p><strong>📍 Local:</strong> $local</p>
+                        <p><strong>📅 Data:</strong> $data_formatada</p>
+                        <p><strong>🕐 Horário:</strong> $horario</p>
+                        <p><strong>⏱️ Duração:</strong> $tempo_duracao</p>
+                        " . ($descricao ? "<p><strong>📝 Observações:</strong> $descricao</p>" : "") . "
+                    </div>
+                    
+                    <div class='details'>
+                        <h3>📋 Lembrete Importante:</h3>
+                        <ul>
+                            <li>Chegue no horário marcado</li>
+                            <li>Deixe o local limpo após o uso</li>
+                            <li>Em caso de cancelamento, avise com antecedência</li>
+                            <li>Dúvidas? Entre em contato conosco</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class='footer'>
+                    <p>Este é um email automático, não responda.</p>
+                    <p>© 2025 ShieldTech - Sistema de Controle de Acesso</p>
+                </div>
+            </div>
+        </body>
+        </html>
+        ";
+        
+        $headers = "MIME-Version: 1.0" . "\r\n";
+        $headers .= "Content-type:text/html;charset=UTF-8" . "\r\n";
+        $headers .= "From: ShieldTech <noreply@shieldtech.com>" . "\r\n";
+        $headers .= "Reply-To: contato@shieldtech.com" . "\r\n";
+        
+        // Tentar enviar o email
+        if (mail($email_morador, $assunto, $mensagem, $headers)) {
+            return true;
+        } else {
+            // Log do erro para debug
+            error_log("Erro ao enviar email para: $email_morador");
+            return false;
+        }
+    }
+    
     // Processar formulário se foi enviado
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
         $local = mysqli_real_escape_string($conn, $_POST["local"]);
@@ -34,15 +105,32 @@
                 $morador_query = mysqli_query($conn, "SELECT nome, email FROM tb_moradores WHERE id_moradores = $id_morador");
                 $morador = mysqli_fetch_array($morador_query);
                 
+                $email_enviado = false;
                 if ($morador && $morador['email']) {
                     $nome_morador = $morador['nome'];
                     $email_morador = $morador['email'];
                     
-                    // Log da reserva para debug
-                    error_log("Reserva criada para: $nome_morador ($email_morador)");
+                    // Enviar email de confirmação
+                    $email_enviado = enviarEmailConfirmacao(
+                        $email_morador, 
+                        $nome_morador, 
+                        $local, 
+                        $data, 
+                        $horario, 
+                        $tempo_duracao, 
+                        $descricao
+                    );
                 }
                 
-                echo "<script>alert('Reserva realizada com sucesso!');</script>";
+                if ($email_enviado) {
+                    echo "<script>alert('Reserva realizada com sucesso! Email de confirmação enviado para " . $morador['email'] . "');</script>";
+                } else {
+                    if ($morador && $morador['email']) {
+                        echo "<script>alert('Reserva realizada com sucesso! Porém houve um problema ao enviar o email de confirmação.');</script>";
+                    } else {
+                        echo "<script>alert('Reserva realizada com sucesso! Email não cadastrado para este morador.');</script>";
+                    }
+                }
             } else {
                 echo "<script>alert('Erro ao realizar reserva: " . mysqli_error($conn) . "');</script>";
             }
@@ -101,12 +189,14 @@
                             <select id="id_morador" name="id_morador" required>
                                 <option value="">Selecione o morador</option>
                                 <?php
-                                $moradores = mysqli_query($conn, "SELECT id_moradores, nome, bloco, torre FROM tb_moradores ORDER BY nome");
+                                $moradores = mysqli_query($conn, "SELECT id_moradores, nome, bloco, torre, email FROM tb_moradores ORDER BY nome");
                                 while ($morador = mysqli_fetch_array($moradores)) {
-                                    echo "<option value='" . $morador["id_moradores"] . "'>" . $morador["nome"] . " - Bloco " . $morador["bloco"] . "/" . $morador["torre"] . "</option>";
+                                    $email_info = $morador["email"] ? " ✉️" : " ⚠️ Sem email";
+                                    echo "<option value='" . $morador["id_moradores"] . "'>" . $morador["nome"] . " - Bloco " . $morador["bloco"] . "/" . $morador["torre"] . $email_info . "</option>";
                                 }
                                 ?>
                             </select>
+                            <small style="color: #666; font-size: 0.8em;">✉️ = Email cadastrado | ⚠️ = Sem email cadastrado</small>
                         </div>
                     </div>
 
@@ -215,8 +305,18 @@
                             <li>Cancelamentos devem ser feitos até 12h antes</li>
                             <li>É obrigatório deixar o local limpo após o uso</li>
                             <li>Horário de funcionamento: 08:00 às 22:00</li>
-                            <li>Confirmação será enviada por email</li>
+                            <li>Confirmação será enviada por email (se cadastrado)</li>
                         </ul>
+                    </div>
+                </div>
+
+                <div class="quick-actions">
+                    <h4>Status do Email</h4>
+                    <div style="background: #e8f4fd; padding: 1rem; border-radius: 0.5rem; margin-top: 1rem; border-left: 4px solid #3498db;">
+                        <p style="margin: 0; color: #2c3e50; font-size: 0.9em;">
+                            <i class="fas fa-info-circle"></i> 
+                            Emails de confirmação são enviados automaticamente para moradores com email cadastrado.
+                        </p>
                     </div>
                 </div>
             </section>
@@ -233,6 +333,7 @@
                             <th>Horário</th>
                             <th>Duração</th>
                             <th>Morador</th>
+                            <th>Email</th>
                             <th>Status</th>
                         </tr>
                     </thead>
@@ -240,7 +341,7 @@
                         <?php
                         $hoje = date('Y-m-d');
                         $proximas = mysqli_query($conn, "
-                            SELECT r.*, m.nome as nome_morador, m.bloco, m.torre 
+                            SELECT r.*, m.nome as nome_morador, m.bloco, m.torre, m.email 
                             FROM tb_reservas r 
                             LEFT JOIN tb_moradores m ON r.id_morador = m.id_moradores 
                             WHERE r.data >= '$hoje' 
@@ -250,17 +351,21 @@
                         
                         if (mysqli_num_rows($proximas) > 0) {
                             while ($reserva = mysqli_fetch_array($proximas)) {
+                                $email_status = $reserva["email"] ? "✉️ Enviado" : "⚠️ Sem email";
+                                $email_class = $reserva["email"] ? "status-ativo" : "status-presente";
+                                
                                 echo "<tr>";
                                 echo "<td>" . $reserva["local"] . "</td>";
                                 echo "<td>" . date('d/m/Y', strtotime($reserva["data"])) . "</td>";
                                 echo "<td>" . $reserva["horario"] . "</td>";
                                 echo "<td>" . $reserva["tempo_duracao"] . "</td>";
                                 echo "<td>" . $reserva["nome_morador"] . " - Bloco " . $reserva["bloco"] . "/" . $reserva["torre"] . "</td>";
+                                echo "<td><span class='$email_class'>$email_status</span></td>";
                                 echo "<td><span class='status-ativo'>Confirmada</span></td>";
                                 echo "</tr>";
                             }
                         } else {
-                            echo "<tr><td colspan='6' style='text-align: center;'>Nenhuma reserva encontrada</td></tr>";
+                            echo "<tr><td colspan='7' style='text-align: center;'>Nenhuma reserva encontrada</td></tr>";
                         }
                         ?>
                     </tbody>
@@ -299,6 +404,14 @@
         document.getElementById('local').addEventListener('change', verificarDisponibilidade);
         document.getElementById('data').addEventListener('change', verificarDisponibilidade);
         document.getElementById('horario').addEventListener('change', verificarDisponibilidade);
+
+        // Mostrar aviso sobre email ao selecionar morador
+        document.getElementById('id_morador').addEventListener('change', function() {
+            const selectedOption = this.options[this.selectedIndex];
+            if (selectedOption.text.includes('⚠️ Sem email')) {
+                alert('Atenção: Este morador não possui email cadastrado. A confirmação não será enviada por email.');
+            }
+        });
     </script>
 </body>
 </html>
