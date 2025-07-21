@@ -29,6 +29,7 @@
         $torre = mysqli_real_escape_string($conn, $_POST["torre"]);
         $andar = mysqli_real_escape_string($conn, $_POST["andar"]);
         $veiculo = mysqli_real_escape_string($conn, $_POST["veiculo"]);
+        $animais = mysqli_real_escape_string($conn, $_POST["animais"]);
         $foto = mysqli_real_escape_string($conn, $_POST["foto"]);
         $data_cadastro = date('Y-m-d H:i:s');
         
@@ -178,7 +179,7 @@
                      <div class="form-row">
                     <div class="form-group">
                         <label>
-                            <input type="checkbox" id="tem_animal" name="tem_animal" onchange="toggleAnimalForm()"> 
+                            <input type="checkbox" id="animais" name="animais" value="Possui" onchange="toggleAnimalForm()"> 
                             Possui animal de estimação?
                         </label>
                     </div>
