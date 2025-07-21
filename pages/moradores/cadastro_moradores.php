@@ -162,16 +162,88 @@
                             <input type="text" id="andar" name="andar">
                         </div>
 
-                        <div class="form-group">
-                            <label for="veiculo">Veículo:</label>
-                            <input type="text" id="veiculo" name="veiculo" placeholder="Marca/Modelo - Placa">
-                        </div>
-                    </div>
 
                     <div class="form-group full-width">
                         <label for="foto">Foto (URL):</label>
                         <input type="text" id="foto" name="foto" placeholder="URL da foto">
                     </div>
+
+                    <div class="form-group">
+                            <label for="veiculo">Veículo:</label>
+                            <input type="text" id="veiculo" name="veiculo" placeholder="Marca/Modelo - Placa">
+                        </div>
+                    </div>
+
+                     <!-- Formulário de Animal (inicialmente oculto) -->
+                     <div class="form-row">
+                    <div class="form-group">
+                        <label>
+                            <input type="checkbox" id="tem_animal" name="tem_animal" onchange="toggleAnimalForm()"> 
+                            Possui animal de estimação?
+                        </label>
+                    </div>
+                </div>
+
+                <div id="animal-form-section" style="display: none;">
+                    <h4 style="color: var(--primary-color); margin: 1.5rem 0 1rem 0; padding-bottom: 0.5rem; border-bottom: 2px solid var(--accent-color);">
+                        <i class="fas fa-paw"></i> Dados do Animal
+                    </h4>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nome_animal">Nome do Animal:</label>
+                            <input type="text" id="nome_animal" name="nome_animal">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="tipo_animal">Tipo:</label>
+                            <select id="tipo_animal" name="tipo_animal">
+                                <option value="">Selecione o tipo</option>
+                                <option value="Cão">Cão</option>
+                                <option value="Gato">Gato</option>
+                                <option value="Pássaro">Pássaro</option>
+                                <option value="Peixe">Peixe</option>
+                                <option value="Outro">Outro</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="porte_animal">Porte:</label>
+                            <select id="porte_animal" name="porte_animal">
+                                <option value="">Selecione o porte</option>
+                                <option value="Pequeno">Pequeno</option>
+                                <option value="Médio">Médio</option>
+                                <option value="Grande">Grande</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="idade_animal">Idade (anos):</label>
+                            <input type="number" id="idade_animal" name="idade_animal" min="0" max="30">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="cor_animal">Cor:</label>
+                            <input type="text" id="cor_animal" name="cor_animal">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="peso_animal">Peso (kg):</label>
+                            <input type="number" id="peso_animal" name="peso_animal" step="0.1" min="0">
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="observacoes_animal">Observações sobre o Animal:</label>
+                        <textarea id="observacoes_animal" name="observacoes_animal" rows="3" placeholder="Informações adicionais sobre o animal (vacinas, comportamento, etc.)"></textarea>
+                    </div>
+                </div>
+
+
 
                     <div class="form-actions">
                         <button type="submit" class="btn-primary">
@@ -258,6 +330,39 @@
             EmailValidator.setupEmailValidation('email', 'email-error');
             CPFValidator.setupCompleteValidation('cpf', 'cpf-error', 'moradores');
         });
+ 
+ 
+        // Função para mostrar/ocultar formulário de animal
+        function toggleAnimalForm() {
+            const checkbox = document.getElementById('tem_animal');
+            const animalForm = document.getElementById('animal-form-section');
+            
+            if (checkbox.checked) {
+                animalForm.style.display = 'block';
+                animalForm.style.animation = 'fadeIn 0.3s ease-in';
+                
+                // Tornar campos obrigatórios quando visíveis
+                document.getElementById('nome_animal').required = true;
+                document.getElementById('tipo_animal').required = true;
+                document.getElementById('porte_animal').required = true;
+            } else {
+                animalForm.style.display = 'none';
+                
+                // Remover obrigatoriedade e limpar campos
+                document.getElementById('nome_animal').required = false;
+                document.getElementById('tipo_animal').required = false;
+                document.getElementById('porte_animal').required = false;
+                
+                // Limpar todos os campos do animal
+                document.getElementById('nome_animal').value = '';
+                document.getElementById('tipo_animal').value = '';
+                document.getElementById('porte_animal').value = '';
+                document.getElementById('idade_animal').value = '';
+                document.getElementById('cor_animal').value = '';
+                document.getElementById('peso_animal').value = '';
+                document.getElementById('observacoes_animal').value = '';
+            }
+        }
     </script>
 </body>
 </html>
