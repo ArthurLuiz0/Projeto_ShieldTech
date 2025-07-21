@@ -771,7 +771,7 @@ button:hover, .btn-primary:hover, .btn-secondary:hover, .btn-success:hover, .btn
 /* Cards de Funcionários */
 .cards-funcionarios {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    grid-template-columns: 2fr 2fr;
     gap: 1.5rem;
     margin-top: 1rem;
 }
