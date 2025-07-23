@@ -22,7 +22,7 @@
                 <li class="dropdown">
                     <a href="#" class="dropbtn"><i class="fas fa-gear"></i> Cadastros</a>
                     <div class="dropdown-content">
-                        <a href="cadastro_moradores.php">Moradores</a>
+                        <a href="../moradores/cadastro_moradores.php">Moradores</a>
                         <a href="../funcionarios/cadastro_funcionarios.php">Funcionários</a>
                         <a href="../cargos/cadastro_cargos.php">Cargos</a>
                         <a href="../animais/cadastro_animais.php">Animais</a>
@@ -68,6 +68,7 @@
                 </button>
             </div>
         </section>
+        
 
         <section class="lista-section">
             <div id="resultado-pesquisa" style="margin-bottom: 1rem; font-weight: 500; color: var(--primary-color);"></div>

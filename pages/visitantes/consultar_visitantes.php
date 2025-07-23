@@ -22,7 +22,7 @@
                 <li class="dropdown">
                     <a href="#" class="dropbtn"><i class="fas fa-gear"></i> Cadastros</a>
                     <div class="dropdown-content">
-                        <a href="cadastro_moradores.php">Moradores</a>
+                        <a href="../moradores/cadastro_moradores.php">Moradores</a>
                         <a href="../funcionarios/cadastro_funcionarios.php">Funcionários</a>
                         <a href="../cargos/cadastro_cargos.php">Cargos</a>
                         <a href="../animais/cadastro_animais.php">Animais</a>
@@ -31,7 +31,6 @@
             </ul>
         </nav>
     </header>
-
     <main>
         <h2>Histórico de Visitantes</h2>
         
@@ -40,39 +39,6 @@
                 <i class="fas fa-plus"></i> Novo Visitante
             </a>
         </div>
-        
-
-
-
-        <section class="form-section">
-            <h3>Pesquisar Visitantes</h3>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="pesquisa">Pesquisar por nome:</label>
-                    <input type="text" id="pesquisa" name="pesquisa" placeholder="Digite o nome do morador..." onkeyup="filtrarVisitantes()">
-                </div>
-                <div class="form-group">
-                    <label for="filtro_bloco">Filtrar por bloco:</label>
-                    <select id="filtro_bloco" name="filtro_bloco" onchange="filtrarVisitantes()">
-                        <option value="">Todos os blocos</option>
-                        <?php
-                        include("../../conectarbd.php");
-                        $blocos = mysqli_query($conn, "SELECT DISTINCT bloco FROM tb_visitantes WHERE bloco IS NOT NULL AND bloco != '' ORDER BY bloco");
-                        while ($bloco = mysqli_fetch_array($blocos)) {
-                            echo "<option value='" . $bloco["bloco"] . "'>" . $bloco["bloco"] . "</option>";
-                        }
-                        ?>
-                    </select>
-                </div>
-            </div>
-            <div class="form-actions">
-                <button type="button" onclick="limparFiltros()" class="btn-secondary">
-                    <i class="fas fa-refresh"></i> Limpar Filtros
-                </button>
-            </div>
-        </section>
-
-
 
         <section class="lista-section">
             <div class="tabela-container">
