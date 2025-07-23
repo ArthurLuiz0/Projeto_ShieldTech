@@ -18,6 +18,7 @@
                 <li><a href="../visitantes/visitantes.php"><i class="fas fa-user-friends"></i> Visitantes</a></li>
                 <li><a href="../relatorios/relatorios.php"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
                 <li><a href="../reservas/reservas.php"><i class="fas fa-calendar"></i> Reservas</a></li>
+                <li><a href="../encomendas/cadastro_encomendas.php"><i class="fas fa-box"></i> Encomendas</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropbtn"><i class="fas fa-gear"></i> Cadastros</a>
                     <div class="dropdown-content">
@@ -40,7 +41,36 @@
             </a>
         </div>
 
+        <section class="form-section">
+            <h3>Pesquisar Moradores</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="pesquisa">Pesquisar por nome:</label>
+                    <input type="text" id="pesquisa" name="pesquisa" placeholder="Digite o nome do morador..." onkeyup="filtrarMoradores()">
+                </div>
+                <div class="form-group">
+                    <label for="filtro_bloco">Filtrar por bloco:</label>
+                    <select id="filtro_bloco" name="filtro_bloco" onchange="filtrarMoradores()">
+                        <option value="">Todos os blocos</option>
+                        <?php
+                        include("../../conectarbd.php");
+                        $blocos = mysqli_query($conn, "SELECT DISTINCT bloco FROM tb_moradores WHERE bloco IS NOT NULL AND bloco != '' ORDER BY bloco");
+                        while ($bloco = mysqli_fetch_array($blocos)) {
+                            echo "<option value='" . $bloco["bloco"] . "'>" . $bloco["bloco"] . "</option>";
+                        }
+                        ?>
+                    </select>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="button" onclick="limparFiltros()" class="btn-secondary">
+                    <i class="fas fa-refresh"></i> Limpar Filtros
+                </button>
+            </div>
+        </section>
+
         <section class="lista-section">
+            <div id="resultado-pesquisa" style="margin-bottom: 1rem; font-weight: 500; color: var(--primary-color);"></div>
             <div class="tabela-container">
                 <table class="tabela-relatorio">
                     <thead>
@@ -58,9 +88,8 @@
                             <th>Ações</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="tabela-moradores">
                         <?php
-                        include("../../conectarbd.php");
                         $selecionar = mysqli_query($conn, "SELECT * FROM tb_moradores ORDER BY nome");
                         
                         if (mysqli_num_rows($selecionar) > 0) {
@@ -97,5 +126,98 @@
     <footer>
         <p>&copy; 2025 ShieldTech. Todos os direitos reservados.</p>
     </footer>
+
+    <script>
+        // Dados dos moradores para filtro em JavaScript
+        const moradores = [
+            <?php
+            $selecionar = mysqli_query($conn, "SELECT * FROM tb_moradores ORDER BY nome");
+            $moradores_js = [];
+            while ($campo = mysqli_fetch_array($selecionar)) {
+                $moradores_js[] = "{
+                    id: " . $campo["id_moradores"] . ",
+                    nome: '" . addslashes($campo["nome"]) . "',
+                    cpf: '" . addslashes($campo["cpf"]) . "',
+                    telefone: '" . addslashes($campo["telefone"]) . "',
+                    email: '" . addslashes($campo["email"] ? $campo["email"] : "Não informado") . "',
+                    bloco: '" . addslashes($campo["bloco"]) . "',
+                    torre: '" . addslashes($campo["torre"]) . "',
+                    andar: '" . addslashes($campo["andar"]) . "',
+                    veiculo: '" . addslashes($campo["veiculo"] ? $campo["veiculo"] : "Não possui") . "',
+                    animais: '" . addslashes($campo["animais"] ? $campo["animais"] : "Não possui") . "',
+                    status: '" . addslashes($campo["status"] ? $campo["status"] : "Ativo") . "'
+                }";
+            }
+            echo implode(",\n            ", $moradores_js);
+            ?>
+        ];
+
+        function filtrarMoradores() {
+            const pesquisa = document.getElementById('pesquisa').value.toLowerCase();
+            const filtroBloco = document.getElementById('filtro_bloco').value.toLowerCase();
+            const tbody = document.getElementById('tabela-moradores');
+            const resultadoPesquisa = document.getElementById('resultado-pesquisa');
+            
+            let moradoresFiltrados = moradores.filter(morador => {
+                const nomeMatch = morador.nome.toLowerCase().includes(pesquisa);
+                const blocoMatch = filtroBloco === '' || morador.bloco.toLowerCase() === filtroBloco;
+                return nomeMatch && blocoMatch;
+            });
+            
+            // Atualizar resultado da pesquisa
+            if (pesquisa || filtroBloco) {
+                resultadoPesquisa.textContent = `Encontrados ${moradoresFiltrados.length} morador(es)`;
+            } else {
+                resultadoPesquisa.textContent = '';
+            }
+            
+            // Limpar tabela
+            tbody.innerHTML = '';
+            
+            if (moradoresFiltrados.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="11" style="text-align: center;">Nenhum morador encontrado</td></tr>';
+                return;
+            }
+            
+            // Preencher tabela com resultados filtrados
+            moradoresFiltrados.forEach(morador => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${morador.id}</td>
+                    <td>${destacarTexto(morador.nome, pesquisa)}</td>
+                    <td>${morador.cpf}</td>
+                    <td>${morador.telefone}</td>
+                    <td>${morador.email}</td>
+                    <td>${morador.bloco}/${morador.torre}</td>
+                    <td>${morador.andar}</td>
+                    <td>${morador.veiculo}</td>
+                    <td>${morador.animais}</td>
+                    <td><span class='status-ativo'>${morador.status}</span></td>
+                    <td class='acoes'>
+                        <a href='editar_morador.php?id=${morador.id}' class='btn-editar'>
+                            <i class='fas fa-edit'></i> Editar
+                        </a>
+                        <a href='excluir_morador.php?id=${morador.id}' class='btn-excluir' onclick='return confirm("Tem certeza que deseja excluir este morador?")'>
+                            <i class='fas fa-trash'></i> Excluir
+                        </a>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+        
+        function limparFiltros() {
+            document.getElementById('pesquisa').value = '';
+            document.getElementById('filtro_bloco').value = '';
+            filtrarMoradores();
+        }
+        
+        // Destacar texto pesquisado
+        function destacarTexto(texto, pesquisa) {
+            if (!pesquisa) return texto;
+            const regex = new RegExp(`(${pesquisa})`, 'gi');
+            return texto.replace(regex, '<mark>$1</mark>');
+        }
+    </script>
 </body>
 </html>

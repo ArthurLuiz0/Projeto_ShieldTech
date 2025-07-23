@@ -20,9 +20,10 @@
         $descricao = mysqli_real_escape_string($conn, $_POST["descricao"]);
         $data_recebimento = mysqli_real_escape_string($conn, $_POST["data_recebimento"]);
         $status = mysqli_real_escape_string($conn, $_POST["status"]);
+        $id_morador = mysqli_real_escape_string($conn, $_POST["id_morador"]);
         
-        $sql = "INSERT INTO tb_encomendas (nome_morador, descricao, data_recebimento, status) 
-                VALUES ('$morador', '$descricao', '$data_recebimento', '$status')";
+        $sql = "INSERT INTO tb_encomendas (nome_morador, descricao, data_recebimento, status, id_morador) 
+                VALUES ('$morador', '$descricao', '$data_recebimento', '$status', '$id_morador')";
         
         if (mysqli_query($conn, $sql)) {
             echo "<script>alert('encomenda cadastrado com sucesso!'); window.location = 'consultar_encomendas.php';</script>";
@@ -42,7 +43,7 @@
                 <li><a href="../visitantes/visitantes.php"><i class="fas fa-user-friends"></i> Visitantes</a></li>
                 <li><a href="../relatorios/relatorios.php"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
                 <li><a href="../reservas/reservas.php"><i class="fas fa-calendar"></i> Reservas</a></li>
-                <li><a href="../encomendas/cadastro_encomendas.php"><i class="fas fa-box"></i> encomendas</a></li>
+                <li><a href="../encomendas/cadastro_encomendas.php"><i class="fas fa-box"></i> Encomendas</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropbtn"><i class="fas fa-gear"></i> Cadastros</a>
                     <div class="dropdown-content">
@@ -63,13 +64,21 @@
             <h3>Cadastro de Encomendas</h3>
             <form method="post" action="">
                 <div class="form-group">
-                    <label for="nome">Morador:</label>
-                    <input type="text" id="nome" name="nome_morador" required>
-                </div>
+                        <label for="id_morador">Morador:</label>
+                        <select id="id_morador" name="nome_morador" required>
+                            <option value="">Selecione um morador</option>
+                            <?php
+                            $moradores = mysqli_query($conn, "SELECT * FROM tb_moradores ORDER BY nome");
+                            while ($morador = mysqli_fetch_array($moradores)) {
+                                echo "<option value='" . $morador["id_moradores"] . "'>" . $morador["nome"] . " - Bloco " . $morador["bloco"] . "</option>";
+                            }
+                            ?>
+                        </select>
+                    </div>
 
                 <div class="form-group">
-                    <label for="cpf">Descricao:</label>
-                    <input type="text" id="cpf" name="descricao" placeholder="" required>
+                    <label for="descricao">Descrição:</label>
+                    <input type="text" id="descricao" name="descricao" placeholder="" required>
                 </div>
 
                 <div class="form-group">
@@ -103,25 +112,7 @@
         <p>&copy; 2025 ShieldTech. Todos os direitos reservados.</p>
     </footer>
 
-    <script>
-        // Máscara para CPF
-        document.getElementById('cpf').addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length <= 11) {
-                value = value.replace(/^(\d{3})(\d{3})(\d{3})(\d{2}).*/, '$1.$2.$3-$4');
-                e.target.value = value;
-            }
-        });
 
-        // Máscara para telefone
-        document.getElementById('telefone').addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length <= 11) {
-                value = value.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
-                e.target.value = value;
-            }
-        });
-    </script>
     
     <style>
   /* Variáveis */
