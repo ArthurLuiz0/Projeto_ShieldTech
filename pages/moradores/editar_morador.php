@@ -48,6 +48,33 @@
                         WHERE id_moradores=$id";
                 
                 if (mysqli_query($conn, $sql)) {
+                    // Gerenciar dados do animal
+                    if (isset($_POST['tem_animal']) && $_POST['tem_animal'] == '1' && !empty($_POST['nome_animal'])) {
+                        $nome_animal = mysqli_real_escape_string($conn, $_POST["nome_animal"]);
+                        $tipo_animal = mysqli_real_escape_string($conn, $_POST["tipo_animal"]);
+                        $porte_animal = mysqli_real_escape_string($conn, $_POST["porte_animal"]);
+                        $observacoes_animal = mysqli_real_escape_string($conn, $_POST["observacoes_animal"]);
+                        
+                        // Verificar se já existe animal para este morador
+                        $verificar_animal = mysqli_query($conn, "SELECT * FROM tb_animais WHERE id_morador = $id");
+                        
+                        if (mysqli_num_rows($verificar_animal) > 0) {
+                            // Atualizar animal existente
+                            $sql_animal = "UPDATE tb_animais SET 
+                                          nome='$nome_animal', tipo='$tipo_animal', porte='$porte_animal', observacoes='$observacoes_animal' 
+                                          WHERE id_morador=$id";
+                        } else {
+                            // Inserir novo animal
+                            $sql_animal = "INSERT INTO tb_animais (nome, tipo, porte, observacoes, id_morador) 
+                                          VALUES ('$nome_animal', '$tipo_animal', '$porte_animal', '$observacoes_animal', '$id')";
+                        }
+                        
+                        mysqli_query($conn, $sql_animal);
+                    } else {
+                        // Se não tem animal marcado, remover animal existente
+                        mysqli_query($conn, "DELETE FROM tb_animais WHERE id_morador = $id");
+                    }
+                    
                     echo "<script>alert('Morador atualizado com sucesso!'); window.location = 'consultar_moradores.php';</script>";
                 } else {
                     echo "<script>alert('Erro ao atualizar morador: " . mysqli_error($conn) . "');</script>";
@@ -59,6 +86,10 @@
     // Buscar dados do morador
     $selecionar = mysqli_query($conn, "SELECT * FROM tb_moradores WHERE id_moradores=$id");
     $campo = mysqli_fetch_array($selecionar);
+    
+    // Buscar dados do animal se existir
+    $animal_query = mysqli_query($conn, "SELECT * FROM tb_animais WHERE id_morador = $id");
+    $animal = mysqli_fetch_array($animal_query);
     ?>
 
 <header>
@@ -175,6 +206,56 @@
                         <label for="animais">Animais:</label>
                         <input type="text" id="animais" name="animais" value="<?= $campo["animais"] ?>">
                     </div>
+                    
+                    <div class="form-group">
+                        <label for="tem_animal">
+                            <input type="checkbox" id="tem_animal" name="tem_animal" value="1" onchange="toggleAnimalForm()" <?= $animal ? 'checked' : '' ?>> 
+                            Possui animal de estimação?
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Formulário de Animal -->
+                <div id="animal-form-section" style="display: <?= $animal ? 'block' : 'none' ?>;">
+                    <h4 style="color: var(--primary-color); margin: 1.5rem 0 1rem 0; padding-bottom: 0.5rem; border-bottom: 2px solid var(--accent-color);">
+                        <i class="fas fa-paw"></i> Dados do Animal
+                    </h4>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nome_animal">Nome do Animal:</label>
+                            <input type="text" id="nome_animal" name="nome_animal" value="<?= $animal ? $animal['nome'] : '' ?>">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="tipo_animal">Tipo:</label>
+                            <select id="tipo_animal" name="tipo_animal">
+                                <option value="">Selecione o tipo</option>
+                                <option value="Cão" <?= ($animal && $animal['tipo'] == 'Cão') ? 'selected' : '' ?>>Cão</option>
+                                <option value="Gato" <?= ($animal && $animal['tipo'] == 'Gato') ? 'selected' : '' ?>>Gato</option>
+                                <option value="Pássaro" <?= ($animal && $animal['tipo'] == 'Pássaro') ? 'selected' : '' ?>>Pássaro</option>
+                                <option value="Peixe" <?= ($animal && $animal['tipo'] == 'Peixe') ? 'selected' : '' ?>>Peixe</option>
+                                <option value="Outro" <?= ($animal && $animal['tipo'] == 'Outro') ? 'selected' : '' ?>>Outro</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="porte_animal">Porte:</label>
+                            <select id="porte_animal" name="porte_animal">
+                                <option value="">Selecione o porte</option>
+                                <option value="Pequeno" <?= ($animal && $animal['porte'] == 'Pequeno') ? 'selected' : '' ?>>Pequeno</option>
+                                <option value="Médio" <?= ($animal && $animal['porte'] == 'Médio') ? 'selected' : '' ?>>Médio</option>
+                                <option value="Grande" <?= ($animal && $animal['porte'] == 'Grande') ? 'selected' : '' ?>>Grande</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label for="observacoes_animal">Observações sobre o Animal:</label>
+                        <textarea id="observacoes_animal" name="observacoes_animal" rows="3" placeholder="Informações adicionais sobre o animal (vacinas, comportamento, etc.)"><?= $animal ? $animal['observacoes'] : '' ?></textarea>
+                    </div>
                 </div>
 
                 <div class="form-group full-width">
@@ -227,6 +308,35 @@
                 }
             });
         });
+        
+        // Função para mostrar/ocultar formulário de animal
+        function toggleAnimalForm() {
+            const checkbox = document.getElementById('tem_animal');
+            const animalForm = document.getElementById('animal-form-section');
+            
+            if (checkbox.checked) {
+                animalForm.style.display = 'block';
+                animalForm.style.animation = 'fadeIn 0.3s ease-in';
+                
+                // Tornar campos obrigatórios quando visíveis
+                document.getElementById('nome_animal').required = true;
+                document.getElementById('tipo_animal').required = true;
+                document.getElementById('porte_animal').required = true;
+            } else {
+                animalForm.style.display = 'none';
+                
+                // Remover obrigatoriedade e limpar campos
+                document.getElementById('nome_animal').required = false;
+                document.getElementById('tipo_animal').required = false;
+                document.getElementById('porte_animal').required = false;
+                
+                // Limpar todos os campos do animal
+                document.getElementById('nome_animal').value = '';
+                document.getElementById('tipo_animal').value = '';
+                document.getElementById('porte_animal').value = '';
+                document.getElementById('observacoes_animal').value = '';
+            }
+        }
     </script>
 </body>
 </html>

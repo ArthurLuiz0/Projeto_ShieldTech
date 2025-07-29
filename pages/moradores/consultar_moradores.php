@@ -91,10 +91,15 @@
                     </thead>
                     <tbody id="tabela-moradores">
                         <?php
-                        $selecionar = mysqli_query($conn, "SELECT * FROM tb_moradores ORDER BY nome");
+                        $selecionar = mysqli_query($conn, "SELECT m.*, a.nome as nome_animal, a.tipo as tipo_animal 
+                                                          FROM tb_moradores m 
+                                                          LEFT JOIN tb_animais a ON m.id_moradores = a.id_morador 
+                                                          ORDER BY m.nome");
                         
                         if (mysqli_num_rows($selecionar) > 0) {
                             while ($campo = mysqli_fetch_array($selecionar)) {
+                                $animal_info = $campo["nome_animal"] ? $campo["nome_animal"] . " (" . $campo["tipo_animal"] . ")" : "Não possui";
+                                
                                 echo "<tr>";
                                 echo "<td>" . $campo["id_moradores"] . "</td>";
                                 echo "<td>" . $campo["nome"] . "</td>";
@@ -104,7 +109,7 @@
                                 echo "<td>" . $campo["bloco"] . "/" . $campo["torre"] . "</td>";
                                 echo "<td>" . $campo["andar"] . "</td>";
                                 echo "<td>" . ($campo["veiculo"] ? $campo["veiculo"] : "Não possui") . "</td>";
-                                echo "<td>" . ($campo["animais"] ? $campo["animais"] : "Não possui") . "</td>";
+                                echo "<td>" . $animal_info . "</td>";
                                 echo "<td><span class='status-ativo'>" . ($campo["status"] ? $campo["status"] : "Ativo") . "</span></td>";
                                 echo "<td class='acoes'>";
                                 echo "<a href='editar_morador.php?id=" . $campo["id_moradores"] . "' class='btn-editar'>";
@@ -132,9 +137,13 @@
         // Dados dos moradores para filtro em JavaScript
         const moradores = [
             <?php
-            $selecionar = mysqli_query($conn, "SELECT * FROM tb_moradores ORDER BY nome");
+            $selecionar_js = mysqli_query($conn, "SELECT m.*, a.nome as nome_animal, a.tipo as tipo_animal 
+                                                 FROM tb_moradores m 
+                                                 LEFT JOIN tb_animais a ON m.id_moradores = a.id_morador 
+                                                 ORDER BY m.nome");
             $moradores_js = [];
-            while ($campo = mysqli_fetch_array($selecionar)) {
+            while ($campo = mysqli_fetch_array($selecionar_js)) {
+                $animal_info = $campo["nome_animal"] ? $campo["nome_animal"] . " (" . $campo["tipo_animal"] . ")" : "Não possui";
                 $moradores_js[] = "{
                     id: " . $campo["id_moradores"] . ",
                     nome: '" . addslashes($campo["nome"]) . "',
@@ -145,7 +154,7 @@
                     torre: '" . addslashes($campo["torre"]) . "',
                     andar: '" . addslashes($campo["andar"]) . "',
                     veiculo: '" . addslashes($campo["veiculo"] ? $campo["veiculo"] : "Não possui") . "',
-                    animais: '" . addslashes($campo["animais"] ? $campo["animais"] : "Não possui") . "',
+                    animais: '" . addslashes($animal_info) . "',
                     status: '" . addslashes($campo["status"] ? $campo["status"] : "Ativo") . "'
                 }";
             }
