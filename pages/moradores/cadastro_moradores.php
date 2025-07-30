@@ -50,7 +50,7 @@
                     $id_morador = mysqli_insert_id($conn);
                     
                     // Verificar se tem dados do animal
-                    if (isset($_POST['tem_animal']) && $_POST['tem_animal'] == '1' && !empty($_POST['nome_animal'])) {
+                    if (isset($_POST['animais']) && $_POST['animais'] == 'sim' && !empty($_POST['nome_animal'])) {
                         $nome_animal = mysqli_real_escape_string($conn, $_POST["nome_animal"]);
                         $tipo_animal = mysqli_real_escape_string($conn, $_POST["tipo_animal"]);
                         $porte_animal = mysqli_real_escape_string($conn, $_POST["porte_animal"]);
@@ -211,7 +211,7 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="tem_animal">
-                            <input type="checkbox" id="tem_animal" name="tem_animal" value="1" onchange="toggleAnimalForm()"> 
+                            <input type="checkbox" id="tem_animal" name="animais" value="sim" onchange="toggleAnimalForm()"> 
                             Possui animal de estimação?
                         </label>
                     </div>

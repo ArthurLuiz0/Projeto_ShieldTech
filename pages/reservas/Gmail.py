@@ -18,50 +18,168 @@ def enviar_email(email_destinatario, descricao):
     <head>
         <style>
             body {{
-                font-family: Arial, sans-serif;
-                background: #fffbe6;
-                color: #ff4e50;
+                font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+                background: #f8fafc;
+                color: #2c3e50;
                 padding: 0;
                 margin: 0;
+                line-height: 1.6;
             }}
             .container {{
-                background: #fffde7;
-                border: 2px solid #ffb347;
-                border-radius: 12px;
-                max-width: 400px;
+                background: #ffffff;
+                border: 2px solid #3498db;
+                border-radius: 15px;
+                max-width: 600px;
                 margin: 30px auto;
-                padding: 25px 20px;
-                box-shadow: 0 4px 16px rgba(255, 78, 80, 0.10);
+                padding: 0;
+                box-shadow: 0 10px 30px rgba(52, 152, 219, 0.15);
+                overflow: hidden;
             }}
-            h2 {{
-                color: #ff9800;
-                margin-bottom: 10px;
+            .header {{
+                background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+                color: #ffffff;
+                padding: 25px;
+                text-align: center;
+            }}
+            .header h1 {{
+                margin: 0;
+                font-size: 28px;
+                font-weight: bold;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 10px;
+            }}
+            .header .subtitle {{
+                margin: 10px 0 0 0;
+                font-size: 16px;
+                opacity: 0.9;
+            }}
+            .content {{
+                padding: 30px;
+            }}
+            .greeting {{
+                font-size: 18px;
+                color: #2c3e50;
+                margin-bottom: 20px;
+                font-weight: 500;
+            }}
+            .success-message {{
+                background: #d4edda;
+                color: #155724;
+                padding: 15px;
+                border-radius: 8px;
+                border-left: 4px solid #28a745;
+                margin: 20px 0;
+                font-weight: 500;
             }}
             .descricao {{
-                background: #ffe066;
-                color: #b23c17;
+                background: #e8f4fd;
+                color: #2c3e50;
                 border-radius: 8px;
-                padding: 10px;
+                padding: 20px;
                 margin: 15px 0;
-                font-size: 1.05em;
-                border-left: 4px solid #ff9800;
+                font-size: 16px;
+                border-left: 4px solid #3498db;
             }}
-            .resposta {{
-                color: #ff4e50;
-                font-size: 1.1em;
-                margin-bottom: 10px;
+            .descricao h3 {{
+                margin: 0 0 15px 0;
+                color: #2c3e50;
+                font-size: 18px;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }}
+            .info-item {{
+                margin: 8px 0;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }}
+            .info-item strong {{
+                color: #2c3e50;
+                min-width: 100px;
+            }}
+            .important-notes {{
+                background: #fff3cd;
+                border: 1px solid #ffeaa7;
+                border-radius: 8px;
+                padding: 20px;
+                margin: 20px 0;
+            }}
+            .important-notes h3 {{
+                margin: 0 0 15px 0;
+                color: #856404;
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }}
+            .important-notes ul {{
+                margin: 0;
+                padding-left: 20px;
+                color: #856404;
+            }}
+            .important-notes li {{
+                margin: 5px 0;
             }}
             .footer {{
-                color: #ff9800;
-                font-size: 0.95em;
-                margin-top: 18px;
-                text-align: right;
+                background: #f8f9fa;
+                color: #6c757d;
+                font-size: 14px;
+                padding: 20px;
+                text-align: center;
+                border-top: 1px solid #e9ecef;
+            }}
+            .footer .company {{
+                font-weight: bold;
+                color: #2c3e50;
+                margin-bottom: 5px;
+            }}
+            .shield-icon {{
+                color: #3498db;
+                font-size: 24px;
             }}
         </style>
     </head>
     <body>
         <div class="container">
-            <h2>Olá, tudo bem?</h2>
+            <div class='header'>
+                <h1>
+                    <span class='shield-icon'>🛡️</span>
+                    ShieldTech
+                </h1>
+                <div class='subtitle'>Sistema de Controle de Acesso Inteligente</div>
+            </div>
+            
+            <div class='content'>
+                <div class='greeting'>Olá! Tudo bem?</div>
+                
+                <div class='success-message'>
+                    ✅ <strong>Sua reserva foi concluída com sucesso!</strong>
+                </div>
+                
+                <div class='descricao'>
+                    <h3>📋 Detalhes da sua reserva:</h3>
+                    {f"<div class='info-item'><strong>📝 Observações:</strong> {descricao.strip()}</div>" if descricao.strip() else "<div class='info-item'><em>Nenhuma observação adicional foi fornecida.</em></div>"}
+                </div>
+                
+                <div class='important-notes'>
+                    <h3>⚠️ Lembretes Importantes:</h3>
+                    <ul>
+                        <li>Chegue no horário marcado para sua reserva</li>
+                        <li>Mantenha o local limpo e organizado após o uso</li>
+                        <li>Em caso de cancelamento, avise com antecedência mínima de 12 horas</li>
+                        <li>Respeite as regras de uso do espaço reservado</li>
+                        <li>Para dúvidas ou alterações, entre em contato conosco</li>
+                    </ul>
+                </div>
+                
+                <div style='background: #e8f5e8; padding: 15px; border-radius: 8px; border-left: 4px solid #28a745; margin: 20px 0;'>
+                    <strong>🎉 Aproveite sua reserva!</strong><br>
+                    Agradecemos por utilizar nossos serviços. Sua satisfação é nossa prioridade.
+                </div>
+            </div>
+            
             <div class="descricao">
                 <b>Sua mensagem:</b><br>
                 {descricao if descricao.strip() else "Nenhuma descrição fornecida."}
@@ -70,7 +188,12 @@ def enviar_email(email_destinatario, descricao):
                 {f"Recebemos sua observação: \"{descricao.strip()}\".<br> Sua solicitação está registrada! Caso não consiga comparecer, por favor, cancele sua reserva." if descricao.strip() else "Sua solicitação está registrada! Caso não consiga comparecer, por favor, cancele sua reserva."}
             </div>
             <div class="footer">
-                [Equipe BellaCrosta]
+                <div class='company'>ShieldTech - Sistema de Controle de Acesso</div>
+                <div>Este é um email automático, não responda esta mensagem.</div>
+                <div>© 2025 ShieldTech. Todos os direitos reservados.</div>
+                <div style='margin-top: 10px; color: #3498db;'>
+                    📧 contato@shieldtech.com | 📞 (11) 1234-5678
+                </div>
             </div>
         </div>
     </body>
@@ -89,6 +212,5 @@ def enviar_email(email_destinatario, descricao):
         print("Email enviado com sucesso para", email_destinatario)
         return True
     except Exception as e:
-        print("Erro ao enviar email")
-        print(e)
+        print("Erro ao enviar email:", str(e))
         return False
