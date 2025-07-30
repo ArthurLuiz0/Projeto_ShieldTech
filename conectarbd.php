@@ -1,7 +1,7 @@
 <?php
 $servidor = "localhost";
 $dbusuario = "root";
-$dbsenha = "";
+$dbsenha = "1234";
 $dbname = "db_shieldtech";
 
 $conn = mysqli_connect($servidor, $dbusuario, $dbsenha, $dbname);

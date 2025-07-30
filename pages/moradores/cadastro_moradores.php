@@ -29,8 +29,8 @@
         $torre = mysqli_real_escape_string($conn, $_POST["torre"]);
         $andar = mysqli_real_escape_string($conn, $_POST["andar"]);
         $veiculo = mysqli_real_escape_string($conn, $_POST["veiculo"]);
-        $animais = mysqli_real_escape_string($conn, $_POST["animais"]);
         $foto = mysqli_real_escape_string($conn, $_POST["foto"]);
+        $animais = mysqli_real_escape_string($conn, $_POST["animais"]);
         $data_cadastro = date('Y-m-d H:i:s');
         
         // Validar email

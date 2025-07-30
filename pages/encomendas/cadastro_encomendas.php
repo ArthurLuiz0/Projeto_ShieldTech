@@ -90,9 +90,8 @@
         <label>Status:</label>
         <select name="status" class="form-control" required>
             <option value="">-- Selecione --</option>
-            <option value="Pendente">Pendente</option>
+            <option value="Recebido">Recebido</option>
             <option value="Entregue">Entregue</option>
-            <option value="Cancelado">Cancelado</option>
         </select>
     </div>
 

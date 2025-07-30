@@ -54,9 +54,8 @@
         <label for="status">Status:</label><br>
         <select name="status" id="status">
             <option value="">-- Todos --</option>
-            <option value="Pendente" <?php if(isset($_GET['status']) && $_GET['status'] == 'Pendente') echo 'selected'; ?>>Pendente</option>
+            <option value="Recebido" <?php if(isset($_GET['status']) && $_GET['status'] == 'Recebido') echo 'selected'; ?>>Recebido</option>
             <option value="Entregue" <?php if(isset($_GET['status']) && $_GET['status'] == 'Entregue') echo 'selected'; ?>>Entregue</option>
-            <option value="Cancelado" <?php if(isset($_GET['status']) && $_GET['status'] == 'Cancelado') echo 'selected'; ?>>Cancelado</option>
         </select>
     </div>
 

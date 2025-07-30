@@ -40,7 +40,31 @@
             </a>
         </div>
 
+        <section class="form-section">
+            <h3>Pesquisar Visitantes</h3>
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="pesquisa">Pesquisar por nome:</label>
+                    <input type="text" id="pesquisa" name="pesquisa" placeholder="Digite o nome do visitante..." onkeyup="filtrarVisitantes()">
+                </div>
+                <div class="form-group">
+                    <label for="filtro_status">Filtrar por status:</label>
+                    <select id="filtro_status" name="filtro_status" onchange="filtrarVisitantes()">
+                        <option value="">Todos os status</option>
+                        <option value="Presente">Presente</option>
+                        <option value="Saiu">Saiu</option>
+                    </select>
+                </div>
+            </div>
+            <div class="form-actions">
+                <button type="button" onclick="limparFiltros()" class="btn-secondary">
+                    <i class="fas fa-refresh"></i> Limpar Filtros
+                </button>
+            </div>
+        </section>
+        
         <section class="lista-section">
+            <div id="resultado-pesquisa" style="margin-bottom: 1rem; font-weight: 500; color: var(--primary-color);"></div>
             <div class="tabela-container">
                 <table class="tabela-relatorio">
                     <thead>
@@ -55,7 +79,7 @@
                             <th>Ações</th>
                         </tr>
                     </thead>
-                    <tbody>
+                    <tbody id="tabela-visitantes">
                         <?php
                         include("../../conectarbd.php");
                         $selecionar = mysqli_query($conn, "SELECT * FROM tb_visitantes ORDER BY nome_visitante");
@@ -95,5 +119,98 @@
     <footer>
         <p>&copy; 2025 ShieldTech. Todos os direitos reservados.</p>
     </footer>
+
+    <script>
+        // Dados dos visitantes para filtro em JavaScript
+        const visitantes = [
+            <?php
+            $selecionar_js = mysqli_query($conn, "SELECT * FROM tb_visitantes ORDER BY nome_visitante");
+            $visitantes_js = [];
+            while ($campo = mysqli_fetch_array($selecionar_js)) {
+                $visitantes_js[] = "{
+                    id: " . $campo["id_visitantes"] . ",
+                    nome: '" . addslashes($campo["nome_visitante"]) . "',
+                    documento: '" . addslashes($campo["num_documento"]) . "',
+                    telefone: '" . addslashes($campo["telefone"]) . "',
+                    email: '" . addslashes($campo["email"] ? $campo["email"] : "Não informado") . "',
+                    data_nascimento: '" . addslashes(date('d/m/Y', strtotime($campo["data_nascimento"]))) . "',
+                    status: '" . addslashes($campo["status"]) . "'
+                }";
+            }
+            echo implode(",\n            ", $visitantes_js);
+            ?>
+        ];
+
+        function filtrarVisitantes() {
+            const pesquisa = document.getElementById('pesquisa').value.toLowerCase();
+            const filtroStatus = document.getElementById('filtro_status').value.toLowerCase();
+            const tbody = document.getElementById('tabela-visitantes');
+            const resultadoPesquisa = document.getElementById('resultado-pesquisa');
+            
+            let visitantesFiltrados = visitantes.filter(visitante => {
+                const nomeMatch = visitante.nome.toLowerCase().includes(pesquisa);
+                const statusMatch = filtroStatus === '' || visitante.status.toLowerCase() === filtroStatus;
+                return nomeMatch && statusMatch;
+            });
+            
+            // Atualizar resultado da pesquisa
+            if (pesquisa || filtroStatus) {
+                resultadoPesquisa.textContent = `Encontrados ${visitantesFiltrados.length} visitante(s)`;
+            } else {
+                resultadoPesquisa.textContent = '';
+            }
+            
+            // Limpar tabela
+            tbody.innerHTML = '';
+            
+            if (visitantesFiltrados.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Nenhum visitante encontrado</td></tr>';
+                return;
+            }
+            
+            // Preencher tabela com resultados filtrados
+            visitantesFiltrados.forEach(visitante => {
+                const tr = document.createElement('tr');
+                const statusClass = visitante.status.toLowerCase() === 'presente' ? 'status-presente' : 'status-ativo';
+                
+                tr.innerHTML = `
+                    <td>${visitante.id}</td>
+                    <td>${destacarTexto(visitante.nome, pesquisa)}</td>
+                    <td>${visitante.documento}</td>
+                    <td>${visitante.telefone}</td>
+                    <td>${visitante.email}</td>
+                    <td>${visitante.data_nascimento}</td>
+                    <td><span class='${statusClass}'>${visitante.status}</span></td>
+                    <td class='acoes'>
+                        ${visitante.status === 'Presente' ? 
+                            `<a href='registrar_saida.php?id=${visitante.id}' class='btn-danger'>
+                                <i class='fas fa-sign-out-alt'></i> Registrar Saída
+                            </a>` : ''
+                        }
+                        <a href='editar_visitante.php?id=${visitante.id}' class='btn-editar'>
+                            <i class='fas fa-edit'></i> Editar
+                        </a>
+                        <a href='excluir_visitante.php?id=${visitante.id}' class='btn-excluir' onclick='return confirm("Tem certeza que deseja excluir este visitante?")'>
+                            <i class='fas fa-trash'></i> Excluir
+                        </a>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+        
+        function limparFiltros() {
+            document.getElementById('pesquisa').value = '';
+            document.getElementById('filtro_status').value = '';
+            filtrarVisitantes();
+        }
+        
+        // Destacar texto pesquisado
+        function destacarTexto(texto, pesquisa) {
+            if (!pesquisa) return texto;
+            const regex = new RegExp(`(${pesquisa})`, 'gi');
+            return texto.replace(regex, '<mark>$1</mark>');
+        }
+    </script>
 </body>
 </html>
