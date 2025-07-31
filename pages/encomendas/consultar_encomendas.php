@@ -8,29 +8,84 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-<header>
+    <header>
         <nav>
             <div class="logo">
                 <h1><i class="fas fa-shield"></i> ShieldTech</h1>
             </div>
             <ul class="menu">
-                <li><a href="../../index.php"><i class="fas fa-home"></i> Início</a></li>
-                <li><a href="../visitantes/visitantes.php"><i class="fas fa-user-friends"></i> Visitantes</a></li>
-                <li><a href="../relatorios/relatorios.php"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
-                <li><a href="../reservas/reservas.php"><i class="fas fa-calendar"></i> Reservas</a></li>
-                <li><a href="../encomendas/cadastro_encomendas.php"><i class="fas fa-box"></i> Encomendas</a></li>
+                <li><a href="../index.php"><i class="fas fa-home"></i> Início</a></li>
+                <li><a href="visitantes.php"><i class="fas fa-user-friends"></i> Visitantes</a></li>
+                <li><a href="relatorios.php"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropbtn"><i class="fas fa-gear"></i> Cadastros</a>
                     <div class="dropdown-content">
-                        <a href="../moradores/cadastro_moradores.php">Moradores</a>
-                        <a href="../funcionarios/cadastro_funcionarios.php">Funcionários</a>
-                        <a href="../cargos/cadastro_cargos.php">Cargos</a>
-                        <a href="../animais/cadastro_animais.php">Animais</a>
+                        <a href="cadastro_encomendas.php">Moradores</a>
+                        <a href="cadastro_funcionarios.php">Funcionários</a>
+                        <a href="cadastro_cargos.php">Cargos</a>
                     </div>
                 </li>
             </ul>
         </nav>
     </header>
+
+    <?php
+                        include("../../conectarbd.php");
+$data = isset($_GET['data_encomenda']) ? $_GET['data_encomenda'] : null;
+$nome = isset($_GET['nome_morador']) ? $_GET['nome_morador'] : null;
+$email = isset($_GET['email']) ? $_GET['email'] : null;
+$status = isset($_GET['status']) ? $_GET['status'] : null;
+
+$query = "SELECT * FROM tb_encomendas";
+$condicoes = [];
+
+if (!empty($data)) {
+    $condicoes[] = "data_recebimento = '$data'";
+}
+
+if (!empty($nome)) {
+    $condicoes[] = "nome_morador LIKE '%$nome%'";
+}
+
+if (!empty($email)) {
+    $condicoes[] = "email = '$email'";
+}
+
+if (!empty($status)) {
+    $condicoes[] = "status = '$status'";
+}
+
+if (!empty($condicoes)) {
+    $query .= " WHERE " . implode(" AND ", $condicoes);
+}
+
+$query .= " ORDER BY nome_morador";
+
+$selecionar = mysqli_query($conn, $query);
+
+
+                        
+                        if (mysqli_num_rows($selecionar) > 0) {
+                            while ($campo = mysqli_fetch_array($selecionar)) {
+                                echo "<tr>";
+                                echo "<td>" . $campo["nome_morador"] . "</td>";
+                                echo "<td>" . $campo["descricao"] . "</td>";
+                                echo "<td>" . $campo["data_recebimento"] . "</td>";
+                                echo "<td>" . $campo["email"] . "</td>";
+                                echo "<td>" . $campo["status"] . "</td>";
+                                echo "<td class='acoes'>";
+                                echo "<a href='editar_encomenda.php?id=" . $campo["id_encomendas"] . "' class='btn-editar'>";
+                                echo "<i class='fas fa-edit'></i> Editar</a>";
+                                echo "<a href='excluir_encomenda.php?id=" . $campo["id_encomendas"] . "' class='btn-excluir' onclick='return confirm(\"Tem certeza que deseja excluir esta encomenda?\")'>";
+                                echo "<i class='fas fa-trash'></i> Excluir</a>";
+                                echo "</td>";
+                                echo "</tr>";
+                            }
+                        } else {
+                            echo "<tr><td colspan='10' style='text-align: center;'>Nenhum Encomenda cadastrado</td></tr>";
+                        }
+                        ?>
+
     <main>
         <h2>Encomendas Cadastrados</h2>
         
@@ -48,6 +103,11 @@
     <div>
         <label for="nome_morador">Nome do morador:</label><br>
         <input type="text" name="nome_morador" id="nome_morador" placeholder="Digite o nome" value="<?php echo isset($_GET['nome_morador']) ? $_GET['nome_morador'] : ''; ?>">
+    </div>
+    
+    <div>
+        <label for="email">Email:</label><br>
+        <input type="email" name="email" id="email" placeholder="Digite o email" value="<?php echo isset($_GET['email']) ? $_GET['email'] : ''; ?>">
     </div>
 
     <div>
@@ -73,61 +133,11 @@
                             <th>Morador</th>
                             <th>Descricao</th>
                             <th>Data_recebimento</th>
+                            <th>email</th>
                             <th>Status</th>
+
                         </tr>
                     </thead>
-                    <tbody>
-                        <?php
-                        include("../../conectarbd.php");
-$data = isset($_GET['data_encomenda']) ? $_GET['data_encomenda'] : null;
-$nome = isset($_GET['nome_morador']) ? $_GET['nome_morador'] : null;
-$status = isset($_GET['status']) ? $_GET['status'] : null;
-
-$query = "SELECT * FROM tb_encomendas";
-$condicoes = [];
-
-if (!empty($data)) {
-    $condicoes[] = "data_recebimento = '$data'";
-}
-
-if (!empty($nome)) {
-    $condicoes[] = "nome_morador LIKE '%$nome%'";
-}
-
-if (!empty($status)) {
-    $condicoes[] = "status = '$status'";
-}
-
-if (!empty($condicoes)) {
-    $query .= " WHERE " . implode(" AND ", $condicoes);
-}
-
-$query .= " ORDER BY nome_morador";
-
-$selecionar = mysqli_query($conn, $query);
-
-
-                        
-                        if (mysqli_num_rows($selecionar) > 0) {
-                            while ($campo = mysqli_fetch_array($selecionar)) {
-                                echo "<tr>";
-                                echo "<td>" . $campo["nome_morador"] . "</td>";
-                                echo "<td>" . $campo["descricao"] . "</td>";
-                                echo "<td>" . $campo["data_recebimento"] . "</td>";
-                                echo "<td>" . $campo["status"] . "</td>";
-                                echo "<td class='acoes'>";
-                                echo "<a href='editar_encomenda.php?id=" . $campo["id_encomendas"] . "' class='btn-editar'>";
-                                echo "<i class='fas fa-edit'></i> Editar</a>";
-                                echo "<a href='excluir_encomenda.php?id=" . $campo["id_encomendas"] . "' class='btn-excluir' onclick='return confirm(\"Tem certeza que deseja excluir esta encomenda?\")'>";
-                                echo "<i class='fas fa-trash'></i> Excluir</a>";
-                                echo "</td>";
-                                echo "</tr>";
-                            }
-                        } else {
-                            echo "<tr><td colspan='10' style='text-align: center;'>Nenhum Encomenda cadastrado</td></tr>";
-                        }
-                        ?>
-                    </tbody>
                 </table>
             </div>
         </section>

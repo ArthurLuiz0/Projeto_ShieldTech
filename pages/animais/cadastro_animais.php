@@ -48,6 +48,7 @@
                         <a href="../funcionarios/cadastro_funcionarios.php">Funcionários</a>
                         <a href="../cargos/cadastro_cargos.php">Cargos</a>
                         <a href="../animais/cadastro_animais.php">Animais</a>
+                        <a href="../veiculos/cadastro_veiculos.php">Veículos</a>
                     </div>
                 </li>
             </ul>
@@ -95,7 +96,7 @@
                             <?php
                             $moradores = mysqli_query($conn, "SELECT * FROM tb_moradores ORDER BY nome");
                             while ($morador = mysqli_fetch_array($moradores)) {
-                                echo "<option value='" . $morador["id_moradores"] . "'>" . $morador["nome"] . " - Bloco " . $morador["bloco"] . "</option>";
+                                echo "<option value='" . $morador["id_moradores"] . "'>" . $morador["nome"] . " - Bloco " . $morador["bloco"] . "/" . $morador["torre"] . "</option>";
                             }
                             ?>
                         </select>

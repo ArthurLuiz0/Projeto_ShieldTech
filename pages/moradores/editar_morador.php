@@ -110,6 +110,7 @@
                         <a href="../funcionarios/cadastro_funcionarios.php">Funcionários</a>
                         <a href="../cargos/cadastro_cargos.php">Cargos</a>
                         <a href="../animais/cadastro_animais.php">Animais</a>
+                        <a href="../veiculos/cadastro_veiculos.php">Veículos</a>
                     </div>
                 </li>
             </ul>
@@ -197,7 +198,10 @@
 
                     <div class="form-group">
                         <label for="veiculo">Veículo:</label>
-                        <input type="text" id="veiculo" name="veiculo" value="<?= $campo["veiculo"] ?>">
+                        <select id="veiculo" name="veiculo">
+                            <option value="Não possui" <?= $campo["veiculo"] == "Não possui" ? "selected" : "" ?>>Não possui</option>
+                            <option value="Possui" <?= $campo["veiculo"] == "Possui" ? "selected" : "" ?>>Possui</option>
+                        </select>
                     </div>
                 </div>
 
@@ -213,6 +217,14 @@
                             Possui animal de estimação?
                         </label>
                     </div>
+                </div>
+
+                <div style="background: #e8f4fd; padding: 1rem; border-radius: 0.5rem; margin: 1rem 0; border-left: 4px solid #3498db;">
+                    <p style="margin: 0; color: #2c3e50;">
+                        <i class="fas fa-info-circle"></i> 
+                        <strong>Gerenciar Veículos:</strong> Para cadastrar, editar ou remover veículos deste morador, 
+                        acesse o menu <strong>Cadastros > Veículos</strong>.
+                    </p>
                 </div>
 
                 <!-- Formulário de Animal -->

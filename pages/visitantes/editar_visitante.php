@@ -59,6 +59,7 @@
                         <a href="../funcionarios/cadastro_funcionarios.php">Funcionários</a>
                         <a href="../cargos/cadastro_cargos.php">Cargos</a>
                         <a href="../animais/cadastro_animais.php">Animais</a>
+                        <a href="../veiculos/cadastro_veiculos.php">Veículos</a>
                     </div>
                 </li>
             </ul>

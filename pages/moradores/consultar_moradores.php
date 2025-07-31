@@ -26,6 +26,7 @@
                         <a href="../funcionarios/cadastro_funcionarios.php">Funcionários</a>
                         <a href="../cargos/cadastro_cargos.php">Cargos</a>
                         <a href="../animais/cadastro_animais.php">Animais</a>
+                        <a href="../veiculos/cadastro_veiculos.php">Veículos</a>
                     </div>
                 </li>
             </ul>
@@ -98,6 +99,17 @@
                         
                         if (mysqli_num_rows($selecionar) > 0) {
                             while ($campo = mysqli_fetch_array($selecionar)) {
+                                // Buscar veículos do morador
+                                $veiculos_query = mysqli_query($conn, "SELECT placa, modelo FROM tb_veiculos WHERE id_morador = " . $campo["id_moradores"]);
+                                $veiculo_info = "Não possui";
+                                if (mysqli_num_rows($veiculos_query) > 0) {
+                                    $veiculos = [];
+                                    while ($veiculo = mysqli_fetch_array($veiculos_query)) {
+                                        $veiculos[] = $veiculo["modelo"] . " (" . $veiculo["placa"] . ")";
+                                    }
+                                    $veiculo_info = implode(", ", $veiculos);
+                                }
+                                
                                 $animal_info = $campo["nome_animal"] ? $campo["nome_animal"] . " (" . $campo["tipo_animal"] . ")" : "Não possui";
                                 
                                 echo "<tr>";
@@ -108,7 +120,7 @@
                                 echo "<td>" . ($campo["email"] ? $campo["email"] : "Não informado") . "</td>";
                                 echo "<td>" . $campo["bloco"] . "/" . $campo["torre"] . "</td>";
                                 echo "<td>" . $campo["andar"] . "</td>";
-                                echo "<td>" . ($campo["veiculo"] ? $campo["veiculo"] : "Não possui") . "</td>";
+                                echo "<td>" . $veiculo_info . "</td>";
                                 echo "<td>" . $animal_info . "</td>";
                                 echo "<td><span class='status-ativo'>" . ($campo["status"] ? $campo["status"] : "Ativo") . "</span></td>";
                                 echo "<td class='acoes'>";
@@ -143,6 +155,17 @@
                                                  ORDER BY m.nome");
             $moradores_js = [];
             while ($campo = mysqli_fetch_array($selecionar_js)) {
+                // Buscar veículos para JavaScript
+                $veiculos_query = mysqli_query($conn, "SELECT placa, modelo FROM tb_veiculos WHERE id_morador = " . $campo["id_moradores"]);
+                $veiculo_info = "Não possui";
+                if (mysqli_num_rows($veiculos_query) > 0) {
+                    $veiculos = [];
+                    while ($veiculo = mysqli_fetch_array($veiculos_query)) {
+                        $veiculos[] = $veiculo["modelo"] . " (" . $veiculo["placa"] . ")";
+                    }
+                    $veiculo_info = implode(", ", $veiculos);
+                }
+                
                 $animal_info = $campo["nome_animal"] ? $campo["nome_animal"] . " (" . $campo["tipo_animal"] . ")" : "Não possui";
                 $moradores_js[] = "{
                     id: " . $campo["id_moradores"] . ",
@@ -153,7 +176,7 @@
                     bloco: '" . addslashes($campo["bloco"]) . "',
                     torre: '" . addslashes($campo["torre"]) . "',
                     andar: '" . addslashes($campo["andar"]) . "',
-                    veiculo: '" . addslashes($campo["veiculo"] ? $campo["veiculo"] : "Não possui") . "',
+                    veiculo: '" . addslashes($veiculo_info) . "',
                     animais: '" . addslashes($animal_info) . "',
                     status: '" . addslashes($campo["status"] ? $campo["status"] : "Ativo") . "'
                 }";

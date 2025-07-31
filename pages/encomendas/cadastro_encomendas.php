@@ -19,11 +19,13 @@
         $morador = mysqli_real_escape_string($conn, $_POST["nome_morador"]);
         $descricao = mysqli_real_escape_string($conn, $_POST["descricao"]);
         $data_recebimento = mysqli_real_escape_string($conn, $_POST["data_recebimento"]);
+        $email = mysqli_real_escape_string($conn, $_POST["email"]);
         $status = mysqli_real_escape_string($conn, $_POST["status"]);
-        $id_morador = mysqli_real_escape_string($conn, $_POST["id_morador"]);
+
+
         
-        $sql = "INSERT INTO tb_encomendas (nome_morador, descricao, data_recebimento, status, id_morador) 
-                VALUES ('$morador', '$descricao', '$data_recebimento', '$status', '$id_morador')";
+        $sql = "INSERT INTO tb_encomendas (nome_morador, descricao, data_recebimento,email, status) 
+                VALUES ('$morador', '$descricao', '$data_recebimento', '$email', '$status')";
         
         if (mysqli_query($conn, $sql)) {
             echo "<script>alert('encomenda cadastrado com sucesso!'); window.location = 'consultar_encomendas.php';</script>";
@@ -51,6 +53,7 @@
                         <a href="../funcionarios/cadastro_funcionarios.php">Funcionários</a>
                         <a href="../cargos/cadastro_cargos.php">Cargos</a>
                         <a href="../animais/cadastro_animais.php">Animais</a>
+                        <a href="../veiculos/cadastro_veiculos.php">Veículos</a>
                     </div>
                 </li>
             </ul>
@@ -84,6 +87,11 @@
                 <div class="form-group">
                     <label for="rg">Data_recebimento:</label>
                     <input type="date" id="rg" name="data_recebimento" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="rg">Email:</label>
+                    <input type="email" id="rg" name="email" required>
                 </div>
 
 <div style="display: flex; flex-direction: column;">

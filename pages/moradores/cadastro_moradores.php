@@ -49,26 +49,8 @@
                 if (mysqli_query($conn, $sql)) {
                     $id_morador = mysqli_insert_id($conn);
                     
-                    // Verificar se tem dados do animal
-                    if (isset($_POST['animais']) && $_POST['animais'] == 'sim' && !empty($_POST['nome_animal'])) {
-                        $nome_animal = mysqli_real_escape_string($conn, $_POST["nome_animal"]);
-                        $tipo_animal = mysqli_real_escape_string($conn, $_POST["tipo_animal"]);
-                        $porte_animal = mysqli_real_escape_string($conn, $_POST["porte_animal"]);
-                        $observacoes_animal = mysqli_real_escape_string($conn, $_POST["observacoes_animal"]);
+                    
                         
-                        $sql_animal = "INSERT INTO tb_animais (nome, tipo, porte, observacoes, id_morador) 
-                                      VALUES ('$nome_animal', '$tipo_animal', '$porte_animal', '$observacoes_animal', '$id_morador')";
-                        
-                        if (mysqli_query($conn, $sql_animal)) {
-                            echo "<script>alert('Morador e animal cadastrados com sucesso!'); window.location = 'consultar_moradores.php';</script>";
-                        } else {
-                            echo "<script>alert('Morador cadastrado, mas erro ao cadastrar animal: " . mysqli_error($conn) . "');</script>";
-                        }
-                    } else {
-                        echo "<script>alert('Morador cadastrado com sucesso!'); window.location = 'consultar_moradores.php';</script>";
-                    }
-                } else {
-                    echo "<script>alert('Erro ao cadastrar morador: " . mysqli_error($conn) . "');</script>";
                 }
             }
         }
@@ -93,6 +75,7 @@
                         <a href="../funcionarios/cadastro_funcionarios.php">Funcionários</a>
                         <a href="../cargos/cadastro_cargos.php">Cargos</a>
                         <a href="../animais/cadastro_animais.php">Animais</a>
+                        <a href="../veiculos/cadastro_veiculos.php">Veículos</a>
                     </div>
                 </li>
             </ul>
@@ -203,7 +186,10 @@
 
                     <div class="form-group">
                             <label for="veiculo">Veículo:</label>
-                            <input type="text" id="veiculo" name="veiculo" placeholder="Marca/Modelo - Placa">
+                        <select id="veiculo" name="veiculo">
+                            <option value="Não possui">Não possui</option>
+                            <option value="Possui">Possui</option>
+                        </select>
                         </div>
                     </div>
 
@@ -215,49 +201,26 @@
                             Possui animal de estimação?
                         </label>
                     </div>
+                    
+                    <div class="form-group">
+                        <label for="tem_veiculo">
+                            <input type="checkbox" id="tem_veiculo" name="tem_veiculo" value="1" onchange="toggleVeiculoInfo()"> 
+                            Possui veículo?
+                        </label>
+                    </div>
                 </div>
 
-                <!-- Formulário de Animal (inicialmente oculto) -->
-                <div id="animal-form-section" style="display: none;">
-                    <h4 style="color: var(--primary-color); margin: 1.5rem 0 1rem 0; padding-bottom: 0.5rem; border-bottom: 2px solid var(--accent-color);">
-                        <i class="fas fa-paw"></i> Dados do Animal
-                    </h4>
+                <div id="veiculo-info" style="display: none; background: #e8f4fd; padding: 1rem; border-radius: 0.5rem; margin: 1rem 0; border-left: 4px solid #3498db;">
+                    <p style="margin: 0; color: #2c3e50;">
+                        <i class="fas fa-info-circle"></i> 
+                        <strong>Informação:</strong> Para cadastrar os detalhes do veículo (placa, modelo, cor), 
+                        acesse o menu <strong>Cadastros > Veículos</strong> após salvar o morador.
+                    </p>
+                </div>
+
+
                     
-                    <div class="form-row">
-                        <div class="form-group">
-                            <label for="nome_animal">Nome do Animal:</label>
-                            <input type="text" id="nome_animal" name="nome_animal">
-                        </div>
-
-                        <div class="form-group">
-                            <label for="tipo_animal">Tipo:</label>
-                            <select id="tipo_animal" name="tipo_animal">
-                                <option value="">Selecione o tipo</option>
-                                <option value="Cão">Cão</option>
-                                <option value="Gato">Gato</option>
-                                <option value="Pássaro">Pássaro</option>
-                                <option value="Peixe">Peixe</option>
-                                <option value="Outro">Outro</option>
-                            </select>
-                        </div>
-                    </div>
-
-                    <div class="form-row">
-                         <div class="form-group">
-                             <label for="porte_animal">Porte:</label>
-                             <select id="porte_animal" name="porte_animal">
-                                 <option value="">Selecione o porte</option>
-                                 <option value="Pequeno">Pequeno</option>
-                                 <option value="Médio">Médio</option>
-                                 <option value="Grande">Grande</option>
-                             </select>
-                         </div>
-                    </div>
-
-                    <div class="form-group full-width">
-                        <label for="observacoes_animal">Observações sobre o Animal:</label>
-                        <textarea id="observacoes_animal" name="observacoes_animal" rows="3" placeholder="Informações adicionais sobre o animal (vacinas, comportamento, etc.)"></textarea>
-                    </div>
+                    
                 </div>
 
                     <div class="form-actions">
@@ -345,6 +308,21 @@
             EmailValidator.setupEmailValidation('email', 'email-error');
             CPFValidator.setupCompleteValidation('cpf', 'cpf-error', 'moradores');
         });
+        
+        // Função para mostrar/ocultar informação sobre veículo
+        function toggleVeiculoInfo() {
+            const checkbox = document.getElementById('tem_veiculo');
+            const veiculoInfo = document.getElementById('veiculo-info');
+            const veiculoSelect = document.getElementById('veiculo');
+            
+            if (checkbox.checked) {
+                veiculoInfo.style.display = 'block';
+                veiculoSelect.value = 'Possui';
+            } else {
+                veiculoInfo.style.display = 'none';
+                veiculoSelect.value = 'Não possui';
+            }
+        }
         
         // Função para mostrar/ocultar formulário de animal
         function toggleAnimalForm() {

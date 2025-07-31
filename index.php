@@ -30,6 +30,7 @@
                         <a href="pages/funcionarios/cadastro_funcionarios.php">Funcionários</a>
                         <a href="pages/cargos/cadastro_cargos.php">Cargos</a>
                         <a href="pages/animais/cadastro_animais.php">Animais</a>
+                        <a href="pages/veiculos/cadastro_veiculos.php">Veículos</a>
                     </div>
                 </li>
             </ul>
