@@ -28,6 +28,8 @@
                     VALUES ('$placa', '$modelo', '$cor', '$tipo', '$id_morador')";
             
             if (mysqli_query($conn, $sql)) {
+                // Atualizar status do morador para "Possui" veículo
+                mysqli_query($conn, "UPDATE tb_moradores SET veiculo = 'Possui' WHERE id_moradores = $id_morador");
                 echo "<script>alert('Veículo cadastrado com sucesso!'); window.location = 'consultar_veiculos.php';</script>";
             } else {
                 echo "<script>alert('Erro ao cadastrar veículo: " . mysqli_error($conn) . "');</script>";

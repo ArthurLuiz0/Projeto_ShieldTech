@@ -23,6 +23,8 @@
                 VALUES ('$nome', '$tipo', '$porte', '$observacoes', '$id_morador')";
         
         if (mysqli_query($conn, $sql)) {
+            // Atualizar status do morador para "Possui" animais
+            mysqli_query($conn, "UPDATE tb_moradores SET animais = 'Possui' WHERE id_moradores = $id_morador");
             echo "<script>alert('Animal cadastrado com sucesso!'); window.location = 'consultar_animais.php';</script>";
         } else {
             echo "<script>alert('Erro ao cadastrar animal: " . mysqli_error($conn) . "');</script>";

@@ -186,10 +186,7 @@
 
                     <div class="form-group">
                             <label for="veiculo">Veículo:</label>
-                        <select id="veiculo" name="veiculo">
-                            <option value="Não possui">Não possui</option>
-                            <option value="Possui">Possui</option>
-                        </select>
+                        <input type="hidden" id="veiculo" name="veiculo" value="Não possui">
                         </div>
                     </div>
 

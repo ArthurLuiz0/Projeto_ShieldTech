@@ -73,6 +73,8 @@
                     } else {
                         // Se não tem animal marcado, remover animal existente
                         mysqli_query($conn, "DELETE FROM tb_animais WHERE id_morador = $id");
+                        // Atualizar status do morador para "Não possui"
+                        mysqli_query($conn, "UPDATE tb_moradores SET animais = 'Não possui' WHERE id_moradores = $id");
                     }
                     
                     echo "<script>alert('Morador atualizado com sucesso!'); window.location = 'consultar_moradores.php';</script>";
@@ -198,23 +200,41 @@
 
                     <div class="form-group">
                         <label for="veiculo">Veículo:</label>
-                        <select id="veiculo" name="veiculo">
-                            <option value="Não possui" <?= $campo["veiculo"] == "Não possui" ? "selected" : "" ?>>Não possui</option>
-                            <option value="Possui" <?= $campo["veiculo"] == "Possui" ? "selected" : "" ?>>Possui</option>
-                        </select>
+                        <input type="hidden" id="veiculo" name="veiculo" value="<?= $campo["veiculo"] ?>">
+                        <div style="background: #f8f9fa; padding: 0.8rem; border-radius: 0.5rem; border: 1px solid #dee2e6;">
+                            <span style="color: #495057;">
+                                <i class="fas fa-car"></i> 
+                                Status atual: <strong><?= $campo["veiculo"] == "Possui" ? "Possui veículo" : "Não possui veículo" ?></strong>
+                            </span>
+                        </div>
                     </div>
                 </div>
 
                 <div class="form-row">
                     <div class="form-group">
                         <label for="animais">Animais:</label>
-                        <input type="text" id="animais" name="animais" value="<?= $campo["animais"] ?>">
+                        <input type="hidden" id="animais" name="animais" value="<?= $campo["animais"] ?>">
+                        <div style="background: #f8f9fa; padding: 0.8rem; border-radius: 0.5rem; border: 1px solid #dee2e6;">
+                            <span style="color: #495057;">
+                                <i class="fas fa-paw"></i> 
+                                Status atual: <strong><?= ($campo["animais"] == "Possui" || $campo["animais"] == "sim") ? "Possui animal" : "Não possui animal" ?></strong>
+                            </span>
+                        </div>
                     </div>
                     
                     <div class="form-group">
                         <label for="tem_animal">
                             <input type="checkbox" id="tem_animal" name="tem_animal" value="1" onchange="toggleAnimalForm()" <?= $animal ? 'checked' : '' ?>> 
-                            Possui animal de estimação?
+                            Alterar status do animal
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="tem_veiculo_edit">
+                            <input type="checkbox" id="tem_veiculo_edit" name="tem_veiculo_edit" value="1" onchange="toggleVeiculoStatus()" <?= $campo["veiculo"] == "Possui" ? 'checked' : '' ?>> 
+                            Alterar status do veículo
                         </label>
                     </div>
                 </div>
@@ -325,10 +345,12 @@
         function toggleAnimalForm() {
             const checkbox = document.getElementById('tem_animal');
             const animalForm = document.getElementById('animal-form-section');
+            const animaisInput = document.getElementById('animais');
             
             if (checkbox.checked) {
                 animalForm.style.display = 'block';
                 animalForm.style.animation = 'fadeIn 0.3s ease-in';
+                animaisInput.value = 'Possui';
                 
                 // Tornar campos obrigatórios quando visíveis
                 document.getElementById('nome_animal').required = true;
@@ -336,6 +358,7 @@
                 document.getElementById('porte_animal').required = true;
             } else {
                 animalForm.style.display = 'none';
+                animaisInput.value = 'Não possui';
                 
                 // Remover obrigatoriedade e limpar campos
                 document.getElementById('nome_animal').required = false;
@@ -347,6 +370,18 @@
                 document.getElementById('tipo_animal').value = '';
                 document.getElementById('porte_animal').value = '';
                 document.getElementById('observacoes_animal').value = '';
+            }
+        }
+        
+        // Função para alterar status do veículo
+        function toggleVeiculoStatus() {
+            const checkbox = document.getElementById('tem_veiculo_edit');
+            const veiculoInput = document.getElementById('veiculo');
+            
+            if (checkbox.checked) {
+                veiculoInput.value = 'Possui';
+            } else {
+                veiculoInput.value = 'Não possui';
             }
         }
     </script>

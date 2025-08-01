@@ -101,16 +101,44 @@
                             while ($campo = mysqli_fetch_array($selecionar)) {
                                 // Buscar veículos do morador
                                 $veiculos_query = mysqli_query($conn, "SELECT placa, modelo FROM tb_veiculos WHERE id_morador = " . $campo["id_moradores"]);
-                                $veiculo_info = "Não possui";
+                                $veiculo_info = "";
+                                $veiculo_class = "";
+                                
                                 if (mysqli_num_rows($veiculos_query) > 0) {
                                     $veiculos = [];
                                     while ($veiculo = mysqli_fetch_array($veiculos_query)) {
                                         $veiculos[] = $veiculo["modelo"] . " (" . $veiculo["placa"] . ")";
                                     }
                                     $veiculo_info = implode(", ", $veiculos);
+                                    $veiculo_class = "status-ativo";
+                                } else {
+                                    // Verificar se o morador marcou que possui veículo
+                                    if ($campo["veiculo"] == "Possui") {
+                                        $veiculo_info = "Possui - Não cadastrado";
+                                        $veiculo_class = "status-warning";
+                                    } else {
+                                        $veiculo_info = "Não possui";
+                                        $veiculo_class = "status-inactive";
+                                    }
                                 }
                                 
-                                $animal_info = $campo["nome_animal"] ? $campo["nome_animal"] . " (" . $campo["tipo_animal"] . ")" : "Não possui";
+                                // Buscar informações do animal
+                                $animal_info = "";
+                                $animal_class = "";
+                                
+                                if ($campo["nome_animal"]) {
+                                    $animal_info = $campo["nome_animal"] . " (" . $campo["tipo_animal"] . ")";
+                                    $animal_class = "status-ativo";
+                                } else {
+                                    // Verificar se o morador marcou que possui animal
+                                    if ($campo["animais"] == "Possui" || $campo["animais"] == "sim") {
+                                        $animal_info = "Possui - Não cadastrado";
+                                        $animal_class = "status-warning";
+                                    } else {
+                                        $animal_info = "Não possui";
+                                        $animal_class = "status-inactive";
+                                    }
+                                }
                                 
                                 echo "<tr>";
                                 echo "<td>" . $campo["id_moradores"] . "</td>";
@@ -120,8 +148,8 @@
                                 echo "<td>" . ($campo["email"] ? $campo["email"] : "Não informado") . "</td>";
                                 echo "<td>" . $campo["bloco"] . "/" . $campo["torre"] . "</td>";
                                 echo "<td>" . $campo["andar"] . "</td>";
-                                echo "<td>" . $veiculo_info . "</td>";
-                                echo "<td>" . $animal_info . "</td>";
+                                echo "<td><span class='$veiculo_class'>" . $veiculo_info . "</span></td>";
+                                echo "<td><span class='$animal_class'>" . $animal_info . "</span></td>";
                                 echo "<td><span class='status-ativo'>" . ($campo["status"] ? $campo["status"] : "Ativo") . "</span></td>";
                                 echo "<td class='acoes'>";
                                 echo "<a href='editar_morador.php?id=" . $campo["id_moradores"] . "' class='btn-editar'>";
@@ -177,7 +205,9 @@
                     torre: '" . addslashes($campo["torre"]) . "',
                     andar: '" . addslashes($campo["andar"]) . "',
                     veiculo: '" . addslashes($veiculo_info) . "',
+                    veiculo_class: '" . addslashes($veiculo_class) . "',
                     animais: '" . addslashes($animal_info) . "',
+                    animal_class: '" . addslashes($animal_class) . "',
                     status: '" . addslashes($campo["status"] ? $campo["status"] : "Ativo") . "'
                 }";
             }
@@ -223,8 +253,8 @@
                     <td>${morador.email}</td>
                     <td>${morador.bloco}/${morador.torre}</td>
                     <td>${morador.andar}</td>
-                    <td>${morador.veiculo}</td>
-                    <td>${morador.animais}</td>
+                    <td><span class='${morador.veiculo_class}'>${morador.veiculo}</span></td>
+                    <td><span class='${morador.animal_class}'>${morador.animais}</span></td>
                     <td><span class='status-ativo'>${morador.status}</span></td>
                     <td class='acoes'>
                         <a href='editar_morador.php?id=${morador.id}' class='btn-editar'>
