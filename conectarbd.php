@@ -34,6 +34,25 @@ if (mysqli_num_rows($check_veiculos) == 0) {
     mysqli_query($conn, "ALTER TABLE tb_veiculos ADD FOREIGN KEY (id_morador) REFERENCES tb_moradores(id_moradores)");
 }
 
+// Verificar e criar coluna id_morador na tabela tb_encomendas se não existir
+$check_encomendas = mysqli_query($conn, "SHOW COLUMNS FROM tb_encomendas LIKE 'id_morador'");
+if (mysqli_num_rows($check_encomendas) == 0) {
+    mysqli_query($conn, "ALTER TABLE tb_encomendas ADD COLUMN id_morador INT");
+    mysqli_query($conn, "ALTER TABLE tb_encomendas ADD FOREIGN KEY (id_morador) REFERENCES tb_moradores(id_moradores)");
+}
+
+// Verificar e criar coluna nome_morador na tabela tb_encomendas se não existir
+$check_nome_morador = mysqli_query($conn, "SHOW COLUMNS FROM tb_encomendas LIKE 'nome_morador'");
+if (mysqli_num_rows($check_nome_morador) == 0) {
+    mysqli_query($conn, "ALTER TABLE tb_encomendas ADD COLUMN nome_morador VARCHAR(100)");
+}
+
+// Verificar e criar coluna email na tabela tb_encomendas se não existir
+$check_email_encomendas = mysqli_query($conn, "SHOW COLUMNS FROM tb_encomendas LIKE 'email'");
+if (mysqli_num_rows($check_email_encomendas) == 0) {
+    mysqli_query($conn, "ALTER TABLE tb_encomendas ADD COLUMN email VARCHAR(100)");
+}
+
 // Verificar se a coluna veiculo na tb_moradores existe e alterar para indicar se possui veículo
 $check_morador_veiculo = mysqli_query($conn, "SHOW COLUMNS FROM tb_moradores LIKE 'veiculo'");
 if (mysqli_num_rows($check_morador_veiculo) > 0) {
@@ -42,5 +61,11 @@ if (mysqli_num_rows($check_morador_veiculo) > 0) {
     if (strpos($column_info['Type'], 'varchar') !== false) {
         // Manter como está para compatibilidade, mas usar para indicar "Possui" ou "Não possui"
     }
+}
+
+// Verificar e criar coluna email na tabela tb_moradores se não existir
+$check_email_moradores = mysqli_query($conn, "SHOW COLUMNS FROM tb_moradores LIKE 'email'");
+if (mysqli_num_rows($check_email_moradores) == 0) {
+    mysqli_query($conn, "ALTER TABLE tb_moradores ADD COLUMN email VARCHAR(100)");
 }
 ?>

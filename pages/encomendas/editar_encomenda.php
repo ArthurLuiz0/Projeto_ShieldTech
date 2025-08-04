@@ -9,7 +9,8 @@
 </head>
 <body>
     <?php
-    include("../conectarbd.php");
+    include("../../conectarbd.php");
+    include("GmailEncomendas.php");
     
     $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
     
@@ -18,17 +19,17 @@
         $morador = mysqli_real_escape_string($conn, $_POST["nome_morador"]);
         $descricao = mysqli_real_escape_string($conn, $_POST["descricao"]);
         $data_recebimento = mysqli_real_escape_string($conn, $_POST["data_recebimento"]);
-        $email = mysqli_real_escape_string($conn, $_POST["email"]);
         $status = mysqli_real_escape_string($conn, $_POST["status"]);
         
         $sql = "UPDATE tb_encomendas SET 
-                nome_morador='$morador', descricao='$descricao', data_recebimento='$data_recebimento', email='$email', status='$status'
+                nome_morador='$morador', descricao='$descricao', data_recebimento='$data_recebimento', status='$status'
                 WHERE id_encomendas=$id";
         
         if (mysqli_query($conn, $sql)) {
-            echo "<script>alert('Encomendas atualizado com sucesso!'); window.location = 'consultar_encomendas.php';</script>";
+            enviar_email_encomenda($conn, $morador, $descricao, $data_recebimento);
+            echo "<script>alert('Encomenda atualizada com sucesso!'); window.location = 'consultar_encomendas.php';</script>";
         } else {
-            echo "<script>alert('Erro ao atualizar encomendas: " . mysqli_error($conn) . "');</script>";
+            echo "<script>alert('Erro ao atualizar encomenda: " . mysqli_error($conn) . "');</script>";
         }
     }
     
@@ -37,27 +38,29 @@
     $campo = mysqli_fetch_array($selecionar);
     ?>
 
-    <header>
+<header>
         <nav>
             <div class="logo">
                 <h1><i class="fas fa-shield"></i> ShieldTech</h1>
             </div>
             <ul class="menu">
-                <li><a href="../index.php"><i class="fas fa-home"></i> Início</a></li>
-                <li><a href="visitantes.php"><i class="fas fa-user-friends"></i> Visitantes</a></li>
-                <li><a href="relatorios.php"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
+                <li><a href="../../index.php"><i class="fas fa-home"></i> Início</a></li>
+                <li><a href="../visitantes/visitantes.php"><i class="fas fa-user-friends"></i> Visitantes</a></li>
+                <li><a href="../relatorios/relatorios.php"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
+                <li><a href="../reservas/reservas.php"><i class="fas fa-calendar"></i> Reservas</a></li>
+                <li><a href="../encomendas/cadastro_encomendas.php"><i class="fas fa-box"></i> encomendas</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropbtn"><i class="fas fa-gear"></i> Cadastros</a>
                     <div class="dropdown-content">
-                        <a href="cadastro_encomendas.php">Moradores</a>
-                        <a href="cadastro_funcionarios.php">Funcionários</a>
-                        <a href="cadastro_cargos.php">Cargos</a>
+                        <a href="cadastro_moradores.php">Moradores</a>
+                        <a href="../funcionarios/cadastro_funcionarios.php">Funcionários</a>
+                        <a href="../cargos/cadastro_cargos.php">Cargos</a>
+                        <a href="../animais/cadastro_animais.php">Animais</a>
                     </div>
                 </li>
             </ul>
         </nav>
     </header>
-
     <main>
         <h2>Editar Encomenda</h2>
 
@@ -80,17 +83,13 @@
                     <label for="cor">Data_recebimento:</label>
                     <input type="date" id="rg" name="data_recebimento" value="<?= $campo["data_recebimento"] ?>" required>
                 </div>
-                
-                <div class="form-group">
-                    <label for="cor">Email:</label>
-                    <input type="email" id="rg" name="Email" value="<?= $campo["email"] ?>" required>
-                </div>
 
                 <div class="form-group">
                     <label for="tipo">Status:</label>
 <select name="status" class="form-control" required>
-    <option value="Recebido" <?php if($campo["status"] == "Recebido") echo "selected"; ?>>Recebido</option>
+    <option value="Pendente" <?php if($campo["status"] == "Pendente") echo "selected"; ?>>Pendente</option>
     <option value="Entregue" <?php if($campo["status"] == "Entregue") echo "selected"; ?>>Entregue</option>
+    <option value="Cancelado" <?php if($campo["status"] == "Cancelado") echo "selected"; ?>>Cancelado</option>
 </select>
                 </div>
 

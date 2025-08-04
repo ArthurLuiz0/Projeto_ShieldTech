@@ -33,28 +33,16 @@
         $animais = mysqli_real_escape_string($conn, $_POST["animais"]);
         $data_cadastro = date('Y-m-d H:i:s');
         
-        // Validar email
-        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-            echo "<script>alert('Email inválido! Por favor, digite um email válido.');</script>";
-        } else {
-            // Verificar se email já existe
-            $verificar_email = mysqli_query($conn, "SELECT * FROM tb_moradores WHERE email = '$email'");
-            if (mysqli_num_rows($verificar_email) > 0) {
-                echo "<script>alert('Este email já está cadastrado!');</script>";
-            } else {
-                // Inserir morador
-                $sql = "INSERT INTO tb_moradores (nome, cpf, rg, data_nascimento, sexo, telefone, email, bloco, torre, andar, veiculo, animais, foto, data_cadastro) 
-                        VALUES ('$nome', '$cpf', '$rg', '$data_nascimento', '$sexo', '$telefone','$email', '$bloco', '$torre', '$andar', '$veiculo', '$animais', '$foto', '$data_cadastro')";
-
-                if (mysqli_query($conn, $sql)) {
-                    $id_morador = mysqli_insert_id($conn);
-                    
-                    
-                        
+                const temVeiculo = document.getElementById('tem_veiculo');
+                if (temVeiculo && temVeiculo.checked) {
+                    dadosMorador.veiculo = 'Possui';
+                } else {
+                    dadosMorador.veiculo = 'Não possui';
                 }
             }
-        }
-    }
+        
+    
+
     ?>
 
 <header>
