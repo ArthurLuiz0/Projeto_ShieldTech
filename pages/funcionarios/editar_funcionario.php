@@ -138,7 +138,7 @@
                             $cargos = mysqli_query($conn, "SELECT * FROM tb_cargo ORDER BY nome_cargo");
                             while ($cargo = mysqli_fetch_array($cargos)) {
                                 $selected = ($campo["funcao_cargo"] == $cargo["nome_cargo"]) ? "selected" : "";
-                                echo "<option value='" . $cargo["nome_cargo"] . "' $selected>" . $cargo["nome_cargo"] . "</option>";
+                                echo "<option value='" . $cargo["nome_cargo"] . "' data-salario='" . $cargo["salario_base"] . "' $selected>" . $cargo["nome_cargo"] . "</option>";
                             }
                             ?>
                         </select>
@@ -149,6 +149,9 @@
                     <div class="form-group">
                         <label for="salario">Salário:</label>
                         <input type="number" id="salario" name="salario" step="0.01" min="0" value="<?= $campo["salario"] ?>" required>
+                        <small style="color: #666; font-size: 0.8em;">
+                            <i class="fas fa-info-circle"></i> Você pode alterar o salário ou usar o valor padrão do cargo
+                        </small>
                     </div>
 
                     <div class="form-group">
@@ -184,6 +187,36 @@
         document.addEventListener('DOMContentLoaded', () => {
             const funcionarioId = <?= $campo["id_funcionarios"] ?>;
             CPFValidator.setupCompleteValidation('cpf', 'cpf-error', 'funcionarios', funcionarioId);
+            
+            // Configurar auto-preenchimento do salário na edição
+            const cargoSelect = document.getElementById('funcao_cargo');
+            const salarioInput = document.getElementById('salario');
+            const salarioOriginal = salarioInput.value; // Guardar valor original
+            
+            cargoSelect.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                const salarioCargo = selectedOption.getAttribute('data-salario');
+                
+                if (salarioCargo && salarioCargo !== '') {
+                    // Perguntar se deseja usar o salário padrão do cargo
+                    const usarSalarioPadrao = confirm(
+                        `O cargo selecionado tem salário base de R$ ${parseFloat(salarioCargo).toFixed(2).replace('.', ',')}.\n\n` +
+                        `Deseja usar este valor? (Clique "Cancelar" para manter o salário atual)`
+                    );
+                    
+                    if (usarSalarioPadrao) {
+                        salarioInput.value = parseFloat(salarioCargo).toFixed(2);
+                        salarioInput.style.backgroundColor = '#e8f5e8';
+                        salarioInput.style.borderColor = '#28a745';
+                        
+                        // Remover destaque após 3 segundos
+                        setTimeout(() => {
+                            salarioInput.style.backgroundColor = '';
+                            salarioInput.style.borderColor = '';
+                        }, 3000);
+                    }
+                }
+            });
         });
     </script>
 </body>

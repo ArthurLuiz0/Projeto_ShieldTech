@@ -125,7 +125,7 @@
                             <?php
                             $cargos = mysqli_query($conn, "SELECT * FROM tb_cargo ORDER BY nome_cargo");
                             while ($cargo = mysqli_fetch_array($cargos)) {
-                                echo "<option value='" . $cargo["nome_cargo"] . "'>" . $cargo["nome_cargo"] . "</option>";
+                                echo "<option value='" . $cargo["nome_cargo"] . "' data-salario='" . $cargo["salario_base"] . "'>" . $cargo["nome_cargo"] . "</option>";
                             }
                             ?>
                         </select>
@@ -135,7 +135,10 @@
                 <div class="form-row">
                     <div class="form-group">
                         <label for="salario">Salário:</label>
-                        <input type="number" id="salario" name="salario" step="0.01" min="0" required>
+                        <input type="number" id="salario" name="salario" step="0.01" min="0" required readonly>
+                        <small style="color: #666; font-size: 0.8em;">
+                            <i class="fas fa-info-circle"></i> O salário será preenchido automaticamente baseado no cargo selecionado
+                        </small>
                     </div>
 
                     <div class="form-group">
@@ -179,6 +182,68 @@
         // Configurar validação de CPF
         document.addEventListener('DOMContentLoaded', () => {
             CPFValidator.setupCompleteValidation('cpf', 'cpf-error', 'funcionarios');
+            
+            // Configurar auto-preenchimento do salário
+            const cargoSelect = document.getElementById('funcao_cargo');
+            const salarioInput = document.getElementById('salario');
+            
+            cargoSelect.addEventListener('change', function() {
+                const selectedOption = this.options[this.selectedIndex];
+                const salario = selectedOption.getAttribute('data-salario');
+                
+                if (salario && salario !== '') {
+                    salarioInput.value = parseFloat(salario).toFixed(2);
+                    salarioInput.style.backgroundColor = '#e8f5e8';
+                    salarioInput.style.borderColor = '#28a745';
+                    
+                    // Mostrar feedback visual
+                    const feedback = document.createElement('div');
+                    feedback.style.cssText = `
+                        position: absolute;
+                        background: #d4edda;
+                        color: #155724;
+                        padding: 0.5rem;
+                        border-radius: 4px;
+                        font-size: 0.8rem;
+                        margin-top: 0.25rem;
+                        border: 1px solid #c3e6cb;
+                        z-index: 1000;
+                    `;
+                    feedback.innerHTML = '<i class="fas fa-check"></i> Salário preenchido automaticamente';
+                    
+                    // Inserir feedback após o campo de salário
+                    const salarioGroup = salarioInput.closest('.form-group');
+                    salarioGroup.style.position = 'relative';
+                    salarioGroup.appendChild(feedback);
+                    
+                    // Remover feedback após 3 segundos
+                    setTimeout(() => {
+                        if (feedback.parentNode) {
+                            feedback.remove();
+                        }
+                        salarioInput.style.backgroundColor = '';
+                        salarioInput.style.borderColor = '';
+                    }, 3000);
+                    
+                } else {
+                    salarioInput.value = '';
+                    salarioInput.style.backgroundColor = '';
+                    salarioInput.style.borderColor = '';
+                }
+            });
+            
+            // Permitir edição manual do salário
+            salarioInput.addEventListener('focus', function() {
+                this.removeAttribute('readonly');
+                this.style.backgroundColor = '';
+                this.style.borderColor = '';
+            });
+            
+            salarioInput.addEventListener('blur', function() {
+                if (this.value === '') {
+                    this.setAttribute('readonly', 'readonly');
+                }
+            });
         });
     </script>
 </body>
