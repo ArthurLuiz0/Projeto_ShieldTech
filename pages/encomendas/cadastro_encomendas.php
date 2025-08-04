@@ -200,9 +200,8 @@
                         <label for="status">Status:</label>
                         <select name="status" id="status" required>
                             <option value="">-- Selecione --</option>
-                            <option value="Pendente" selected>Pendente</option>
-                            <option value="Entregue">Entregue</option>
-                            <option value="Cancelado">Cancelado</option>
+                            <option value="Recebido" >Recebido</option>
+                            <option value="Entregue" >Entregue</option>
                         </select>
                     </div>
 
