@@ -64,49 +64,55 @@
             <section class="form-section">
                 <h3>Cadastro de Animal</h3>
                 <form method="post" action="">
-                    <div class="form-group">
-                        <label for="nome">Nome do Animal:</label>
-                        <input type="text" id="nome" name="nome" required>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nome">Nome do Animal:</label>
+                            <input type="text" id="nome" name="nome" placeholder="Ex: Rex, Mimi" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="tipo">Tipo:</label>
+                            <select id="tipo" name="tipo" required>
+                                <option value="">Selecione o tipo</option>
+                                <option value="Cão">Cão</option>
+                                <option value="Gato">Gato</option>
+                                <option value="Pássaro">Pássaro</option>
+                                <option value="Peixe">Peixe</option>
+                                <option value="Hamster">Hamster</option>
+                                <option value="Coelho">Coelho</option>
+                                <option value="Outro">Outro</option>
+                            </select>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="tipo">Tipo:</label>
-                        <select id="tipo" name="tipo" required>
-                            <option value="">Selecione o tipo</option>
-                            <option value="Cão">Cão</option>
-                            <option value="Gato">Gato</option>
-                            <option value="Pássaro">Pássaro</option>
-                            <option value="Peixe">Peixe</option>
-                            <option value="Outro">Outro</option>
-                        </select>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="porte">Porte:</label>
+                            <select id="porte" name="porte" required>
+                                <option value="">Selecione o porte</option>
+                                <option value="Pequeno">Pequeno (até 10kg)</option>
+                                <option value="Médio">Médio (10kg a 25kg)</option>
+                                <option value="Grande">Grande (acima de 25kg)</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="id_morador">Morador Responsável:</label>
+                            <select id="id_morador" name="id_morador" required>
+                                <option value="">Selecione um morador</option>
+                                <?php
+                                $moradores = mysqli_query($conn, "SELECT * FROM tb_moradores ORDER BY nome");
+                                while ($morador = mysqli_fetch_array($moradores)) {
+                                    echo "<option value='" . $morador["id_moradores"] . "'>" . $morador["nome"] . " - Bloco " . $morador["bloco"] . "/" . $morador["torre"] . "</option>";
+                                }
+                                ?>
+                            </select>
+                        </div>
                     </div>
 
-                    <div class="form-group">
-                        <label for="porte">Porte:</label>
-                        <select id="porte" name="porte" required>
-                            <option value="">Selecione o porte</option>
-                            <option value="Pequeno">Pequeno</option>
-                            <option value="Médio">Médio</option>
-                            <option value="Grande">Grande</option>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="id_morador">Morador Responsável:</label>
-                        <select id="id_morador" name="id_morador" required>
-                            <option value="">Selecione um morador</option>
-                            <?php
-                            $moradores = mysqli_query($conn, "SELECT * FROM tb_moradores ORDER BY nome");
-                            while ($morador = mysqli_fetch_array($moradores)) {
-                                echo "<option value='" . $morador["id_moradores"] . "'>" . $morador["nome"] . " - Bloco " . $morador["bloco"] . "/" . $morador["torre"] . "</option>";
-                            }
-                            ?>
-                        </select>
-                    </div>
-
-                    <div class="form-group">
+                    <div class="form-group full-width">
                         <label for="observacoes">Observações:</label>
-                        <textarea id="observacoes" name="observacoes" rows="3" placeholder="Informações adicionais sobre o animal"></textarea>
+                        <textarea id="observacoes" name="observacoes" rows="3" placeholder="Informações adicionais sobre o animal (vacinas, comportamento, cuidados especiais, etc.)"></textarea>
                     </div>
 
                     <div class="form-actions">

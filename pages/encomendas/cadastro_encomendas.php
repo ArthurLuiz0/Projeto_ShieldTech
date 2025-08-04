@@ -4,11 +4,98 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Cadastro de Encomenda - ShieldTech</title>
-    <link rel="stylesheet" href="../css/style.css">
+    <link rel="stylesheet" href="../../css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .search-container {
+            position: relative;
+        }
+        
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .search-item {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .search-item:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .search-item:last-child {
+            border-bottom: none;
+        }
+        
+        .morador-info {
+            flex: 1;
+        }
+        
+        .morador-name {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .morador-details {
+            font-size: 0.9em;
+            color: #666;
+        }
+        
+        .email-badge {
+            background: #e8f4fd;
+            color: #2c3e50;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            border: 1px solid #3498db;
+        }
+        
+        .no-email-badge {
+            background: #fff3cd;
+            color: #856404;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.8em;
+            border: 1px solid #ffc107;
+        }
+        
+        .selected-morador {
+            background: #e8f5e8;
+            padding: 10px;
+            border-radius: 4px;
+            border-left: 4px solid #28a745;
+            margin-top: 10px;
+            display: none;
+        }
+        
+        .clear-selection {
+            background: none;
+            border: none;
+            color: #dc3545;
+            cursor: pointer;
+            float: right;
+            font-size: 1.2em;
+        }
+    </style>
 </head>
 <body>
     <?php
@@ -17,16 +104,18 @@
     
     // Processar formulário se foi enviado
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $morador = mysqli_real_escape_string($conn, $_POST["nome_morador"]);
+        $nome_morador = mysqli_real_escape_string($conn, $_POST["nome_morador"]);
+        $email = mysqli_real_escape_string($conn, $_POST["email"]);
         $descricao = mysqli_real_escape_string($conn, $_POST["descricao"]);
         $data_recebimento = mysqli_real_escape_string($conn, $_POST["data_recebimento"]);
         $status = mysqli_real_escape_string($conn, $_POST["status"]);
+        $id_morador = mysqli_real_escape_string($conn, $_POST["id_morador"]);
         
-        $sql = "INSERT INTO tb_encomendas (nome_morador, descricao, data_recebimento, status) 
-                VALUES ('$morador', '$descricao', '$data_recebimento', '$status')";
+        $sql = "INSERT INTO tb_encomendas (nome_morador, email, descricao, data_recebimento, status, id_morador) 
+                VALUES ('$nome_morador', '$email', '$descricao', '$data_recebimento', '$status', '$id_morador')";
         
         if (mysqli_query($conn, $sql)) {
-            enviar_email_encomenda($conn, $morador, $descricao, $data_recebimento);
+            enviar_email_encomenda($conn, $nome_morador, $descricao, $data_recebimento);
             echo "<script>alert('Encomenda cadastrada com sucesso!'); window.location = 'consultar_encomendas.php';</script>";
         } else {
             echo "<script>alert('Erro ao cadastrar encomenda: " . mysqli_error($conn) . "');</script>";
@@ -44,7 +133,7 @@
                 <li><a href="../visitantes/visitantes.php"><i class="fas fa-user-friends"></i> Visitantes</a></li>
                 <li><a href="../relatorios/relatorios.php"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
                 <li><a href="../reservas/reservas.php"><i class="fas fa-calendar"></i> Reservas</a></li>
-                <li><a href="../encomendas/cadastro_encomendas.php"><i class="fas fa-box"></i> encomendas</a></li>
+                <li><a href="../encomendas/cadastro_encomendas.php"><i class="fas fa-box"></i> Encomendas</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropbtn"><i class="fas fa-gear"></i> Cadastros</a>
                     <div class="dropdown-content">
@@ -52,6 +141,7 @@
                         <a href="../funcionarios/cadastro_funcionarios.php">Funcionários</a>
                         <a href="../cargos/cadastro_cargos.php">Cargos</a>
                         <a href="../animais/cadastro_animais.php">Animais</a>
+                        <a href="../veiculos/cadastro_veiculos.php">Veículos</a>
                     </div>
                 </li>
             </ul>
@@ -61,44 +151,124 @@
     <main>
         <h2>Gestão de Encomendas</h2>
 
-        <section class="form-section">
-            <h3>Cadastro de Encomendas</h3>
-            <form method="post" action="">
-                <div class="form-group">
-                    <label for="nome">Morador:</label>
-                    <input type="text" id="nome" name="nome_morador" required>
+        <div class="form-grid">
+            <section class="form-section">
+                <h3>Cadastro de Encomenda</h3>
+                <form method="post" action="">
+                    <input type="hidden" id="id_morador" name="id_morador" value="">
+                    
+                    <div class="form-group">
+                        <label for="search_morador">Pesquisar Morador:</label>
+                        <div class="search-container">
+                            <input type="text" id="search_morador" name="search_morador" 
+                                   placeholder="Digite o nome do morador..." 
+                                   autocomplete="off" required>
+                            <div class="search-results" id="search_results"></div>
+                        </div>
+                        <div class="selected-morador" id="selected_morador">
+                            <button type="button" class="clear-selection" onclick="clearSelection()">×</button>
+                            <strong>Morador selecionado:</strong>
+                            <div id="selected_info"></div>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="nome_morador">Nome do Morador:</label>
+                            <input type="text" id="nome_morador" name="nome_morador" readonly required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="email">Email:</label>
+                            <input type="email" id="email" name="email" readonly>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label for="descricao">Descrição:</label>
+                            <input type="text" id="descricao" name="descricao" placeholder="Descrição da encomenda" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="data_recebimento">Data de Recebimento:</label>
+                            <input type="date" id="data_recebimento" name="data_recebimento" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="status">Status:</label>
+                        <select name="status" id="status" required>
+                            <option value="">-- Selecione --</option>
+                            <option value="Pendente" selected>Pendente</option>
+                            <option value="Entregue">Entregue</option>
+                            <option value="Cancelado">Cancelado</option>
+                        </select>
+                    </div>
+
+                    <div class="form-actions">
+                        <button type="submit" class="btn-primary">
+                            <i class="fas fa-save"></i> Cadastrar Encomenda
+                        </button>
+                        <a href="consultar_encomendas.php" class="btn-secondary">
+                            <i class="fas fa-list"></i> Ver Encomendas
+                        </a>
+                    </div>
+                </form>
+            </section>
+
+            <section class="info-section">
+                <h3>Informações sobre Encomendas</h3>
+                <div class="info-cards">
+                    <?php
+                    $total_encomendas = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM tb_encomendas"));
+                    $pendentes = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM tb_encomendas WHERE status = 'Pendente'"));
+                    $entregues = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM tb_encomendas WHERE status = 'Entregue'"));
+                    $hoje = date('Y-m-d');
+                    $hoje_count = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM tb_encomendas WHERE data_recebimento = '$hoje'"));
+                    ?>
+                    
+                    <div class="info-card">
+                        <i class="fas fa-box"></i>
+                        <h4>Total de Encomendas</h4>
+                        <p><?= $total_encomendas ?></p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <i class="fas fa-clock"></i>
+                        <h4>Pendentes</h4>
+                        <p><?= $pendentes ?></p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <i class="fas fa-check"></i>
+                        <h4>Entregues</h4>
+                        <p><?= $entregues ?></p>
+                    </div>
+                    
+                    <div class="info-card">
+                        <i class="fas fa-calendar-day"></i>
+                        <h4>Recebidas Hoje</h4>
+                        <p><?= $hoje_count ?></p>
+                    </div>
                 </div>
 
-                <div class="form-group">
-                    <label for="cpf">Descricao:</label>
-                    <input type="text" id="cpf" name="descricao" placeholder="" required>
+                <div class="recent-animals">
+                    <h4>Últimas Encomendas</h4>
+                    <div class="recent-list">
+                        <?php
+                        $recentes = mysqli_query($conn, "SELECT * FROM tb_encomendas ORDER BY id_encomendas DESC LIMIT 5");
+                        while ($encomenda = mysqli_fetch_array($recentes)) {
+                            echo "<div class='recent-item'>";
+                            echo "<strong>" . $encomenda['nome_morador'] . "</strong>";
+                            echo "<br><small>" . $encomenda['descricao'] . " - " . date('d/m/Y', strtotime($encomenda['data_recebimento'])) . "</small>";
+                            echo "</div>";
+                        }
+                        ?>
+                    </div>
                 </div>
-
-                <div class="form-group">
-                    <label for="rg">Data_recebimento:</label>
-                    <input type="date" id="rg" name="data_recebimento" required>
-                </div>
-
-<div style="display: flex; flex-direction: column;">
-        <label>Status:</label>
-        <select name="status" class="form-control" required>
-            <option value="">-- Selecione --</option>
-            <option value="Pendente">Pendente</option>
-            <option value="Entregue">Entregue</option>
-            <option value="Cancelado">Cancelado</option>
-        </select>
-    </div>
-
-                <div class="form-actions">
-                    <button type="submit" class="btn-primary">
-                        <i class="fas fa-save"></i> Cadastrar Encomendas
-                    </button>
-                    <a href="consultar_encomendas.php" class="btn-secondary">
-                        <i class="fas fa-list"></i> Ver Encomendas
-                    </a>
-                </div>
-            </form>
-        </section>
+            </section>
+        </div>
     </main>
 
     <footer>
@@ -106,871 +276,130 @@
     </footer>
 
     <script>
-        // Máscara para CPF
-        document.getElementById('cpf').addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length <= 11) {
-                value = value.replace(/^(\d{3})(\d{3})(\d{3})(\d{2}).*/, '$1.$2.$3-$4');
-                e.target.value = value;
+        // Dados dos moradores para pesquisa
+        const moradores = [
+            <?php
+            $moradores_query = mysqli_query($conn, "SELECT id_moradores, nome, email, bloco, torre FROM tb_moradores ORDER BY nome");
+            $moradores_js = [];
+            while ($morador = mysqli_fetch_array($moradores_query)) {
+                $moradores_js[] = "{
+                    id: " . $morador["id_moradores"] . ",
+                    nome: '" . addslashes($morador["nome"]) . "',
+                    email: '" . addslashes($morador["email"] ? $morador["email"] : "") . "',
+                    bloco: '" . addslashes($morador["bloco"]) . "',
+                    torre: '" . addslashes($morador["torre"]) . "'
+                }";
+            }
+            echo implode(",\n            ", $moradores_js);
+            ?>
+        ];
+
+        const searchInput = document.getElementById('search_morador');
+        const searchResults = document.getElementById('search_results');
+        const selectedMoradorDiv = document.getElementById('selected_morador');
+        const selectedInfo = document.getElementById('selected_info');
+        const nomeMoradorInput = document.getElementById('nome_morador');
+        const emailInput = document.getElementById('email');
+        const idMoradorInput = document.getElementById('id_morador');
+
+        // Função de pesquisa
+        searchInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            
+            if (query.length < 2) {
+                searchResults.style.display = 'none';
+                return;
+            }
+
+            const filteredMoradores = moradores.filter(morador => 
+                morador.nome.toLowerCase().includes(query)
+            );
+
+            if (filteredMoradores.length > 0) {
+                searchResults.innerHTML = '';
+                filteredMoradores.forEach(morador => {
+                    const div = document.createElement('div');
+                    div.className = 'search-item';
+                    div.innerHTML = `
+                        <div class="morador-info">
+                            <div class="morador-name">${morador.nome}</div>
+                            <div class="morador-details">Bloco ${morador.bloco}/${morador.torre}</div>
+                        </div>
+                        <div>
+                            ${morador.email ? 
+                                `<span class="email-badge">✉️ ${morador.email}</span>` : 
+                                `<span class="no-email-badge">⚠️ Sem email</span>`
+                            }
+                        </div>
+                    `;
+                    
+                    div.addEventListener('click', function() {
+                        selectMorador(morador);
+                    });
+                    
+                    searchResults.appendChild(div);
+                });
+                searchResults.style.display = 'block';
+            } else {
+                searchResults.innerHTML = '<div class="search-item">Nenhum morador encontrado</div>';
+                searchResults.style.display = 'block';
             }
         });
 
-        // Máscara para telefone
-        document.getElementById('telefone').addEventListener('input', function(e) {
-            let value = e.target.value.replace(/\D/g, '');
-            if (value.length <= 11) {
-                value = value.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1) $2-$3');
-                e.target.value = value;
+        // Função para selecionar morador
+        function selectMorador(morador) {
+            // Preencher campos
+            nomeMoradorInput.value = morador.nome;
+            emailInput.value = morador.email || '';
+            idMoradorInput.value = morador.id;
+            searchInput.value = morador.nome;
+            
+            // Mostrar informações do morador selecionado
+            selectedInfo.innerHTML = `
+                <div><strong>${morador.nome}</strong></div>
+                <div>Bloco ${morador.bloco}/${morador.torre}</div>
+                <div>Email: ${morador.email || 'Não cadastrado'}</div>
+            `;
+            
+            selectedMoradorDiv.style.display = 'block';
+            searchResults.style.display = 'none';
+            
+            // Adicionar feedback visual
+            searchInput.style.borderColor = '#28a745';
+            searchInput.style.backgroundColor = '#f8fff8';
+        }
+
+        // Função para limpar seleção
+        function clearSelection() {
+            nomeMoradorInput.value = '';
+            emailInput.value = '';
+            idMoradorInput.value = '';
+            searchInput.value = '';
+            selectedMoradorDiv.style.display = 'none';
+            searchInput.style.borderColor = '';
+            searchInput.style.backgroundColor = '';
+            searchInput.focus();
+        }
+
+        // Fechar resultados ao clicar fora
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.search-container')) {
+                searchResults.style.display = 'none';
             }
         });
+
+        // Validação do formulário
+        document.querySelector('form').addEventListener('submit', function(e) {
+            if (!idMoradorInput.value) {
+                e.preventDefault();
+                alert('Por favor, selecione um morador da lista de pesquisa.');
+                searchInput.focus();
+                return false;
+            }
+        });
+
+        // Definir data padrão como hoje
+        document.getElementById('data_recebimento').value = new Date().toISOString().split('T')[0];
     </script>
-    
-    <style>
-  /* Variáveis */
-:root {
-    --primary-color: #2c3e50;
-    --secondary-color: #34495e;
-    --accent-color: #3498db;
-    --success-color: #2ecc71;
-    --error-color: #e74c3c;
-    --warning-color: #f1c40f;
-    --text-color: #2c3e50;
-    --light-text: #7f8c8d;
-    --border-color: #d1d5db;
-    --background-color: #f8fafc;
-    --white: #ffffff;
-    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
-    --transition: all 0.3s ease;
-}
-
-/* Reset e Estilos Base */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-    font-family: 'Poppins', system-ui, -apple-system, sans-serif;
-}
-
-body {
-    background-color: var(--background-color);
-    color: var(--text-color);
-    line-height: 1.5;
-}
-
-/* Container */
-.container {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 1rem;
-    background:#2c3e50;
-}
-
-/* Form Container */
-.form-container {
-    background: var(--white);
-    width: 100%;
-    max-width: 28rem;
-    border-radius: 1rem;
-    box-shadow: var(--shadow-lg);
-    padding: 2rem;
-}
-
-/* Header */
-.header {
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
-.header h1 {
-    font-size: 1.875rem;
-    font-weight: bold;
-    color: var(--text-color);
-    margin-bottom: 0.5rem;
-}
-
-.header p {
-    color: var(--light-text);
-}
-
-/* Form Fields */
-.input-field {
-    margin-bottom: 1.5rem;
-}
-
-label {
-    display: block;
-    font-size: 0.875rem;
-    font-weight: 500;
-    color: var(--text-color);
-    margin-bottom: 0.5rem;
-}
-
-.input-container {
-    position: relative;
-}
-
-.input-container i {
-    position: absolute;
-    left: 0.75rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--light-text);
-    width: 1.25rem;
-    height: 1.25rem;
-}
-
-input {
-    width: 100%;
-    padding: 0.75rem 0.75rem 0.75rem 2.5rem;
-    border: 1px solid var(--border-color);
-    border-radius: 0.5rem;
-    outline: none;
-    transition: var(--transition);
-    font-size: 0.875rem;
-}
-
-input:focus {
-    border-color: var(--accent-color);
-    box-shadow: 0 0 0 3px rgba(52, 152, 219, 0.2);
-}
-
-/* Error Message */
-.error-message {
-    display: none;
-    color: var(--error-color);
-    font-size: 0.875rem;
-    margin-bottom: 1rem;
-    padding: 0.5rem;
-    border-radius: 0.25rem;
-    background-color: rgba(231, 76, 60, 0.1);
-}
-
-/* Submit Button */
-.submit-button {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    background-color: var(--primary-color);
-    color: var(--white);
-    padding: 0.75rem 1rem;
-    border: none;
-    border-radius: 0.5rem;
-    font-weight: 500;
-    cursor: pointer;
-    transition: var(--transition);
-}
-
-.submit-button:hover {
-    background-color: var(--secondary-color);
-}
-
-.submit-button:disabled {
-    opacity: 0.7;
-    cursor: not-allowed;
-}
-
-.submit-button i {
-    width: 1.25rem;
-    height: 1.25rem;
-}
-
-/* Toggle Container */
-.toggle-container {
-    margin-top: 1.5rem;
-    text-align: center;
-}
-
-.toggle-button {
-    background: none;
-    border: none;
-    color: var(--accent-color);
-    font-weight: 500;
-    cursor: pointer;
-    transition: var(--transition);
-    text-decoration: none;
-}
-
-.toggle-button:hover {
-    color: var(--primary-color);
-}
-
-/* Loading Animation */
-.animate-spin {
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    from {
-        transform: rotate(0deg);
-    }
-    to {
-        transform: rotate(360deg);
-    }
-}
-
-/* Responsive Design */
-@media (max-width: 640px) {
-    .form-container {
-        padding: 1.5rem;
-    }
-    
-    .header h1 {
-        font-size: 1.5rem;
-    }
-}
-
-/* Notifications */
-.notification {
-    position: fixed;
-    top: 1rem;
-    right: 1rem;
-    padding: 1rem;
-    border-radius: 0.5rem;
-    background: var(--white);
-    box-shadow: var(--shadow-lg);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    z-index: 1000;
-    animation: slideIn 0.3s ease-out;
-}
-
-.notification.success {
-    border-left: 4px solid var(--success-color);
-}
-
-.notification.error {
-    border-left: 4px solid var(--error-color);
-}
-
-.notification.warning {
-    border-left: 4px solid var(--warning-color);
-}
-
-@keyframes slideIn {
-    from {
-        transform: translateX(100%);
-        opacity: 0;
-    }
-    to {
-        transform: translateX(0);
-        opacity: 1;
-    }
-}
-
-/* Loading States */
-.loading {
-    position: relative;
-    pointer-events: none;
-}
-
-.loading::after {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(255, 255, 255, 0.7);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: inherit;
-}
-
-/* Form Validation */
-input:invalid {
-    border-color: var(--error-color);
-}
-
-input:invalid:focus {
-    box-shadow: 0 0 0 3px rgba(231, 76, 60, 0.2);
-}
-
-/* Accessibility */
-.visually-hidden {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    padding: 0;
-    margin: -1px;
-    overflow: hidden;
-    clip: rect(0, 0, 0, 0);
-    white-space: nowrap;
-    border: 0;
-}
-
-/* Reset e variáveis */
-:root {
-    --primary-color: #2c3e50;
-    --secondary-color: #3498db;
-    --success-color: #27ae60;
-    --warning-color: #f39c12;
-    --danger-color: #e74c3c;
-    --light-bg: #f8f9fa;
-    --dark-bg: #2c3e50;
-    --text-color: #2c3e50;
-    --light-text: #ffffff;
-    --border-radius: 8px;
-    --shadow: 0 2px 4px rgba(0,0,0,0.1);
-    --transition: all 0.3s ease;
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Roboto', Arial, sans-serif;
-    line-height: 1.6;
-    color: var(--text-color);
-    background-color: #f5f6fa;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-}
-
-/* Header e navegação */
-header {
-    background-color: var(--dark-bg);
-    color: var(--light-text);
-    padding: 1rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    position: fixed;
-    width: 100%;
-    top: 0;
-    z-index: 1000;
-}
-
-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 1rem;
-}
-
-.logo h1 {
-    font-size: 1.5rem;
-    font-weight: 700;
-    color: var(--light-text);
-}
-
-.menu {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
-
-.menu li {
-    position: relative;
-}
-
-nav {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1rem 2rem;
-    background-color: var(--primary-color);
-}
-
-.logo h1 {
-    color: var(--white);
-    font-size: 1.5rem;
-    margin: 0;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.menu a {
-    color: var(--light-text);
-    text-decoration: none;
-    font-weight: 400;
-    padding: 0.5rem 1rem;
-    border-radius: var(--border-radius);
-    transition: var(--transition);
-}
-
-.menu a:hover {
-    background-color: rgba(255, 255, 255, 0.1);
-}
-
-/* Main content */
-main {
-    max-width: 1200px;
-    margin: 6rem auto 2rem;
-    padding: 0 1rem;
-    flex: 1;
-}
-
-/* Dashboard */
-.dashboard {
-    margin-bottom: 2rem;
-}
-
-.dashboard h2 {
-    color: var(--text-color);
-    margin-bottom: 1.5rem;
-    font-size: 1.8rem;
-}
-
-.cards {
-    display: flex;
-    justify-content: space-between;
-    gap: 1.5rem;
-    margin-top: 1rem;
-}
-
-.card {
-    background-color: white;
-    padding: 1.2rem;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
-    transition: var(--transition);
-    flex: 1;
-}
-
-.card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
-.card h3 {
-    color: var(--primary-color);
-    font-size: 1.1rem;
-    margin-bottom: 1rem;
-}
-
-.card p {
-    font-size: 2rem;
-    font-weight: bold;
-    color: var(--secondary-color);
-}
-
-/* Botões */
-.botoes {
-    display: flex;
-    gap: 1rem;
-    margin-top: 2rem;
-    flex-wrap: wrap;
-}
-
-button {
-    padding: 0.8rem 1.5rem;
-    border: none;
-    border-radius: var(--border-radius);
-    cursor: pointer;
-    font-weight: 500;
-    transition: var(--transition);
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-button:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
-.btn-primary {
-    background-color: var(--secondary-color);
-    color: white;
-}
-
-.btn-success {
-    background-color: var(--success-color);
-    color: white;
-}
-
-.btn-danger {
-    background-color: var(--danger-color);
-    color: white;
-}
-
-/* Formulários */
-.form-section {
-    background-color: white;
-    padding: 2rem;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
-    margin-bottom: 2px;
-    
- 
-}
-
-.form-section h3 {
-    color: var(--text-color);
-    margin-bottom: 1.5rem;
-    font-size: 1.5rem;
-    
-}
-
-
-.form-group {
-    margin-bottom: 1.5rem;  
-    
-}
-
-.form-group label {
-    margin-bottom: 0.5rem;
-    font-weight: 500;
-    color: var(--text-color);
-    margin-top: 2rem;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-    
-}
-
-.form-group input,
-.form-group select {
-    width: 100%;
-    padding: 0.8rem;
-    border: 1px solid #ddd;
-    border-radius: var(--border-radius);
-    font-size: 1rem;
-    transition: var(--transition);
-    
-}
-
-.form-group input:focus,
-.form-group select:focus {
-    outline: none;
-    border-color: var(--secondary-color);
-    box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
-}
-
-/* Listas */
-.lista-section {
-    margin-top: 2rem;
-}
-
-.lista-section h3 {
-    color: var(--text-color);
-    margin-bottom: 1rem;
-    font-size: 1.5rem;
-}
-
-.lista-item {
-    background-color: white;
-    padding: 1.5rem;
-    border-radius: var(--border-radius);
-    margin-bottom: 1rem;
-    box-shadow: var(--shadow);
-    transition: var(--transition);
-}
-
-.lista-item:hover {
-    transform: translateX(5px);
-    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-}
-
-.lista-item h4 {
-    color: var(--primary-color);
-    margin-bottom: 0.5rem;
-    font-size: 1.2rem;
-}
-
-.lista-item p {
-    color: #666;
-    margin-bottom: 0.5rem;
-}
-
-/* Cards de Funcionários */
-.cards-funcionarios {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1rem;
-}
-
-.card-funcionario {
-    background-color: white;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
-    overflow: hidden;
-    transition: var(--transition);
-    border-left: 4px solid var(--secondary-color);
-}
-
-.card-funcionario:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
-}
-
-.card-header {
-    background-color: #f8f9fa;
-    padding: 4rem;
-    border-bottom: 1px solid #eee;
-    display: flex;
-    align-items: center;
-    gap: 0.8rem;
-}
-
-.card-header i {
-    font-size: 1.5rem;
-    color: var(--secondary-color);
-}
-
-.card-header h4 {
-    color: var(--primary-color);
-    font-size: 1.2rem;
-    margin: 0;
-    flex: 1;
-}
-
-.card-body {
-    padding: 1rem;
-}
-
-.card-body p {
-    margin-bottom: 0.8rem;
-    color: #555;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-}
-
-.card-body p i {
-    color: var(--secondary-color);
-    width: 20px;
-    text-align: center;
-}
-
-.card-footer {
-    padding: 1rem;
-    background-color: #f8f9fa;
-    border-top: 1px solid #eee;
-    display: flex;
-    justify-content: flex-end;
-    gap: 0.8rem;
-}
-
-.btn-editar, .btn-remover {
-    padding: 0.5rem 1rem;
-    border-radius: var(--border-radius);
-    font-size: 0.9rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    cursor: pointer;
-    transition: var(--transition);
-}
-
-.btn-editar {
-    background-color: #f8f9fa;
-    color: var(--secondary-color);
-    border: 1px solid var(--secondary-color);
-}
-
-.btn-remover {
-    background-color: #f8f9fa;
-    color: var(--danger-color);
-    border: 1px solid var(--danger-color);
-}
-
-.btn-editar:hover {
-    background-color: var(--secondary-color);
-    color: white;
-}
-
-.btn-remover:hover {
-    background-color: var(--danger-color);
-    color: white;
-}
-
-.sem-registros {
-    text-align: center;
-    padding: 2rem;
-    background-color: #f8f9fa;
-    border-radius: var(--border-radius);
-    color: #777;
-    font-style: italic;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 1rem;
-}
-
-.sem-registros i {
-    font-size: 2rem;
-    color: var(--secondary-color);
-}
-
-/* Tabelas de relatório */
-.tabela-relatorio {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 1rem;
-    background-color: white;
-    border-radius: var(--border-radius);
-    overflow: hidden;
-    box-shadow: var(--shadow);
-}
-
-.tabela-relatorio th,
-.tabela-relatorio td {
-    padding: 1rem;
-    text-align: left;
-    border-bottom: 1px solid #eee;
-}
-
-.tabela-relatorio th {
-    background-color: var(--primary-color);
-    color: white;
-    font-weight: 500;
-}
-
-.tabela-relatorio tr:hover {
-    background-color: #f5f6fa;
-}
-
-/* Footer */
-footer {
-    background-color: var(--dark-bg);
-    color: var(--light-text);
-    text-align: center;
-    padding: 1rem;
-    width: 100%;
-    margin-top: auto;
-    position: sticky;
-    bottom: 0;
-}
-
-/* Responsividade */
-@media (max-width: 768px) {
-    .menu {
-        display: none;
-        position: absolute;
-        top: 100%;
-        left: 0;
-        right: 0;
-        background-color: var(--dark-bg);
-        padding: 1rem;
-        flex-direction: column;
-        gap: 1rem;
-    }
-
-    .menu.active {
-        display: flex;
-    }
-
-    .menu-toggle {
-        display: block;
-        background: none;
-        border: none;
-        color: white;
-        font-size: 1.5rem;
-        cursor: pointer;
-    }
-
-    main {
-        margin-top: 5rem;
-        padding: 0 1rem 1rem;
-    }
-
-    .cards {
-        flex-direction: column;
-    }
-
-    .botoes {
-        flex-direction: column;
-    }
-
-    button {
-        width: 100%;
-    }
-}
-
-/* Animações */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-.card, .lista-item, .form-section {
-    animation: fadeIn 0.5s ease-out;
-} 
-
-  form {
-    margin-top: 2rem;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 1rem;
-  }
-
-  /* Dropdown Menu */
-.dropdown {
-    position: relative;
-    display: inline-block;
-}
-
-.dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: var(--white);
-    min-width: 200px;
-    box-shadow: var(--shadow-lg);
-    z-index: 100;
-    border-radius: 0.5rem;
-    margin-top: 0.5rem;
-    border: 1px solid var(--border-color);
-    right: 0;
-}
-
-.dropdown:hover .dropdown-content {
-    display: block;
-}
-
-.dropbtn {
-    color: var(--white);
-    text-decoration: none;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.5rem 1rem;
-}
-
-.dropdown-content a {
-    color: var(--primary-color);
-    padding: 12px 16px;
-    text-decoration: none;
-    display: block;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-
-.dropdown-content a:hover {
-    background-color: var(--background-color);
-    color: var(--accent-color);
-    padding-left: 20px;
-}
-
-.menu .dropdown {
-    position: relative;
-}
-
-.menu .dropdown .dropbtn:hover {
-    color: var(--accent-color);
-}
-</style>
 </body>
 </html>
