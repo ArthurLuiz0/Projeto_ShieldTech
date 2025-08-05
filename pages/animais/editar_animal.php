@@ -50,14 +50,7 @@
                 <li><a href="../relatorios/relatorios.php"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
                 <li><a href="../reservas/reservas.php"><i class="fas fa-calendar"></i> Reservas</a></li>
                 <li><a href="../encomendas/cadastro_encomendas.php"><i class="fas fa-box"></i> Encomendas</a></li>
-                <li class="dropdown">
-                    <a href="#" class="dropbtn"><i class="fas fa-gear"></i> Cadastros</a>
-                    <div class="dropdown-content">
-                        <a href="../moradores/cadastro_moradores.php">Moradores</a>
-                        <a href="../funcionarios/cadastro_funcionarios.php">Funcionários</a>
-                        <a href="../cargos/cadastro_cargos.php">Cargos</a>
-                        <a href="../animais/cadastro_animais.php">Animais</a>
-                        <a href="../veiculos/cadastro_veiculos.php">Veículos</a>
+                        <input type="text" id="tipo" name="tipo" value="<?= $campo["tipo"] ?>" placeholder="Ex: Cão, Gato, Pássaro" required>
                     </div>
                 </li>
             </ul>
@@ -90,12 +83,7 @@
                 </div>
 
                 <div class="form-group">
-                    <label for="porte">Porte:</label>
-                    <select id="porte" name="porte" required>
-                        <option value="">Selecione o porte</option>
-                        <option value="Pequeno" <?= $campo["porte"] == "Pequeno" ? "selected" : "" ?>>Pequeno</option>
-                        <option value="Médio" <?= $campo["porte"] == "Médio" ? "selected" : "" ?>>Médio</option>
-                        <option value="Grande" <?= $campo["porte"] == "Grande" ? "selected" : "" ?>>Grande</option>
+                        <input type="text" id="porte" name="porte" value="<?= $campo["porte"] ?>" placeholder="Ex: Pequeno, Médio, Grande" required>
                     </select>
                 </div>
 

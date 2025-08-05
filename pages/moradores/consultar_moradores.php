@@ -78,6 +78,7 @@
                     <thead>
                         <tr>
                             <th>ID</th>
+                            <th>Foto</th>
                             <th>Nome</th>
                             <th>CPF</th>
                             <th>Telefone</th>
@@ -142,6 +143,15 @@
                                 
                                 echo "<tr>";
                                 echo "<td>" . $campo["id_moradores"] . "</td>";
+                                echo "<td>";
+                                if ($campo["foto"]) {
+                                    echo "<img src='" . $campo["foto"] . "' alt='Foto de " . $campo["nome"] . "' style='width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #3498db;'>";
+                                } else {
+                                    echo "<div style='width: 50px; height: 50px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; border: 2px solid #ddd;'>";
+                                    echo "<i class='fas fa-user' style='color: #999;'></i>";
+                                    echo "</div>";
+                                }
+                                echo "</td>";
                                 echo "<td>" . $campo["nome"] . "</td>";
                                 echo "<td>" . $campo["cpf"] . "</td>";
                                 echo "<td>" . $campo["telefone"] . "</td>";
@@ -160,7 +170,7 @@
                                 echo "</tr>";
                             }
                         } else {
-                            echo "<tr><td colspan='11' style='text-align: center;'>Nenhum morador cadastrado</td></tr>";
+                            echo "<tr><td colspan='12' style='text-align: center;'>Nenhum morador cadastrado</td></tr>";
                         }
                         ?>
                     </tbody>

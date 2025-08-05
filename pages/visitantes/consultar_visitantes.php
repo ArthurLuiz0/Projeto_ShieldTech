@@ -71,6 +71,7 @@
                     <thead>
                         <tr>
                             <th>ID</th>
+                            <th>Foto</th>
                             <th>Nome</th>
                             <th>Documento</th>
                             <th>Telefone</th>
@@ -89,6 +90,15 @@
                             while ($campo = mysqli_fetch_array($selecionar)) {
                                 echo "<tr>";
                                 echo "<td>" . $campo["id_visitantes"] . "</td>";
+                                echo "<td>";
+                                if ($campo["foto"]) {
+                                    echo "<img src='" . $campo["foto"] . "' alt='Foto de " . $campo["nome_visitante"] . "' style='width: 50px; height: 50px; border-radius: 50%; object-fit: cover; border: 2px solid #3498db;'>";
+                                } else {
+                                    echo "<div style='width: 50px; height: 50px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; border: 2px solid #ddd;'>";
+                                    echo "<i class='fas fa-user' style='color: #999;'></i>";
+                                    echo "</div>";
+                                }
+                                echo "</td>";
                                 echo "<td>" . $campo["nome_visitante"] . "</td>";
                                 echo "<td>" . $campo["num_documento"] . "</td>";
                                 echo "<td>" . $campo["telefone"] . "</td>";
@@ -108,7 +118,7 @@
                                 echo "</tr>";
                             }
                         } else {
-                            echo "<tr><td colspan='8' style='text-align: center;'>Nenhum visitante cadastrado</td></tr>";
+                            echo "<tr><td colspan='9' style='text-align: center;'>Nenhum visitante cadastrado</td></tr>";
                         }
                         ?>
                     </tbody>

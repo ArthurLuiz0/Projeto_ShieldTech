@@ -108,7 +108,14 @@
 
                 <div class="form-group full-width">
                     <label for="foto">Foto (URL):</label>
-                    <input type="text" id="foto" name="foto" placeholder="URL da foto">
+                    <input type="text" id="foto" name="foto" placeholder="https://exemplo.com/foto.jpg">
+                    <small style="color: #666; font-size: 0.8em;">
+                        <i class="fas fa-info-circle"></i> 
+                        Cole aqui o link direto da foto (ex: de um Google Drive, Dropbox, ou servidor de imagens)
+                    </small>
+                    <div id="foto-preview" style="margin-top: 0.5rem; display: none;">
+                        <img id="preview-img" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid #3498db;">
+                    </div>
                 </div>
 
                 <div class="form-actions">
@@ -129,6 +136,7 @@
                     <thead>
                         <tr>
                             <th>Nome</th>
+                            <th>Foto</th>
                             <th>Documento</th>
                             <th>Telefone</th>
                             <th>Email</th>
@@ -144,6 +152,15 @@
                             while ($campo = mysqli_fetch_array($selecionar)) {
                                 echo "<tr>";
                                 echo "<td>" . $campo["nome_visitante"] . "</td>";
+                                echo "<td>";
+                                if ($campo["foto"]) {
+                                    echo "<img src='" . $campo["foto"] . "' alt='Foto de " . $campo["nome_visitante"] . "' style='width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #28a745;'>";
+                                } else {
+                                    echo "<div style='width: 40px; height: 40px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; border: 2px solid #ddd;'>";
+                                    echo "<i class='fas fa-user' style='color: #999; font-size: 0.8rem;'></i>";
+                                    echo "</div>";
+                                }
+                                echo "</td>";
                                 echo "<td>" . $campo["num_documento"] . "</td>";
                                 echo "<td>" . $campo["telefone"] . "</td>";
                                 echo "<td>" . ($campo["email"] ? $campo["email"] : "Não informado") . "</td>";
@@ -155,7 +172,7 @@
                                 echo "</tr>";
                             }
                         } else {
-                            echo "<tr><td colspan='6' style='text-align: center;'>Nenhum visitante presente</td></tr>";
+                            echo "<tr><td colspan='7' style='text-align: center;'>Nenhum visitante presente</td></tr>";
                         }
                         ?>
                     </tbody>
@@ -169,6 +186,7 @@
     </footer>
 
     <script src="../../js/cpf-validator.js"></script>
+    <script src="../../js/photo-preview.js"></script>
     <script>
         // Configurar validação de CPF para visitantes
         document.addEventListener('DOMContentLoaded', () => {

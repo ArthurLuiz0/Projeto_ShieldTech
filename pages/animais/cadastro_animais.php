@@ -72,28 +72,14 @@
 
                         <div class="form-group">
                             <label for="tipo">Tipo:</label>
-                            <select id="tipo" name="tipo" required>
-                                <option value="">Selecione o tipo</option>
-                                <option value="Cão">Cão</option>
-                                <option value="Gato">Gato</option>
-                                <option value="Pássaro">Pássaro</option>
-                                <option value="Peixe">Peixe</option>
-                                <option value="Hamster">Hamster</option>
-                                <option value="Coelho">Coelho</option>
-                                <option value="Outro">Outro</option>
-                            </select>
+                            <input type="text" id="tipo" name="tipo" placeholder="Ex: Cão, Gato, Pássaro" required>
                         </div>
                     </div>
 
                     <div class="form-row">
                         <div class="form-group">
                             <label for="porte">Porte:</label>
-                            <select id="porte" name="porte" required>
-                                <option value="">Selecione o porte</option>
-                                <option value="Pequeno">Pequeno (até 10kg)</option>
-                                <option value="Médio">Médio (10kg a 25kg)</option>
-                                <option value="Grande">Grande (acima de 25kg)</option>
-                            </select>
+                            <input type="text" id="porte" name="porte" placeholder="Ex: Pequeno, Médio, Grande" required>
                         </div>
 
                         <div class="form-group">
@@ -131,9 +117,9 @@
                 <div class="info-cards">
                     <?php
                     $total_animais = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM tb_animais"));
-                    $caes = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM tb_animais WHERE tipo = 'Cão'"));
-                    $gatos = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM tb_animais WHERE tipo = 'Gato'"));
-                    $outros = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM tb_animais WHERE tipo NOT IN ('Cão', 'Gato')"));
+                    $caes = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM tb_animais WHERE tipo LIKE '%Cão%' OR tipo LIKE '%cão%' OR tipo LIKE '%Dog%' OR tipo LIKE '%dog%'"));
+                    $gatos = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM tb_animais WHERE tipo LIKE '%Gato%' OR tipo LIKE '%gato%' OR tipo LIKE '%Cat%' OR tipo LIKE '%cat%'"));
+                    $outros = $total_animais - $caes - $gatos;
                     ?>
                     
                     <div class="info-card">
@@ -168,11 +154,15 @@
                         $recentes = mysqli_query($conn, "SELECT a.*, m.nome as nome_morador FROM tb_animais a
                                                         LEFT JOIN tb_moradores m ON a.id_morador = m.id_moradores 
                                                         ORDER BY a.id_animais DESC LIMIT 5");
-                        while ($animal = mysqli_fetch_array($recentes)) {
-                            echo "<div class='recent-item'>";
-                            echo "<strong>" . $animal['nome'] . "</strong> (" . $animal['tipo'] . ")";
-                            echo "<br><small>Responsável: " . $animal['nome_morador'] . "</small>";
-                            echo "</div>";
+                        if (mysqli_num_rows($recentes) > 0) {
+                            while ($animal = mysqli_fetch_array($recentes)) {
+                                echo "<div class='recent-item'>";
+                                echo "<strong>" . $animal['nome'] . "</strong> (" . $animal['tipo'] . ")";
+                                echo "<br><small>Responsável: " . $animal['nome_morador'] . "</small>";
+                                echo "</div>";
+                            }
+                        } else {
+                            echo "<div class='recent-item'>Nenhum animal cadastrado ainda</div>";
                         }
                         ?>
                     </div>

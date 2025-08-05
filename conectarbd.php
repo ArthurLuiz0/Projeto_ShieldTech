@@ -68,4 +68,17 @@ $check_email_moradores = mysqli_query($conn, "SHOW COLUMNS FROM tb_moradores LIK
 if (mysqli_num_rows($check_email_moradores) == 0) {
     mysqli_query($conn, "ALTER TABLE tb_moradores ADD COLUMN email VARCHAR(100)");
 }
+
+// Verificar e ajustar estrutura da tabela tb_animais conforme banco de dados
+$check_animais_structure = mysqli_query($conn, "SHOW COLUMNS FROM tb_animais");
+$columns = [];
+while ($col = mysqli_fetch_array($check_animais_structure)) {
+    $columns[] = $col['Field'];
+}
+
+// Verificar se a coluna id_morador existe na tb_animais
+if (!in_array('id_morador', $columns)) {
+    mysqli_query($conn, "ALTER TABLE tb_animais ADD COLUMN id_morador INT");
+    mysqli_query($conn, "ALTER TABLE tb_animais ADD FOREIGN KEY (id_morador) REFERENCES tb_moradores(id_moradores)");
+}
 ?>
