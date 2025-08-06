@@ -41,15 +41,71 @@
                 <i class="fas fa-plus"></i> Novo Funcionário
             </a>
         </div>
-        
+
+        <section class="form-section">
+            <h3>Pesquisar Funcionários</h3>
+            <form method="GET" action="">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="pesquisa">Pesquisar por nome:</label>
+                        <input type="text" id="pesquisa" name="pesquisa" placeholder="Digite o nome do funcionário..." 
+                               value="<?= $_GET['pesquisa'] ?? '' ?>">
+                    </div>
+                    <div class="form-group">
+                        <label for="filtro_cargo">Filtrar por cargo:</label>
+                        <select id="filtro_cargo" name="filtro_cargo">
+                            <option value="">Todos os cargos</option>
+                            <?php
+                            $cargos = mysqli_query($conn, "SELECT DISTINCT funcao_cargo FROM tb_funcionarios WHERE funcao_cargo IS NOT NULL ORDER BY funcao_cargo");
+                            while ($cargo = mysqli_fetch_array($cargos)) {
+                                $selected = (isset($_GET['filtro_cargo']) && $_GET['filtro_cargo'] == $cargo['funcao_cargo']) ? 'selected' : '';
+                                echo "<option value='" . $cargo["funcao_cargo"] . "' $selected>" . $cargo["funcao_cargo"] . "</option>";
+                            }
+                            ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-search"></i> Pesquisar
+                    </button>
+                    <a href="consultar_funcionarios.php" class="btn-secondary">
+                        <i class="fas fa-refresh"></i> Limpar Filtros
+                    </a>
+                </div>
+            </form>
+        </section>
 
         <section class="lista-section">
             <div class="cards-funcionarios">
                 <?php
                 include("../../conectarbd.php");
-                $selecionar = mysqli_query($conn, "SELECT * FROM tb_funcionarios ORDER BY nome");
+                
+                // Construir query com filtros
+                $sql = "SELECT * FROM tb_funcionarios WHERE 1=1";
+                
+                if (isset($_GET['pesquisa']) && !empty($_GET['pesquisa'])) {
+                    $pesquisa = mysqli_real_escape_string($conn, $_GET['pesquisa']);
+                    $sql .= " AND nome LIKE '%$pesquisa%'";
+                }
+                
+                if (isset($_GET['filtro_cargo']) && !empty($_GET['filtro_cargo'])) {
+                    $cargo = mysqli_real_escape_string($conn, $_GET['filtro_cargo']);
+                    $sql .= " AND funcao_cargo = '$cargo'";
+                }
+                
+                $sql .= " ORDER BY nome";
+                
+                $selecionar = mysqli_query($conn, $sql);
                 
                 if (mysqli_num_rows($selecionar) > 0) {
+                    $total_encontrados = mysqli_num_rows($selecionar);
+                    if (isset($_GET['pesquisa']) || isset($_GET['filtro_cargo'])) {
+                        echo "<div style='margin-bottom: 1rem; padding: 0.5rem; background: #e8f4fd; border-radius: 0.5rem; border-left: 4px solid #3498db;'>";
+                        echo "<i class='fas fa-info-circle'></i> Encontrados $total_encontrados funcionário(s)";
+                        echo "</div>";
+                    }
+                    
                     while ($campo = mysqli_fetch_array($selecionar)) {
                         echo "<div class='card-funcionario'>";
                         echo "<div class='card-header'>";

@@ -41,16 +41,72 @@
             </a>
         </div>
 
+        <section class="form-section">
+            <h3>Pesquisar Animais</h3>
+            <form method="GET" action="">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="pesquisa">Pesquisar por nome:</label>
+                        <input type="text" id="pesquisa" name="pesquisa" placeholder="Digite o nome do animal..." 
+                               value="<?= $_GET['pesquisa'] ?? '' ?>">
+                    </div>
+                    <div class="form-group">
+                        <label for="filtro_tipo">Filtrar por tipo:</label>
+                        <select id="filtro_tipo" name="filtro_tipo">
+                            <option value="">Todos os tipos</option>
+                            <?php
+                            $tipos = mysqli_query($conn, "SELECT DISTINCT tipo FROM tb_animais WHERE tipo IS NOT NULL ORDER BY tipo");
+                            while ($tipo = mysqli_fetch_array($tipos)) {
+                                $selected = (isset($_GET['filtro_tipo']) && $_GET['filtro_tipo'] == $tipo['tipo']) ? 'selected' : '';
+                                echo "<option value='" . $tipo["tipo"] . "' $selected>" . $tipo["tipo"] . "</option>";
+                            }
+                            ?>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-search"></i> Pesquisar
+                    </button>
+                    <a href="consultar_animais.php" class="btn-secondary">
+                        <i class="fas fa-refresh"></i> Limpar Filtros
+                    </a>
+                </div>
+            </form>
+        </section>
         <section class="lista-section">
             <div class="cards-animais">
                 <?php
                 include("../../conectarbd.php");
-                $selecionar = mysqli_query($conn, "SELECT a.*, m.nome as nome_morador, m.bloco, m.torre 
-                                                  FROM tb_animais a 
-                                                  LEFT JOIN tb_moradores m ON a.id_morador = m.id_moradores 
-                                                  ORDER BY a.nome");
+                
+                // Construir query com filtros
+                $sql = "SELECT a.*, m.nome as nome_morador, m.bloco, m.torre 
+                        FROM tb_animais a 
+                        LEFT JOIN tb_moradores m ON a.id_morador = m.id_moradores 
+                        WHERE 1=1";
+                
+                if (isset($_GET['pesquisa']) && !empty($_GET['pesquisa'])) {
+                    $pesquisa = mysqli_real_escape_string($conn, $_GET['pesquisa']);
+                    $sql .= " AND a.nome LIKE '%$pesquisa%'";
+                }
+                
+                if (isset($_GET['filtro_tipo']) && !empty($_GET['filtro_tipo'])) {
+                    $tipo = mysqli_real_escape_string($conn, $_GET['filtro_tipo']);
+                    $sql .= " AND a.tipo = '$tipo'";
+                }
+                
+                $sql .= " ORDER BY a.nome";
+                
+                $selecionar = mysqli_query($conn, $sql);
                 
                 if (mysqli_num_rows($selecionar) > 0) {
+                    $total_encontrados = mysqli_num_rows($selecionar);
+                    if (isset($_GET['pesquisa']) || isset($_GET['filtro_tipo'])) {
+                        echo "<div style='margin-bottom: 1rem; padding: 0.5rem; background: #e8f4fd; border-radius: 0.5rem; border-left: 4px solid #3498db;'>";
+                        echo "<i class='fas fa-info-circle'></i> Encontrados $total_encontrados animal(is)";
+                        echo "</div>";
+                    }
+                    
                     while ($campo = mysqli_fetch_array($selecionar)) {
                         echo "<div class='card-animal'>";
                         echo "<div class='card-header'>";

@@ -43,25 +43,31 @@
 
         <section class="form-section">
             <h3>Pesquisar Visitantes</h3>
-            <div class="form-row">
-                <div class="form-group">
-                    <label for="pesquisa">Pesquisar por nome:</label>
-                    <input type="text" id="pesquisa" name="pesquisa" placeholder="Digite o nome do visitante..." onkeyup="filtrarVisitantes()">
+            <form method="GET" action="">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="pesquisa">Pesquisar por nome:</label>
+                        <input type="text" id="pesquisa" name="pesquisa" placeholder="Digite o nome do visitante..." 
+                               value="<?= $_GET['pesquisa'] ?? '' ?>" onkeyup="filtrarVisitantes()">
+                    </div>
+                    <div class="form-group">
+                        <label for="filtro_status">Filtrar por status:</label>
+                        <select id="filtro_status" name="filtro_status" onchange="filtrarVisitantes()">
+                            <option value="">Todos os status</option>
+                            <option value="Presente" <?= (isset($_GET['filtro_status']) && $_GET['filtro_status'] == 'Presente') ? 'selected' : '' ?>>Presente</option>
+                            <option value="Saiu" <?= (isset($_GET['filtro_status']) && $_GET['filtro_status'] == 'Saiu') ? 'selected' : '' ?>>Saiu</option>
+                        </select>
+                    </div>
                 </div>
-                <div class="form-group">
-                    <label for="filtro_status">Filtrar por status:</label>
-                    <select id="filtro_status" name="filtro_status" onchange="filtrarVisitantes()">
-                        <option value="">Todos os status</option>
-                        <option value="Presente">Presente</option>
-                        <option value="Saiu">Saiu</option>
-                    </select>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-search"></i> Pesquisar
+                    </button>
+                    <a href="consultar_visitantes.php" class="btn-secondary">
+                        <i class="fas fa-refresh"></i> Limpar Filtros
+                    </a>
                 </div>
-            </div>
-            <div class="form-actions">
-                <button type="button" onclick="limparFiltros()" class="btn-secondary">
-                    <i class="fas fa-refresh"></i> Limpar Filtros
-                </button>
-            </div>
+            </form>
         </section>
         
         <section class="lista-section">
@@ -84,7 +90,23 @@
                     <tbody id="tabela-visitantes">
                         <?php
                         include("../../conectarbd.php");
-                        $selecionar = mysqli_query($conn, "SELECT * FROM tb_visitantes ORDER BY nome_visitante");
+                        
+                        // Construir query com filtros
+                        $sql = "SELECT * FROM tb_visitantes WHERE 1=1";
+                        
+                        if (isset($_GET['pesquisa']) && !empty($_GET['pesquisa'])) {
+                            $pesquisa = mysqli_real_escape_string($conn, $_GET['pesquisa']);
+                            $sql .= " AND nome_visitante LIKE '%$pesquisa%'";
+                        }
+                        
+                        if (isset($_GET['filtro_status']) && !empty($_GET['filtro_status'])) {
+                            $status = mysqli_real_escape_string($conn, $_GET['filtro_status']);
+                            $sql .= " AND status = '$status'";
+                        }
+                        
+                        $sql .= " ORDER BY nome_visitante";
+                        
+                        $selecionar = mysqli_query($conn, $sql);
                         
                         if (mysqli_num_rows($selecionar) > 0) {
                             while ($campo = mysqli_fetch_array($selecionar)) {
@@ -221,6 +243,12 @@
             if (!pesquisa) return texto;
             const regex = new RegExp(`(${pesquisa})`, 'gi');
             return texto.replace(regex, '<mark>$1</mark>');
+        }
+        
+        // Atualizar filtros em tempo real
+        function filtrarVisitantes() {
+            // Esta função agora é principalmente para feedback visual
+            // A filtragem real acontece no servidor via GET
         }
     </script>
 </body>

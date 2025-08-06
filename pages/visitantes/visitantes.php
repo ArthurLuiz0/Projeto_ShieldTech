@@ -99,6 +99,32 @@
                     </div>
 
                     <div class="form-group">
+                        <label for="morador_visitado">Morador Visitado:</label>
+                        <div class="search-container">
+                            <input type="text" id="search_morador" placeholder="Pesquisar morador..." autocomplete="off">
+                            <div class="search-results" id="search_results_morador"></div>
+                        </div>
+                        <input type="hidden" id="morador_visitado" name="morador_visitado" required>
+                        <div class="selected-morador" id="selected_morador_display" style="display: none;">
+                            <div style="background: #e8f5e8; padding: 0.8rem; border-radius: 0.5rem; border-left: 4px solid #28a745; margin-top: 0.5rem;">
+                        <div style="margin: 0.5rem 0; text-align: center; color: #666;">
+                            <span>OU</span>
+                        </div>
+                        <label for="foto_file">Foto (Arquivo Local):</label>
+                        <input type="file" id="foto_file" name="foto_file" accept="image/*" onchange="previewLocalImage(this)">
+                                <strong>Morador selecionado:</strong>
+                                <div id="selected_morador_info"></div>
+                            Cole o link da foto OU selecione um arquivo do seu dispositivo
+                                    <i class="fas fa-times"></i>
+                                </button>
+                            </div>
+                        </div>
+                        <div id="foto-preview-local" style="margin-top: 0.5rem; display: none;">
+                            <img id="preview-img-local" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid #28a745;">
+                        </div>
+                    </div>
+
+                    <div class="form-group">
                         <label for="status">Status:</label>
                         <select id="status" name="status" required>
                             <option value="Presente">Presente</option>                   
@@ -188,6 +214,98 @@
     <script src="../../js/cpf-validator.js"></script>
     <script src="../../js/photo-preview.js"></script>
     <script>
+        // Dados dos moradores para pesquisa
+        const moradores = [
+            <?php
+            $moradores_query = mysqli_query($conn, "SELECT id_moradores, nome, bloco, torre, telefone FROM tb_moradores ORDER BY nome");
+            $moradores_js = [];
+            while ($morador = mysqli_fetch_array($moradores_query)) {
+                $moradores_js[] = "{
+                    id: " . $morador["id_moradores"] . ",
+                    nome: '" . addslashes($morador["nome"]) . "',
+                    bloco: '" . addslashes($morador["bloco"]) . "',
+                    torre: '" . addslashes($morador["torre"]) . "',
+                    telefone: '" . addslashes($morador["telefone"]) . "'
+                }";
+            }
+            echo implode(",\n            ", $moradores_js);
+            ?>
+        ];
+
+        // Configuração da pesquisa de moradores
+        const searchMoradorInput = document.getElementById('search_morador');
+        const searchResultsMorador = document.getElementById('search_results_morador');
+        const moradorVisitadoInput = document.getElementById('morador_visitado');
+        const selectedMoradorDisplay = document.getElementById('selected_morador_display');
+        const selectedMoradorInfo = document.getElementById('selected_morador_info');
+
+        searchMoradorInput.addEventListener('input', function() {
+            const query = this.value.toLowerCase().trim();
+            
+            const filteredMoradores = moradores.filter(morador => 
+                morador.nome.toLowerCase().includes(query) ||
+                morador.bloco.toLowerCase().includes(query) ||
+                morador.torre.toLowerCase().includes(query)
+            );
+            if (query.length < 2) {
+            if (filteredMoradores.length > 0) {
+                searchResultsMorador.innerHTML = '';
+                filteredMoradores.forEach(morador => {
+                    const div = document.createElement('div');
+                    div.className = 'search-item';
+                    div.innerHTML = `
+                        <div class="morador-info">
+                            <div class="morador-name">${morador.nome}</div>
+                            <div class="morador-details">Bloco ${morador.bloco}/${morador.torre} - Tel: ${morador.telefone}</div>
+                        </div>
+                    `;
+                    
+                    div.addEventListener('click', function() {
+                        selectMorador(morador);
+                    });
+                    
+                    searchResultsMorador.appendChild(div);
+                });
+                searchResultsMorador.style.display = 'block';
+            } else {
+                searchResultsMorador.innerHTML = '<div class="search-item">Nenhum morador encontrado</div>';
+                searchResultsMorador.style.display = 'block';
+            }
+        });
+                searchResultsMorador.style.display = 'none';
+        function selectMorador(morador) {
+            moradorVisitadoInput.value = morador.nome;
+            searchMoradorInput.value = morador.nome;
+            
+            selectedMoradorInfo.innerHTML = `
+                <div><strong>${morador.nome}</strong></div>
+                <div>Bloco ${morador.bloco}/${morador.torre}</div>
+                <div>Telefone: ${morador.telefone}</div>
+            `;
+            
+            selectedMoradorDisplay.style.display = 'block';
+            searchResultsMorador.style.display = 'none';
+            
+            searchMoradorInput.style.borderColor = '#28a745';
+            searchMoradorInput.style.backgroundColor = '#f8fff8';
+        }
+                return;
+        function clearMoradorSelection() {
+            moradorVisitadoInput.value = '';
+            searchMoradorInput.value = '';
+            selectedMoradorDisplay.style.display = 'none';
+            searchMoradorInput.style.borderColor = '';
+            searchMoradorInput.style.backgroundColor = '';
+            searchMoradorInput.focus();
+        }
+            }
+        // Fechar resultados ao clicar fora
+        document.addEventListener('click', function(e) {
+            if (!e.target.closest('.search-container')) {
+                searchResultsMorador.style.display = 'none';
+            }
+        });
+
         // Configurar validação de CPF para visitantes
         document.addEventListener('DOMContentLoaded', () => {
             CPFValidator.setupCompleteValidation('num_documento', 'cpf-error', 'visitantes');
@@ -201,6 +319,87 @@
                 e.target.value = value;
             }
         });
+        
+        // Preview de imagem local
+        function previewLocalImage(input) {
+            const preview = document.getElementById('foto-preview-local');
+            const img = document.getElementById('preview-img-local');
+            const urlPreview = document.getElementById('foto-preview');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    img.src = e.target.result;
+                    preview.style.display = 'block';
+                    // Ocultar preview da URL quando arquivo local é selecionado
+                    if (urlPreview) urlPreview.style.display = 'none';
+                };
+                
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.style.display = 'none';
+            }
+        }
+        
+        // Validação do formulário
+        document.querySelector('form').addEventListener('submit', function(e) {
+            if (!moradorVisitadoInput.value) {
+                e.preventDefault();
+                alert('Por favor, selecione um morador da lista de pesquisa.');
+                searchMoradorInput.focus();
+                return false;
+            }
+        });
     </script>
+    
+    <style>
+        .search-container {
+            position: relative;
+        }
+        
+        .search-results {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: white;
+            border: 1px solid #ddd;
+            border-top: none;
+            border-radius: 0 0 4px 4px;
+            max-height: 200px;
+            overflow-y: auto;
+            z-index: 1000;
+            display: none;
+        }
+        
+        .search-item {
+            padding: 10px;
+            cursor: pointer;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .search-item:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .search-item:last-child {
+            border-bottom: none;
+        }
+        
+        .morador-info {
+            flex: 1;
+        }
+        
+        .morador-name {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .morador-details {
+            font-size: 0.9em;
+            color: #666;
+        }
+    </style>
 </body>
 </html>

@@ -182,12 +182,20 @@
                     <div class="form-group full-width">
                         <label for="foto">Foto (URL):</label>
                         <input type="text" id="foto" name="foto" placeholder="https://exemplo.com/foto.jpg">
+                        <div style="margin: 0.5rem 0; text-align: center; color: #666;">
+                            <span>OU</span>
+                        </div>
+                        <label for="foto_file">Foto (Arquivo Local):</label>
+                        <input type="file" id="foto_file" name="foto_file" accept="image/*" onchange="previewLocalImage(this)">
                         <small style="color: #666; font-size: 0.8em;">
                             <i class="fas fa-info-circle"></i> 
-                            Cole aqui o link direto da foto (ex: de um Google Drive, Dropbox, ou servidor de imagens)
+                            Cole o link da foto OU selecione um arquivo do seu dispositivo
                         </small>
                         <div id="foto-preview" style="margin-top: 0.5rem; display: none;">
                             <img id="preview-img" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid #3498db;">
+                        </div>
+                        <div id="foto-preview-local" style="margin-top: 0.5rem; display: none;">
+                            <img id="preview-img-local" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid #28a745;">
                         </div>
                     </div>
 
@@ -355,6 +363,28 @@
                 document.getElementById('tipo_animal').value = '';
                 document.getElementById('porte_animal').value = '';
                 document.getElementById('observacoes_animal').value = '';
+            }
+        }
+        
+        // Preview de imagem local
+        function previewLocalImage(input) {
+            const preview = document.getElementById('foto-preview-local');
+            const img = document.getElementById('preview-img-local');
+            const urlPreview = document.getElementById('foto-preview');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    img.src = e.target.result;
+                    preview.style.display = 'block';
+                    // Ocultar preview da URL quando arquivo local é selecionado
+                    urlPreview.style.display = 'none';
+                };
+                
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.style.display = 'none';
             }
         }
     </script>

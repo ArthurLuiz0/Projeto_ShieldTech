@@ -47,6 +47,12 @@
             <form method="get" action="">
                 <div class="form-row">
                     <div class="form-group">
+                        <label for="pesquisa">Pesquisar:</label>
+                        <input type="text" id="pesquisa" name="pesquisa" placeholder="Nome do morador ou local..." 
+                               value="<?= $_GET['pesquisa'] ?? '' ?>">
+                    </div>
+                    
+                    <div class="form-group">
                         <label for="filtro_local">Local:</label>
                         <select id="filtro_local" name="filtro_local">
                             <option value="">Todos os locais</option>
@@ -114,6 +120,11 @@
                                 LEFT JOIN tb_moradores m ON r.id_morador = m.id_moradores 
                                 WHERE 1=1";
                         
+                        if (isset($_GET['pesquisa']) && $_GET['pesquisa'] != '') {
+                            $pesquisa = mysqli_real_escape_string($conn, $_GET['pesquisa']);
+                            $sql .= " AND (m.nome LIKE '%$pesquisa%' OR r.local LIKE '%$pesquisa%')";
+                        }
+                        
                         if (isset($_GET['filtro_local']) && $_GET['filtro_local'] != '') {
                             $filtro_local = mysqli_real_escape_string($conn, $_GET['filtro_local']);
                             $sql .= " AND r.local = '$filtro_local'";
@@ -134,6 +145,13 @@
                         $selecionar = mysqli_query($conn, $sql);
                         
                         if (mysqli_num_rows($selecionar) > 0) {
+                            $total_encontrados = mysqli_num_rows($selecionar);
+                            if (isset($_GET['pesquisa']) || isset($_GET['filtro_local']) || isset($_GET['filtro_data']) || isset($_GET['filtro_morador'])) {
+                                echo "<div style='margin-bottom: 1rem; padding: 0.5rem; background: #e8f4fd; border-radius: 0.5rem; border-left: 4px solid #3498db;'>";
+                                echo "<i class='fas fa-info-circle'></i> Encontradas $total_encontrados reserva(s)";
+                                echo "</div>";
+                            }
+                            
                             while ($campo = mysqli_fetch_array($selecionar)) {
                                 $hoje = date('Y-m-d');
                                 $data_reserva = $campo["data"];

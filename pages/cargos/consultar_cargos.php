@@ -42,6 +42,36 @@
             </a>
         </div>
 
+        <section class="form-section">
+            <h3>Pesquisar Cargos</h3>
+            <form method="GET" action="">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="pesquisa">Pesquisar por nome:</label>
+                        <input type="text" id="pesquisa" name="pesquisa" placeholder="Digite o nome do cargo..." 
+                               value="<?= $_GET['pesquisa'] ?? '' ?>">
+                    </div>
+                    <div class="form-group">
+                        <label for="filtro_salario">Filtrar por faixa salarial:</label>
+                        <select id="filtro_salario" name="filtro_salario">
+                            <option value="">Todas as faixas</option>
+                            <option value="0-1500" <?= (isset($_GET['filtro_salario']) && $_GET['filtro_salario'] == '0-1500') ? 'selected' : '' ?>>Até R$ 1.500</option>
+                            <option value="1500-3000" <?= (isset($_GET['filtro_salario']) && $_GET['filtro_salario'] == '1500-3000') ? 'selected' : '' ?>>R$ 1.500 - R$ 3.000</option>
+                            <option value="3000-5000" <?= (isset($_GET['filtro_salario']) && $_GET['filtro_salario'] == '3000-5000') ? 'selected' : '' ?>>R$ 3.000 - R$ 5.000</option>
+                            <option value="5000+" <?= (isset($_GET['filtro_salario']) && $_GET['filtro_salario'] == '5000+') ? 'selected' : '' ?>>Acima de R$ 5.000</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-primary">
+                        <i class="fas fa-search"></i> Pesquisar
+                    </button>
+                    <a href="consultar_cargos.php" class="btn-secondary">
+                        <i class="fas fa-refresh"></i> Limpar Filtros
+                    </a>
+                </div>
+            </form>
+        </section>
         <section class="lista-section">
             <div class="tabela-container">
                 <table class="tabela-relatorio">
@@ -58,9 +88,45 @@
                     <tbody>
                         <?php
                         include("../../conectarbd.php");
-                        $selecionar = mysqli_query($conn, "SELECT * FROM tb_cargo ORDER BY nome_cargo");
+                        
+                        // Construir query com filtros
+                        $sql = "SELECT * FROM tb_cargo WHERE 1=1";
+                        
+                        if (isset($_GET['pesquisa']) && !empty($_GET['pesquisa'])) {
+                            $pesquisa = mysqli_real_escape_string($conn, $_GET['pesquisa']);
+                            $sql .= " AND nome_cargo LIKE '%$pesquisa%'";
+                        }
+                        
+                        if (isset($_GET['filtro_salario']) && !empty($_GET['filtro_salario'])) {
+                            $faixa = $_GET['filtro_salario'];
+                            switch($faixa) {
+                                case '0-1500':
+                                    $sql .= " AND CAST(salario_base AS DECIMAL(10,2)) <= 1500";
+                                    break;
+                                case '1500-3000':
+                                    $sql .= " AND CAST(salario_base AS DECIMAL(10,2)) > 1500 AND CAST(salario_base AS DECIMAL(10,2)) <= 3000";
+                                    break;
+                                case '3000-5000':
+                                    $sql .= " AND CAST(salario_base AS DECIMAL(10,2)) > 3000 AND CAST(salario_base AS DECIMAL(10,2)) <= 5000";
+                                    break;
+                                case '5000+':
+                                    $sql .= " AND CAST(salario_base AS DECIMAL(10,2)) > 5000";
+                                    break;
+                            }
+                        }
+                        
+                        $sql .= " ORDER BY nome_cargo";
+                        
+                        $selecionar = mysqli_query($conn, $sql);
                         
                         if (mysqli_num_rows($selecionar) > 0) {
+                            $total_encontrados = mysqli_num_rows($selecionar);
+                            if (isset($_GET['pesquisa']) || isset($_GET['filtro_salario'])) {
+                                echo "<div style='margin-bottom: 1rem; padding: 0.5rem; background: #e8f4fd; border-radius: 0.5rem; border-left: 4px solid #3498db;'>";
+                                echo "<i class='fas fa-info-circle'></i> Encontrados $total_encontrados cargo(s)";
+                                echo "</div>";
+                            }
+                            
                             while ($campo = mysqli_fetch_array($selecionar)) {
                                 echo "<tr>";
                                 echo "<td>" . $campo["id_cargos"] . "</td>";

@@ -42,6 +42,18 @@
             </a>
         </div>
 
+
+                <div class="form-group">
+                    <label for="foto_file">Foto (Arquivo Local):</label>
+                    <input type="file" id="foto_file" name="foto_file" accept="image/*" onchange="previewLocalImage(this)">
+                    <small style="color: #666; font-size: 0.8em;">
+                        <i class="fas fa-info-circle"></i> 
+                        Selecione uma foto do seu dispositivo
+                    </small>
+                    <div id="foto-preview-local" style="margin-top: 0.5rem; display: none;">
+                        <img id="preview-img-local" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid #3498db;">
+                    </div>
+                </div>
         <section class="form-section">
             <h3>Pesquisar Moradores</h3>
             <div class="form-row">
@@ -290,6 +302,25 @@
             if (!pesquisa) return texto;
             const regex = new RegExp(`(${pesquisa})`, 'gi');
             return texto.replace(regex, '<mark>$1</mark>');
+        }
+        
+        // Preview de imagem local
+        function previewLocalImage(input) {
+            const preview = document.getElementById('foto-preview-local');
+            const img = document.getElementById('preview-img-local');
+            
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                
+                reader.onload = function(e) {
+                    img.src = e.target.result;
+                    preview.style.display = 'block';
+                };
+                
+                reader.readAsDataURL(input.files[0]);
+            } else {
+                preview.style.display = 'none';
+            }
         }
     </script>
 </body>
