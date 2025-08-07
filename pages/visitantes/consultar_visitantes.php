@@ -83,6 +83,7 @@
                             <th>Telefone</th>
                             <th>Email</th>
                             <th>Data Nascimento</th>
+                            <th>Morador Visitado</th>
                             <th>Status</th>
                             <th>Ações</th>
                         </tr>
@@ -92,19 +93,22 @@
                         include("../../conectarbd.php");
                         
                         // Construir query com filtros
-                        $sql = "SELECT * FROM tb_visitantes WHERE 1=1";
+                        $sql = "SELECT v.*, m.nome as nome_morador, m.bloco, m.torre 
+                                FROM tb_visitantes v 
+                                LEFT JOIN tb_moradores m ON v.id_morador = m.id_moradores 
+                                WHERE 1=1";
                         
                         if (isset($_GET['pesquisa']) && !empty($_GET['pesquisa'])) {
                             $pesquisa = mysqli_real_escape_string($conn, $_GET['pesquisa']);
-                            $sql .= " AND nome_visitante LIKE '%$pesquisa%'";
+                            $sql .= " AND (v.nome_visitante LIKE '%$pesquisa%' OR m.nome LIKE '%$pesquisa%')";
                         }
                         
                         if (isset($_GET['filtro_status']) && !empty($_GET['filtro_status'])) {
                             $status = mysqli_real_escape_string($conn, $_GET['filtro_status']);
-                            $sql .= " AND status = '$status'";
+                            $sql .= " AND v.status = '$status'";
                         }
                         
-                        $sql .= " ORDER BY nome_visitante";
+                        $sql .= " ORDER BY v.nome_visitante";
                         
                         $selecionar = mysqli_query($conn, $sql);
                         
@@ -126,6 +130,7 @@
                                 echo "<td>" . $campo["telefone"] . "</td>";
                                 echo "<td>" . ($campo["email"] ? $campo["email"] : "Não informado") . "</td>";
                                 echo "<td>" . date('d/m/Y', strtotime($campo["data_nascimento"])) . "</td>";
+                                echo "<td>" . ($campo["nome_morador"] ? $campo["nome_morador"] . " - Bloco " . $campo["bloco"] . "/" . $campo["torre"] : "Não informado") . "</td>";
                                 echo "<td><span class='status-" . strtolower($campo["status"]) . "'>" . $campo["status"] . "</span></td>";
                                 echo "<td class='acoes'>";
                                 if ($campo["status"] == "Presente") {
@@ -140,7 +145,7 @@
                                 echo "</tr>";
                             }
                         } else {
-                            echo "<tr><td colspan='9' style='text-align: center;'>Nenhum visitante cadastrado</td></tr>";
+                            echo "<tr><td colspan='10' style='text-align: center;'>Nenhum visitante cadastrado</td></tr>";
                         }
                         ?>
                     </tbody>
@@ -157,7 +162,10 @@
         // Dados dos visitantes para filtro em JavaScript
         const visitantes = [
             <?php
-            $selecionar_js = mysqli_query($conn, "SELECT * FROM tb_visitantes ORDER BY nome_visitante");
+            $selecionar_js = mysqli_query($conn, "SELECT v.*, m.nome as nome_morador, m.bloco, m.torre 
+                                                 FROM tb_visitantes v 
+                                                 LEFT JOIN tb_moradores m ON v.id_morador = m.id_moradores 
+                                                 ORDER BY v.nome_visitante");
             $visitantes_js = [];
             while ($campo = mysqli_fetch_array($selecionar_js)) {
                 $visitantes_js[] = "{
@@ -167,6 +175,7 @@
                     telefone: '" . addslashes($campo["telefone"]) . "',
                     email: '" . addslashes($campo["email"] ? $campo["email"] : "Não informado") . "',
                     data_nascimento: '" . addslashes(date('d/m/Y', strtotime($campo["data_nascimento"]))) . "',
+                    morador_visitado: '" . addslashes($campo["nome_morador"] ? $campo["nome_morador"] . " - Bloco " . $campo["bloco"] . "/" . $campo["torre"] : "Não informado") . "',
                     status: '" . addslashes($campo["status"]) . "'
                 }";
             }
@@ -197,7 +206,7 @@
             tbody.innerHTML = '';
             
             if (visitantesFiltrados.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Nenhum visitante encontrado</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center;">Nenhum visitante encontrado</td></tr>';
                 return;
             }
             
@@ -208,11 +217,17 @@
                 
                 tr.innerHTML = `
                     <td>${visitante.id}</td>
+                    <td>
+                        <div style='width: 50px; height: 50px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; border: 2px solid #ddd;'>
+                            <i class='fas fa-user' style='color: #999;'></i>
+                        </div>
+                    </td>
                     <td>${destacarTexto(visitante.nome, pesquisa)}</td>
                     <td>${visitante.documento}</td>
                     <td>${visitante.telefone}</td>
                     <td>${visitante.email}</td>
                     <td>${visitante.data_nascimento}</td>
+                    <td>${visitante.morador_visitado}</td>
                     <td><span class='${statusClass}'>${visitante.status}</span></td>
                     <td class='acoes'>
                         ${visitante.status === 'Presente' ? 
