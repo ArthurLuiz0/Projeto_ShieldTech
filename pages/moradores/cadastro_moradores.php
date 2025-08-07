@@ -15,6 +15,7 @@
 <body>
     <?php
     include("../../conectarbd.php");
+    require_once("../../php/photo-upload.php");
     
     // Processar formulário se foi enviado
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -29,9 +30,24 @@
         $torre = mysqli_real_escape_string($conn, $_POST["torre"]);
         $andar = mysqli_real_escape_string($conn, $_POST["andar"]);
         $veiculo = mysqli_real_escape_string($conn, $_POST["veiculo"]);
-        $foto = mysqli_real_escape_string($conn, $_POST["foto"]);
         $animais = mysqli_real_escape_string($conn, $_POST["animais"]);
         $data_cadastro = date('Y-m-d H:i:s');
+        
+        // Processar upload de foto
+        $foto_url = '';
+        if (isset($_FILES['foto_file']) && $_FILES['foto_file']['error'] !== UPLOAD_ERR_NO_FILE) {
+            $photoUpload = new PhotoUpload('moradores');
+            $uploadResult = $photoUpload->uploadPhoto($_FILES['foto_file'], 'morador');
+            
+            if ($uploadResult['success']) {
+                $foto_url = $uploadResult['url'];
+            } else {
+                echo "<script>alert('Erro no upload da foto: " . $uploadResult['message'] . "');</script>";
+            }
+        } elseif (!empty($_POST["foto"])) {
+            // Se não há arquivo, usar URL fornecida
+            $foto_url = mysqli_real_escape_string($conn, $_POST["foto"]);
+        }
         
         // Validar email
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -44,7 +60,7 @@
             } else {
                 // Inserir morador
                 $sql = "INSERT INTO tb_moradores (nome, cpf, rg, data_nascimento, sexo, telefone, email, bloco, torre, andar, veiculo, animais, foto, data_cadastro) 
-                        VALUES ('$nome', '$cpf', '$rg', '$data_nascimento', '$sexo', '$telefone','$email', '$bloco', '$torre', '$andar', '$veiculo', '$animais', '$foto', '$data_cadastro')";
+                        VALUES ('$nome', '$cpf', '$rg', '$data_nascimento', '$sexo', '$telefone','$email', '$bloco', '$torre', '$andar', '$veiculo', '$animais', '$foto_url', '$data_cadastro')";
 
                 if (mysqli_query($conn, $sql)) {
                     $id_morador = mysqli_insert_id($conn);
@@ -88,7 +104,7 @@
         <div class="form-grid">
             <section class="form-section">
                 <h3>Cadastro de Morador</h3>
-                <form method="post" action="">
+                <form method="post" action="" enctype="multipart/form-data">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="nome">Nome Completo:</label>
@@ -186,10 +202,10 @@
                             <span>OU</span>
                         </div>
                         <label for="foto_file">Foto (Arquivo Local):</label>
-                        <input type="file" id="foto_file" name="foto_file" accept="image/*" onchange="previewLocalImage(this)">
+                        <input type="file" id="foto_file" name="foto_file" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp" onchange="previewLocalImage(this)">
                         <small style="color: #666; font-size: 0.8em;">
                             <i class="fas fa-info-circle"></i> 
-                            Cole o link da foto OU selecione um arquivo do seu dispositivo
+                            Cole o link da foto OU selecione um arquivo do seu dispositivo (máx. 5MB)
                         </small>
                         <div id="foto-preview" style="margin-top: 0.5rem; display: none;">
                             <img id="preview-img" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid #3498db;">
