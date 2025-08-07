@@ -12,7 +12,6 @@
 <body>
     <?php
     include("../../conectarbd.php");
-    require_once("../../php/photo-upload.php");
     
     $id = filter_input(INPUT_GET, 'id', FILTER_SANITIZE_NUMBER_INT);
     
@@ -31,29 +30,7 @@
         $andar = mysqli_real_escape_string($conn, $_POST["andar"]);
         $veiculo = mysqli_real_escape_string($conn, $_POST["veiculo"]);
         $animais = mysqli_real_escape_string($conn, $_POST["animais"]);
-        
-        // Processar upload de foto
-        $foto_url = $campo["foto"]; // Manter foto atual por padrão
-        if (isset($_FILES['foto_file']) && $_FILES['foto_file']['error'] !== UPLOAD_ERR_NO_FILE) {
-            $photoUpload = new PhotoUpload('moradores');
-            
-            // Remover foto antiga se existir
-            if (!empty($campo["foto"]) && strpos($campo["foto"], '../imagens/') === 0) {
-                $oldFilename = basename($campo["foto"]);
-                $photoUpload->deletePhoto($oldFilename);
-            }
-            
-            $uploadResult = $photoUpload->uploadPhoto($_FILES['foto_file'], 'morador');
-            
-            if ($uploadResult['success']) {
-                $foto_url = $uploadResult['url'];
-            } else {
-                echo "<script>alert('Erro no upload da foto: " . $uploadResult['message'] . "');</script>";
-            }
-        } elseif (!empty($_POST["foto"]) && $_POST["foto"] !== $campo["foto"]) {
-            // Se URL foi alterada, usar nova URL
-            $foto_url = mysqli_real_escape_string($conn, $_POST["foto"]);
-        }
+        $foto = mysqli_real_escape_string($conn, $_POST["foto"]);
         
         // Validar email
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
@@ -67,7 +44,7 @@
                 $sql = "UPDATE tb_moradores SET 
                         nome='$nome', cpf='$cpf', rg='$rg', data_nascimento='$data_nascimento', 
                         sexo='$sexo', telefone='$telefone', email='$email', bloco='$bloco', torre='$torre', 
-                        andar='$andar', veiculo='$veiculo', animais='$animais', foto='$foto_url' 
+                        andar='$andar', veiculo='$veiculo', animais='$animais', foto='$foto' 
                         WHERE id_moradores=$id";
                 
                 if (mysqli_query($conn, $sql)) {
@@ -147,7 +124,7 @@
 
         <section class="form-section">
             <h3>Alterar Dados do Morador</h3>
-            <form method="post" action="" enctype="multipart/form-data">
+            <form method="post" action="">
                 <input type="hidden" name="id" value="<?= $campo["id_moradores"] ?>">
                 
                 <div class="form-row">
@@ -316,20 +293,12 @@
                 <div class="form-group full-width">
                     <label for="foto">Foto (URL):</label>
                     <input type="text" id="foto" name="foto" value="<?= $campo["foto"] ?>" placeholder="https://exemplo.com/foto.jpg">
-                    <div style="margin: 0.5rem 0; text-align: center; color: #666;">
-                        <span>OU</span>
-                    </div>
-                    <label for="foto_file">Nova Foto (Arquivo Local):</label>
-                    <input type="file" id="foto_file" name="foto_file" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp" onchange="previewLocalImage(this)">
                     <small style="color: #666; font-size: 0.8em;">
                         <i class="fas fa-info-circle"></i> 
-                        Cole o link da foto OU selecione um arquivo do seu dispositivo (máx. 5MB)
+                        Cole aqui o link direto da foto (ex: de um Google Drive, Dropbox, ou servidor de imagens)
                     </small>
                     <div id="foto-preview" style="margin-top: 0.5rem; <?= $campo["foto"] ? 'display: block;' : 'display: none;' ?>">
                         <img id="preview-img" src="<?= $campo["foto"] ?>" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid #3498db;">
-                    </div>
-                    <div id="foto-preview-local" style="margin-top: 0.5rem; display: none;">
-                        <img id="preview-img-local" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid #28a745;">
                     </div>
                 </div>
 
@@ -421,36 +390,6 @@
                 veiculoInput.value = 'Possui';
             } else {
                 veiculoInput.value = 'Não possui';
-            }
-        }
-        
-        // Preview de imagem local
-        function previewLocalImage(input) {
-            const preview = document.getElementById('foto-preview-local');
-            const img = document.getElementById('preview-img-local');
-            const urlPreview = document.getElementById('foto-preview');
-            
-            if (input.files && input.files[0]) {
-                // Verificar tamanho do arquivo (5MB)
-                if (input.files[0].size > 5 * 1024 * 1024) {
-                    alert('Arquivo muito grande! Máximo permitido: 5MB');
-                    input.value = '';
-                    preview.style.display = 'none';
-                    return;
-                }
-                
-                const reader = new FileReader();
-                
-                reader.onload = function(e) {
-                    img.src = e.target.result;
-                    preview.style.display = 'block';
-                    // Ocultar preview da URL quando arquivo local é selecionado
-                    if (urlPreview) urlPreview.style.display = 'none';
-                };
-                
-                reader.readAsDataURL(input.files[0]);
-            } else {
-                preview.style.display = 'none';
             }
         }
     </script>

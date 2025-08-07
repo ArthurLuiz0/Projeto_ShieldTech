@@ -15,7 +15,6 @@
 <body>
     <?php
     include("../../conectarbd.php");
-    require_once("../../php/photo-upload.php");
     
     // Processar formulário se foi enviado
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
@@ -33,22 +32,6 @@
         $animais = mysqli_real_escape_string($conn, $_POST["animais"]);
         $data_cadastro = date('Y-m-d H:i:s');
         
-        // Processar upload de foto
-        $foto_url = '';
-        if (isset($_FILES['foto_file']) && $_FILES['foto_file']['error'] !== UPLOAD_ERR_NO_FILE) {
-            $photoUpload = new PhotoUpload('moradores');
-            $uploadResult = $photoUpload->uploadPhoto($_FILES['foto_file'], 'morador');
-            
-            if ($uploadResult['success']) {
-                $foto_url = $uploadResult['url'];
-            } else {
-                echo "<script>alert('Erro no upload da foto: " . $uploadResult['message'] . "');</script>";
-            }
-        } elseif (!empty($_POST["foto"])) {
-            // Se não há arquivo, usar URL fornecida
-            $foto_url = mysqli_real_escape_string($conn, $_POST["foto"]);
-        }
-        
         // Validar email
         if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
             echo "<script>alert('Email inválido! Por favor, digite um email válido.');</script>";
@@ -59,8 +42,8 @@
                 echo "<script>alert('Este email já está cadastrado!');</script>";
             } else {
                 // Inserir morador
-                $sql = "INSERT INTO tb_moradores (nome, cpf, rg, data_nascimento, sexo, telefone, email, bloco, torre, andar, veiculo, animais, foto, data_cadastro) 
-                        VALUES ('$nome', '$cpf', '$rg', '$data_nascimento', '$sexo', '$telefone','$email', '$bloco', '$torre', '$andar', '$veiculo', '$animais', '$foto_url', '$data_cadastro')";
+                $sql = "INSERT INTO tb_moradores (nome, cpf, rg, data_nascimento, sexo, telefone, email, bloco, torre, andar, veiculo, animais, data_cadastro) 
+                        VALUES ('$nome', '$cpf', '$rg', '$data_nascimento', '$sexo', '$telefone','$email', '$bloco', '$torre', '$andar', '$veiculo', '$animais', '$data_cadastro')";
 
                 if (mysqli_query($conn, $sql)) {
                     $id_morador = mysqli_insert_id($conn);
@@ -104,7 +87,7 @@
         <div class="form-grid">
             <section class="form-section">
                 <h3>Cadastro de Morador</h3>
-                <form method="post" action="" enctype="multipart/form-data">
+                <form method="post" action="">
                     <div class="form-row">
                         <div class="form-group">
                             <label for="nome">Nome Completo:</label>
@@ -195,25 +178,7 @@
                         </div>
 
 
-                    <div class="form-group full-width">
-                        <label for="foto">Foto (URL):</label>
-                        <input type="text" id="foto" name="foto" placeholder="https://exemplo.com/foto.jpg">
-                        <div style="margin: 0.5rem 0; text-align: center; color: #666;">
-                            <span>OU</span>
-                        </div>
-                        <label for="foto_file">Foto (Arquivo Local):</label>
-                        <input type="file" id="foto_file" name="foto_file" accept="image/jpeg,image/jpg,image/png,image/gif,image/webp" onchange="previewLocalImage(this)">
-                        <small style="color: #666; font-size: 0.8em;">
-                            <i class="fas fa-info-circle"></i> 
-                            Cole o link da foto OU selecione um arquivo do seu dispositivo (máx. 5MB)
-                        </small>
-                        <div id="foto-preview" style="margin-top: 0.5rem; display: none;">
-                            <img id="preview-img" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid #3498db;">
-                        </div>
-                        <div id="foto-preview-local" style="margin-top: 0.5rem; display: none;">
-                            <img id="preview-img-local" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid #28a745;">
-                        </div>
-                    </div>
+                    
 
                     <div class="form-group">
                             <label for="veiculo">Veículo:</label>
@@ -379,28 +344,6 @@
                 document.getElementById('tipo_animal').value = '';
                 document.getElementById('porte_animal').value = '';
                 document.getElementById('observacoes_animal').value = '';
-            }
-        }
-        
-        // Preview de imagem local
-        function previewLocalImage(input) {
-            const preview = document.getElementById('foto-preview-local');
-            const img = document.getElementById('preview-img-local');
-            const urlPreview = document.getElementById('foto-preview');
-            
-            if (input.files && input.files[0]) {
-                const reader = new FileReader();
-                
-                reader.onload = function(e) {
-                    img.src = e.target.result;
-                    preview.style.display = 'block';
-                    // Ocultar preview da URL quando arquivo local é selecionado
-                    urlPreview.style.display = 'none';
-                };
-                
-                reader.readAsDataURL(input.files[0]);
-            } else {
-                preview.style.display = 'none';
             }
         }
     </script>

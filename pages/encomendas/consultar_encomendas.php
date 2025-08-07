@@ -41,11 +41,6 @@
         </div>
 <form method="GET" style="margin-bottom: 1rem; display: flex; gap: 1rem; flex-wrap: wrap;">
     <div>
-        <label for="pesquisa">Pesquisar:</label><br>
-        <input type="text" name="pesquisa" id="pesquisa" placeholder="Nome do morador ou descrição" value="<?php echo isset($_GET['pesquisa']) ? $_GET['pesquisa'] : ''; ?>">
-    </div>
-
-    <div>
         <label for="data_encomenda">Data de recebimento:</label><br>
         <input type="date" name="data_encomenda" id="data_encomenda" value="<?php echo isset($_GET['data_encomenda']) ? $_GET['data_encomenda'] : ''; ?>">
     </div>
@@ -88,14 +83,9 @@
 $data = isset($_GET['data_encomenda']) ? $_GET['data_encomenda'] : null;
 $nome = isset($_GET['nome_morador']) ? $_GET['nome_morador'] : null;
 $status = isset($_GET['status']) ? $_GET['status'] : null;
-$pesquisa = isset($_GET['pesquisa']) ? $_GET['pesquisa'] : null;
 
 $query = "SELECT * FROM tb_encomendas";
 $condicoes = [];
-
-if (!empty($pesquisa)) {
-    $condicoes[] = "(nome_morador LIKE '%$pesquisa%' OR descricao LIKE '%$pesquisa%')";
-}
 
 if (!empty($data)) {
     $condicoes[] = "data_recebimento = '$data'";
@@ -120,13 +110,6 @@ $selecionar = mysqli_query($conn, $query);
 
                         
                         if (mysqli_num_rows($selecionar) > 0) {
-                            $total_encontrados = mysqli_num_rows($selecionar);
-                            if (!empty($pesquisa) || !empty($data) || !empty($nome) || !empty($status)) {
-                                echo "<div style='margin-bottom: 1rem; padding: 0.5rem; background: #e8f4fd; border-radius: 0.5rem; border-left: 4px solid #3498db;'>";
-                                echo "<i class='fas fa-info-circle'></i> Encontradas $total_encontrados encomenda(s)";
-                                echo "</div>";
-                            }
-                            
                             while ($campo = mysqli_fetch_array($selecionar)) {
                                 echo "<tr>";
                                 echo "<td>" . $campo["nome_morador"] . "</td>";
