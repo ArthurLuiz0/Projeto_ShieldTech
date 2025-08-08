@@ -21,9 +21,7 @@
         $num_documento = mysqli_real_escape_string($conn, $_POST["num_documento"]);
         $telefone = mysqli_real_escape_string($conn, $_POST["telefone"]);
         $email = mysqli_real_escape_string($conn, $_POST["email"]);
-        $data_nascimento = mysqli_real_escape_string($conn, $_POST["data_nascimento"]);
-        $foto = mysqli_real_escape_string($conn, $_POST["foto"]);
-        
+        $data_nascimento = mysqli_real_escape_string($conn, $_POST["data_nascimento"]);        
         $sql = "UPDATE tb_visitantes SET 
                 nome_visitante='$nome_visitante', num_documento='$num_documento', 
                 telefone='$telefone', email='$email', data_nascimento='$data_nascimento', foto='$foto' 
@@ -109,17 +107,6 @@
                     </div>
                 </div>
 
-                <div class="form-group full-width">
-                    <label for="foto">Foto (URL):</label>
-                    <input type="text" id="foto" name="foto" value="<?= $campo["foto"] ?>" placeholder="https://exemplo.com/foto.jpg">
-                    <small style="color: #666; font-size: 0.8em;">
-                        <i class="fas fa-info-circle"></i> 
-                        Cole aqui o link direto da foto (ex: de um Google Drive, Dropbox, ou servidor de imagens)
-                    </small>
-                    <div id="foto-preview" style="margin-top: 0.5rem; <?= $campo["foto"] ? 'display: block;' : 'display: none;' ?>">
-                        <img id="preview-img" src="<?= $campo["foto"] ?>" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid #3498db;">
-                    </div>
-                </div>
 
                 <div class="form-actions">
                     <button type="submit" class="btn-primary">
@@ -138,7 +125,6 @@
     </footer>
     
     <script src="../../js/cpf-validator.js"></script>
-    <script src="../../js/photo-preview.js"></script>
     <script>
         // Configurar validação de CPF para edição de visitante
         document.addEventListener('DOMContentLoaded', () => {

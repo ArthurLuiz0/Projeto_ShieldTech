@@ -42,8 +42,8 @@
                 echo "<script>alert('Este email já está cadastrado!');</script>";
             } else {
                 // Inserir morador
-                $sql = "INSERT INTO tb_moradores (nome, cpf, rg, data_nascimento, sexo, telefone, email, bloco, torre, andar, veiculo, animais, data_cadastro) 
-                        VALUES ('$nome', '$cpf', '$rg', '$data_nascimento', '$sexo', '$telefone','$email', '$bloco', '$torre', '$andar', '$veiculo', '$animais', '$data_cadastro')";
+                $sql = "INSERT INTO tb_moradores (nome, cpf, rg, data_nascimento, sexo, telefone, email, bloco, torre, andar, veiculo, animais, foto, data_cadastro) 
+                        VALUES ('$nome', '$cpf', '$rg', '$data_nascimento', '$sexo', '$telefone','$email', '$bloco', '$torre', '$andar', '$veiculo', '$animais', '$foto', '$data_cadastro')";
 
                 if (mysqli_query($conn, $sql)) {
                     $id_morador = mysqli_insert_id($conn);
@@ -178,7 +178,6 @@
                         </div>
 
 
-                    
 
                     <div class="form-group">
                             <label for="veiculo">Veículo:</label>
@@ -286,7 +285,6 @@
 
     <script src="../../js/validation.js"></script>
     <script src="../../js/cpf-validator.js"></script>
-    <script src="../../js/photo-preview.js"></script>
     <script>
         // Máscara para telefone
         document.getElementById('telefone').addEventListener('input', function(e) {

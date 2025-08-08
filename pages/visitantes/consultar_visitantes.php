@@ -71,7 +71,6 @@
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Foto</th>
                             <th>Nome</th>
                             <th>Documento</th>
                             <th>Telefone</th>
@@ -91,7 +90,6 @@
                                 echo "<tr>";
                                 echo "<td>" . $campo["id_visitantes"] . "</td>";
                                 echo "<td>";
-                                
                                 echo "</td>";
                                 echo "<td>" . $campo["nome_visitante"] . "</td>";
                                 echo "<td>" . $campo["num_documento"] . "</td>";

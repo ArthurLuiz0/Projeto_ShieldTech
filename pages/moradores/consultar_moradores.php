@@ -78,7 +78,6 @@
                     <thead>
                         <tr>
                             <th>ID</th>
-                            <th>Foto</th>
                             <th>Nome</th>
                             <th>CPF</th>
                             <th>Telefone</th>
@@ -143,7 +142,7 @@
                                 
                                 echo "<tr>";
                                 echo "<td>" . $campo["id_moradores"] . "</td>";
-                                echo "<td>";                               
+                                echo "<td>";
                                 echo "</td>";
                                 echo "<td>" . $campo["nome"] . "</td>";
                                 echo "<td>" . $campo["cpf"] . "</td>";

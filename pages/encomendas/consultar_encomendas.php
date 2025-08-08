@@ -18,70 +18,26 @@
                 <li><a href="../visitantes/visitantes.php"><i class="fas fa-user-friends"></i> Visitantes</a></li>
                 <li><a href="../relatorios/relatorios.php"><i class="fas fa-chart-bar"></i> Relatórios</a></li>
                 <li><a href="../reservas/reservas.php"><i class="fas fa-calendar"></i> Reservas</a></li>
-                <li><a href="../encomendas/cadastro_encomendas.php"><i class="fas fa-box"></i> encomendas</a></li>
+                <li><a href="../encomendas/cadastro_encomendas.php"><i class="fas fa-box"></i> Encomendas</a></li>
                 <li class="dropdown">
                     <a href="#" class="dropbtn"><i class="fas fa-gear"></i> Cadastros</a>
                     <div class="dropdown-content">
-                        <a href="cadastro_moradores.php">Moradores</a>
+                        <a href="../moradores/cadastro_moradores.php">Moradores</a>
                         <a href="../funcionarios/cadastro_funcionarios.php">Funcionários</a>
                         <a href="../cargos/cadastro_cargos.php">Cargos</a>
                         <a href="../animais/cadastro_animais.php">Animais</a>
+                        <a href="../veiculos/cadastro_veiculos.php">Veículos</a>
                     </div>
                 </li>
             </ul>
         </nav>
     </header>
-    <main>
-        <h2>Encomendas Cadastrados</h2>
-        
-        <div class="actions-bar">
-            <a href="cadastro_encomendas.php" class="btn-primary">
-                <i class="fas fa-plus"></i> Nova Encomenda
-            </a>
-        </div>
-<form method="GET" style="margin-bottom: 1rem; display: flex; gap: 1rem; flex-wrap: wrap;">
-    <div>
-        <label for="data_encomenda">Data de recebimento:</label><br>
-        <input type="date" name="data_encomenda" id="data_encomenda" value="<?php echo isset($_GET['data_encomenda']) ? $_GET['data_encomenda'] : ''; ?>">
-    </div>
 
-    <div>
-        <label for="nome_morador">Nome do morador:</label><br>
-        <input type="text" name="nome_morador" id="nome_morador" placeholder="Digite o nome" value="<?php echo isset($_GET['nome_morador']) ? $_GET['nome_morador'] : ''; ?>">
-    </div>
-
-    <div>
-        <label for="status">Status:</label><br>
-        <select name="status" id="status">
-            <option value="">-- Todos --</option>
-            <option value="Pendente" <?php if(isset($_GET['status']) && $_GET['status'] == 'Pendente') echo 'selected'; ?>>Pendente</option>
-            <option value="Entregue" <?php if(isset($_GET['status']) && $_GET['status'] == 'Entregue') echo 'selected'; ?>>Entregue</option>
-            <option value="Cancelado" <?php if(isset($_GET['status']) && $_GET['status'] == 'Cancelado') echo 'selected'; ?>>Cancelado</option>
-        </select>
-    </div>
-
-    <div style="align-self: end;">
-        <button type="submit" class="btn-primary"><i class="fas fa-search"></i> Pesquisar</button>
-    </div>
-</form>
-
-
-        <section class="lista-section">
-            <div class="tabela-container">
-                <table class="tabela-relatorio">
-                    <thead>
-                        <tr>
-                            <th>Morador</th>
-                            <th>Descricao</th>
-                            <th>Data_recebimento</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php
+    <?php
                         include("../../conectarbd.php");
 $data = isset($_GET['data_encomenda']) ? $_GET['data_encomenda'] : null;
 $nome = isset($_GET['nome_morador']) ? $_GET['nome_morador'] : null;
+$email = isset($_GET['email']) ? $_GET['email'] : null;
 $status = isset($_GET['status']) ? $_GET['status'] : null;
 
 $query = "SELECT * FROM tb_encomendas";
@@ -93,6 +49,10 @@ if (!empty($data)) {
 
 if (!empty($nome)) {
     $condicoes[] = "nome_morador LIKE '%$nome%'";
+}
+
+if (!empty($email)) {
+    $condicoes[] = "email = '$email'";
 }
 
 if (!empty($status)) {
@@ -115,6 +75,7 @@ $selecionar = mysqli_query($conn, $query);
                                 echo "<td>" . $campo["nome_morador"] . "</td>";
                                 echo "<td>" . $campo["descricao"] . "</td>";
                                 echo "<td>" . $campo["data_recebimento"] . "</td>";
+                                echo "<td>" . $campo["email"] . "</td>";
                                 echo "<td>" . $campo["status"] . "</td>";
                                 echo "<td class='acoes'>";
                                 echo "<a href='editar_encomenda.php?id=" . $campo["id_encomendas"] . "' class='btn-editar'>";
@@ -128,7 +89,59 @@ $selecionar = mysqli_query($conn, $query);
                             echo "<tr><td colspan='10' style='text-align: center;'>Nenhum Encomenda cadastrado</td></tr>";
                         }
                         ?>
-                    </tbody>
+
+    <main>
+        <h2>Encomendas Cadastrados</h2>
+        
+        <div class="actions-bar">
+            <a href="cadastro_encomendas.php" class="btn-primary">
+                <i class="fas fa-plus"></i> Nova Encomenda
+            </a>
+        </div>
+<form method="GET" style="margin-bottom: 1rem; display: flex; gap: 1rem; flex-wrap: wrap;">
+    <div>
+        <label for="data_encomenda">Data de recebimento:</label><br>
+        <input type="date" name="data_encomenda" id="data_encomenda" value="<?php echo isset($_GET['data_encomenda']) ? $_GET['data_encomenda'] : ''; ?>">
+    </div>
+
+    <div>
+        <label for="nome_morador">Nome do morador:</label><br>
+        <input type="text" name="nome_morador" id="nome_morador" placeholder="Digite o nome" value="<?php echo isset($_GET['nome_morador']) ? $_GET['nome_morador'] : ''; ?>">
+    </div>
+    
+    <div>
+        <label for="email">Email:</label><br>
+        <input type="email" name="email" id="email" placeholder="Digite o email" value="<?php echo isset($_GET['email']) ? $_GET['email'] : ''; ?>">
+    </div>
+
+    <div>
+        <label for="status">Status:</label><br>
+        <select name="status" id="status">
+            <option value="">-- Todos --</option>
+            <option value="Recebido" <?php if(isset($_GET['status']) && $_GET['status'] == 'Recebido') echo 'selected'; ?>>Recebido</option>
+            <option value="Entregue" <?php if(isset($_GET['status']) && $_GET['status'] == 'Entregue') echo 'selected'; ?>>Entregue</option>
+        </select>
+    </div>
+
+    <div style="align-self: end;">
+        <button type="submit" class="btn-primary"><i class="fas fa-search"></i> Pesquisar</button>
+    </div>
+</form>
+
+
+        <section class="lista-section">
+            <div class="tabela-container">
+                <table class="tabela-relatorio">
+                    <thead>
+                        <tr>
+                            <th>Morador</th>
+                            <th>Descricao</th>
+                            <th>Data_recebimento</th>
+                            <th>email</th>
+                            <th>Status</th>
+
+                        </tr>
+                    </thead>
                 </table>
             </div>
         </section>

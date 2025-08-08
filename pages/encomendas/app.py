@@ -1,10 +1,10 @@
 from flask import Flask, request, jsonify
+from Gmail import enviar_email
 import mysql.connector
-from GmailEncomendas import enviar_email_encomenda
 
 app = Flask(__name__)
 
-def get_email_by_nome(nome_morador):
+def get_email_by_id(id_morador):
     try:
         conn = mysql.connector.connect(
             host='localhost',
@@ -13,7 +13,7 @@ def get_email_by_nome(nome_morador):
             database='db_shieldtech'
         )
         cursor = conn.cursor(dictionary=True)
-        cursor.execute("SELECT email FROM tb_moradores WHERE nome = %s", (nome_morador,))
+        cursor.execute("SELECT email FROM tb_moradores WHERE id_moradores = %s", (id_morador,))
         result = cursor.fetchone()
         cursor.close()
         conn.close()
@@ -27,18 +27,17 @@ def get_email_by_nome(nome_morador):
 
 @app.route('/')
 def index():
-    return 'API de envio de email de encomendas ativa!'
+    return 'API de envio de email ativa!'
 
-@app.route('/enviar_email_encomenda', methods=['POST'])
-def enviar_email_encomenda_api():
+@app.route('/enviar_email', methods=['POST'])
+def enviar_email_api():
     data = request.get_json()
-    nome_morador = data.get('nome_morador')
+    id_morador = data.get('email')  # Aqui 'email' na verdade é o id_morador vindo do PHP
     descricao = data.get('descricao', '')
-    data_recebimento = data.get('data_recebimento', '')
-    email_destinatario = get_email_by_nome(nome_morador)
+    email_destinatario = get_email_by_id(id_morador)
     if not email_destinatario:
-        return jsonify({'sucesso': False, 'erro': 'Email do morador não encontrado'})
-    sucesso = enviar_email_encomenda(email_destinatario, nome_morador, descricao, data_recebimento)
+        return jsonify({'sucesso': False, 'erro': 'Email não encontrado'})
+    sucesso = enviar_email(email_destinatario, descricao)
     return jsonify({'sucesso': sucesso})
 
 if __name__ == '__main__':

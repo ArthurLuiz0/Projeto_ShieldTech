@@ -19,10 +19,9 @@
         $telefone = mysqli_real_escape_string($conn, $_POST["telefone"]);
         $email = mysqli_real_escape_string($conn, $_POST["email"]);
         $data_nascimento = mysqli_real_escape_string($conn, $_POST["data_nascimento"]);
-        $foto = mysqli_real_escape_string($conn, $_POST["foto"]);
         $status = mysqli_real_escape_string($conn, $_POST["status"]);
-        $sql = "INSERT INTO tb_visitantes (nome_visitante, num_documento, telefone, email, data_nascimento, foto,  status) 
-                VALUES ('$nome_visitante', '$num_documento', '$telefone', '$email', '$data_nascimento', '$foto', '$status')";
+        $sql = "INSERT INTO tb_visitantes (nome_visitante, num_documento, telefone, email, data_nascimento, status) 
+                VALUES ('$nome_visitante', '$num_documento', '$telefone', '$email', '$data_nascimento', '$status')";
         
         if (mysqli_query($conn, $sql)) {
             echo "<script>alert('Visitante registrado com sucesso!');</script>";
@@ -104,9 +103,7 @@
                             <option value="Presente">Presente</option>                   
                         </select>
                     </div>
-                </div>
-
-                
+                </div>            
 
                 <div class="form-actions">
                     <button type="submit" class="btn-primary">
@@ -126,7 +123,6 @@
                     <thead>
                         <tr>
                             <th>Nome</th>
-                            <th>Foto</th>
                             <th>Documento</th>
                             <th>Telefone</th>
                             <th>Email</th>
@@ -142,14 +138,7 @@
                             while ($campo = mysqli_fetch_array($selecionar)) {
                                 echo "<tr>";
                                 echo "<td>" . $campo["nome_visitante"] . "</td>";
-                                echo "<td>";
-                                if ($campo["foto"]) {
-                                    echo "<img src='" . $campo["foto"] . "' alt='Foto de " . $campo["nome_visitante"] . "' style='width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #28a745;'>";
-                                } else {
-                                    echo "<div style='width: 40px; height: 40px; border-radius: 50%; background: #f0f0f0; display: flex; align-items: center; justify-content: center; border: 2px solid #ddd;'>";
-                                    echo "<i class='fas fa-user' style='color: #999; font-size: 0.8rem;'></i>";
-                                    echo "</div>";
-                                }
+                                echo "<td>";           
                                 echo "</td>";
                                 echo "<td>" . $campo["num_documento"] . "</td>";
                                 echo "<td>" . $campo["telefone"] . "</td>";
