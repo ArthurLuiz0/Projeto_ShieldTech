@@ -1,7 +1,7 @@
 <?php
 $servidor = "localhost";
 $dbusuario = "root";
-$dbsenha = "";
+$dbsenha = "1234";
 $dbname = "db_shieldtech";
 
 $conn = mysqli_connect($servidor, $dbusuario, $dbsenha, $dbname);
@@ -14,6 +14,34 @@ if (!$conn) {
 
 // Incluir validador de CPF
 include_once("php/cpf-validator.php");
+
+// Verificar e criar tabela de usuários se não existir
+$check_usuarios = mysqli_query($conn, "SHOW TABLES LIKE 'tb_usuarios'");
+if (mysqli_num_rows($check_usuarios) == 0) {
+    $create_usuarios = "
+    CREATE TABLE tb_usuarios (
+        id_usuario INT AUTO_INCREMENT PRIMARY KEY,
+        nome_completo VARCHAR(100) NOT NULL,
+        email VARCHAR(100) UNIQUE NOT NULL,
+        senha VARCHAR(255) NOT NULL,
+        tipo_usuario ENUM('admin', 'funcionario', 'morador') DEFAULT 'morador',
+        status ENUM('ativo', 'inativo', 'bloqueado') DEFAULT 'ativo',
+        data_criacao TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        ultimo_login TIMESTAMP NULL,
+        tentativas_login INT DEFAULT 0,
+        token_reset VARCHAR(255) NULL,
+        token_expira TIMESTAMP NULL,
+        INDEX idx_email (email),
+        INDEX idx_status (status),
+        INDEX idx_tipo (tipo_usuario)
+    )";
+    mysqli_query($conn, $create_usuarios);
+    
+    // Inserir usuário administrador padrão
+    $senha_admin = password_hash('admin123', PASSWORD_DEFAULT);
+    mysqli_query($conn, "INSERT INTO tb_usuarios (nome_completo, email, senha, tipo_usuario, status) 
+                        VALUES ('Administrador', 'admin@shieldtech.com', '$senha_admin', 'admin', 'ativo')");
+}
 
 // Verificar e criar colunas necessárias se não existirem
 $check_reservas = mysqli_query($conn, "SHOW COLUMNS FROM tb_reservas LIKE 'id_morador'");

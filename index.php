@@ -1,3 +1,20 @@
+<?php
+session_start();
+include("conectarbd.php");
+
+// Verificar se usuário está logado
+if (!isset($_SESSION['usuario_id'])) {
+    header("Location: pages/auth/login.php");
+    exit();
+}
+
+$usuario = [
+    'id' => $_SESSION['usuario_id'],
+    'nome' => $_SESSION['usuario_nome'],
+    'email' => $_SESSION['usuario_email'],
+    'tipo' => $_SESSION['usuario_tipo']
+];
+?>
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
@@ -33,13 +50,20 @@
                         <a href="pages/veiculos/cadastro_veiculos.php">Veículos</a>
                     </div>
                 </li>
+                <li class="dropdown">
+                    <a href="#" class="dropbtn"><i class="fas fa-user"></i> <?= htmlspecialchars($usuario['nome']) ?></a>
+                    <div class="dropdown-content">
+                        <a href="pages/auth/perfil.php">Meu Perfil</a>
+                        <a href="pages/auth/logout.php">Sair</a>
+                    </div>
+                </li>
             </ul>
         </nav>
     </header>
 
     <main>
         <section class="welcome-section">
-            <h2>Bem-vindo ao Sistema de Gestão ShieldTech</h2>
+            <h2>Bem-vindo, <?= htmlspecialchars($usuario['nome']) ?>!</h2>
             <p>Gerencie seu condomínio de forma eficiente e segura.</p>
         </section>
 
@@ -47,8 +71,6 @@
             <h2>Painel de Controle</h2>
             <div class="cards">
                 <?php
-                include("conectarbd.php");
-                
                 // Contar registros
                 $moradores = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM tb_moradores"));
                 $funcionarios = mysqli_num_rows(mysqli_query($conn, "SELECT * FROM tb_funcionarios"));
