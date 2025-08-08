@@ -10,7 +10,7 @@ def enviar_email_encomenda(email_destinatario, nome_morador, descricao, data_rec
     corpo_email = f"""
     <html>
     <body>
-        <div style='font-family: Arial; background: #f8fafc; padding: 20px; border-radius: 10px;'>
+        <div style='font-family: Arial; background: #f8fafc; padding: 20px; border-radius: 10px; color: #3498db;'>
             <h2>Olá, {nome_morador}!</h2>
             <p>Sua encomenda chegou:</p>
             <ul>

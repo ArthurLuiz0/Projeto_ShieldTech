@@ -185,6 +185,7 @@
                         </div>
                     </div>
 
+                </div>
                 <!-- Checkbox para animal -->
                 <div class="form-row">
                     <div class="form-group">

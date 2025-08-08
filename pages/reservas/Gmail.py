@@ -20,7 +20,7 @@ def enviar_email(email_destinatario, descricao):
             body {{
                 font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
                 background: #f8fafc;
-                color: #2c3e50;
+                color: #3498db;
                 padding: 0;
                 margin: 0;
                 line-height: 1.6;
@@ -36,7 +36,7 @@ def enviar_email(email_destinatario, descricao):
                 overflow: hidden;
             }}
             .header {{
-                background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+                background: linear-gradient(135deg, #3498db 0%, #5dade2 100%);
                 color: #ffffff;
                 padding: 25px;
                 text-align: center;
@@ -60,7 +60,7 @@ def enviar_email(email_destinatario, descricao):
             }}
             .greeting {{
                 font-size: 18px;
-                color: #2c3e50;
+                color: #3498db;
                 margin-bottom: 20px;
                 font-weight: 500;
             }}
@@ -75,7 +75,7 @@ def enviar_email(email_destinatario, descricao):
             }}
             .descricao {{
                 background: #e8f4fd;
-                color: #2c3e50;
+                color: #3498db;
                 border-radius: 8px;
                 padding: 20px;
                 margin: 15px 0;
@@ -84,7 +84,7 @@ def enviar_email(email_destinatario, descricao):
             }}
             .descricao h3 {{
                 margin: 0 0 15px 0;
-                color: #2c3e50;
+                color: #3498db;
                 font-size: 18px;
                 display: flex;
                 align-items: center;
@@ -97,7 +97,7 @@ def enviar_email(email_destinatario, descricao):
                 gap: 8px;
             }}
             .info-item strong {{
-                color: #2c3e50;
+                color: #3498db;
                 min-width: 100px;
             }}
             .important-notes {{
@@ -132,7 +132,7 @@ def enviar_email(email_destinatario, descricao):
             }}
             .footer .company {{
                 font-weight: bold;
-                color: #2c3e50;
+                color: #3498db;
                 margin-bottom: 5px;
             }}
             .shield-icon {{

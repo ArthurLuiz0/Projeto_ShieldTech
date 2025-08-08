@@ -2,7 +2,7 @@
     --primary-color: #2563eb;
     --secondary-color: #1e40af;
     --accent-color: #3b82f6;
-    --text-color: #1f2937;
+    --text-color: #3498db;
     --light-text: #6b7280;
     --light-bg: #f3f4f6;
     --white: #ffffff;
@@ -477,7 +477,7 @@ nav {
 
 /* Footer */
 footer {
-    background: var(--text-color);
+    background: var(--primary-color);
     color: var(--white);
     padding: 4rem 2rem 2rem;
 }
@@ -832,4 +832,4 @@ header.scroll-up {
 .form-group textarea.error {
     border-color: #ef4444;
     box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-} 
+}

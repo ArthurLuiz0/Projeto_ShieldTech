@@ -231,6 +231,7 @@
             
             // Atualizar resultado da pesquisa
             if (pesquisa || filtroBloco) {
+                resultadoPesquisa.style.color = '#3498db';
                 resultadoPesquisa.textContent = `Encontrados ${moradoresFiltrados.length} morador(es)`;
             } else {
                 resultadoPesquisa.textContent = '';

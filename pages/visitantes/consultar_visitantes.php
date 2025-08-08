@@ -158,6 +158,7 @@
             
             // Atualizar resultado da pesquisa
             if (pesquisa || filtroStatus) {
+                resultadoPesquisa.style.color = '#3498db';
                 resultadoPesquisa.textContent = `Encontrados ${visitantesFiltrados.length} visitante(s)`;
             } else {
                 resultadoPesquisa.textContent = '';

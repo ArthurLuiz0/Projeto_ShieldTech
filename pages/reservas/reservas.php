@@ -262,7 +262,7 @@
                 <div class="quick-actions">
                     <h4>Status do Email</h4>
                     <div style="background: #e8f4fd; padding: 1rem; border-radius: 0.5rem; margin-top: 1rem; border-left: 4px solid #3498db;">
-                        <p style="margin: 0; color: #2c3e50; font-size: 0.9em;">
+                        <p style="margin: 0; color: #3498db; font-size: 0.9em;">
                             <i class="fas fa-info-circle"></i> 
                             Emails de confirmação são enviados automaticamente para moradores com email cadastrado.
                         </p>

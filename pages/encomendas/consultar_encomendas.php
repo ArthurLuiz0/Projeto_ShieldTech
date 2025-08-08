@@ -187,7 +187,7 @@ body {
     align-items: center;
     justify-content: center;
     padding: 1rem;
-    background:#2c3e50;
+    background: #3498db;
 }
 
 /* Form Container */
@@ -429,14 +429,14 @@ input:invalid:focus {
 
 /* Reset e variáveis */
 :root {
-    --primary-color: #2c3e50;
+    --primary-color: #3498db;
     --secondary-color: #3498db;
     --success-color: #27ae60;
     --warning-color: #f39c12;
     --danger-color: #e74c3c;
     --light-bg: #f8f9fa;
-    --dark-bg: #2c3e50;
-    --text-color: #2c3e50;
+    --dark-bg: #3498db;
+    --text-color: #3498db;
     --light-text: #ffffff;
     --border-radius: 8px;
     --shadow: 0 2px 4px rgba(0,0,0,0.1);
